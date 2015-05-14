@@ -1,6 +1,6 @@
 {
   "name": "cartogram",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "repository": {
     "type": "git",
     "url": "git@github.com:eventbrite/cartogram.git"
@@ -13,6 +13,7 @@
   },
   "description": "Super fast shape WebGL 2D rendering engine",
   "dependencies": {
+    "js-common": "http://packages:8889/package/js-common/latest"
   },
   "devDependencies": {
     "grunt": "~0.4.5",
