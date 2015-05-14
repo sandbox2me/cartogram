@@ -50,8 +50,8 @@ define(function(require) {
             if (hasWebGL || this.options.forceGL) {
                 try {
                     this.renderer = new three.WebGLRenderer({
-                        canvas: this.options.canvas, // for iOS
-                        precision: this.options.canvas ? 'lowp' : 'highp', // low precision for iOS
+                        canvas: this.el,
+                        precision: 'highp',
                         alpha: true,
                         premultipliedAlpha: true,
                         stencil: true
@@ -70,7 +70,7 @@ define(function(require) {
             this.isGL = this.renderer instanceof three.WebGLRenderer;
 
             this.renderer.setClearColor((new three.Color(this.options.backgroundColor)).getHex(), 1);
-            //this.renderer.setClearColor(0x88aa00, 1);
+            // this.renderer.setClearColor(0x88aa00, 1);
             if (this.isGL) {
                 this.renderer.setBlending(
                     three.CustomBlending,
