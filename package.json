@@ -13,7 +13,9 @@
   },
   "description": "Super fast shape WebGL 2D rendering engine",
   "dependencies": {
-    "js-common": "http://packages:8889/package/js-common/latest"
+    "js-common": "http://packages:8889/package/js-common/latest",
+    "rbush": "~1.3.4",
+    "three": "~0.70.0"
   },
   "devDependencies": {
     "grunt": "~0.4.5",
