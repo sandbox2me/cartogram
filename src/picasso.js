@@ -38,7 +38,7 @@ define(function(require) {
         this.initializeRenderer(width, height);
         this.initializeModules();
 
-        if (options.showDebug) {
+        if (this.options.showDebug) {
             this.initializeDebug();
         }
     };
