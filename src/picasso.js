@@ -31,8 +31,6 @@ define(function(require) {
 
         this.version = '0.0.1';
         this.el = el;
-        this.materialCache = [];
-        this.cache = {};
         this.SDFFonts = {};
 
         this.initializeRenderer(options.width, options.height);
@@ -185,6 +183,19 @@ define(function(require) {
         }
     };
 
+    // Create a new instance of Paper so we don't
+    // need a global renderer object.
+    Picasso.Shapes = new PicassoPaper({
+        options: {
+            immediate: false
+        }
+    });
+
+    // delete unusable paper methods from the instance
+    delete Picasso.Shapes.set;
+    delete Picasso.Shapes.clear;
+    delete Picasso.Shapes.remove;
+    delete Picasso.Shapes.add;
 
     return Picasso;
 });

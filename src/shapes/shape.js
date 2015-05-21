@@ -10,6 +10,10 @@ define(function(require) {
         EventBusMixin = require('../event_bus'),
         SpriteCollection = require('../sprite_collection'),
 
+        // XXX(parris): extract into its own store
+        cache = {},
+        materialCache = [],
+
         spriteCollection = new SpriteCollection(),
 
         defaultAttrs = {
@@ -42,8 +46,9 @@ define(function(require) {
 
         this.paper = this.attributes.paper;
 
-        // WARNING: shared cache across all objects
-        this._cache = this.options.paper.picasso.cache;
+        // WARNING: shared caches across all objects
+        this._globalMaterialCache = materialCache;
+        this._cache = cache;
         this._cache.materials = this._cache.materials || {};
         this._cache.textures = this._cache.textures || {};
 
@@ -165,9 +170,9 @@ define(function(require) {
                 }
                 material = this._createMaterial(texture);
 
-                this.options.paper.picasso.materialCache.push(material);
+                this._globalMaterialCache.push(material);
                 this._materialCache()[attrString] = material;
-                material.materialCacheIndex = this.options.paper.picasso.materialCache.length - 1;
+                material.materialCacheIndex = this._globalMaterialCache.length - 1;
             }
 
             if ('opacity' in attributes) {
@@ -177,9 +182,9 @@ define(function(require) {
 
                 if (!opaqueMaterial) {
                     opaqueMaterial = material.clone();
-                    this.options.paper.picasso.materialCache.push(opaqueMaterial);
+                    this._globalMaterialCache.push(opaqueMaterial);
                     this._materialCache()[attrString] = opaqueMaterial;
-                    opaqueMaterial.materialCacheIndex = this.options.paper.picasso.materialCache.length - 1;
+                    opaqueMaterial.materialCacheIndex = this._globalMaterialCache.length - 1;
                 }
 
                 opaqueMaterial.opacity = attributes.opacity;

@@ -63,9 +63,9 @@ define(function(require) {
                 });
             }
 
-            this.options.paper.picasso.materialCache.push(material);
+            this._globalMaterialCache.push(material);
             this._materialCache()['text' + textMaterials++] = material;
-            material.materialCacheIndex = this.options.paper.picasso.materialCache.length - 1;
+            material.materialCacheIndex = this._globalMaterialCache.length - 1;
 
             textureInfo = {
                 canvas: canvas,
