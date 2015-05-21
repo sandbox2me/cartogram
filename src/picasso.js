@@ -192,7 +192,6 @@ define(function(require) {
     });
 
     // delete unusable paper methods from the instance
-    delete Picasso.Shapes.set;
     delete Picasso.Shapes.clear;
     delete Picasso.Shapes.remove;
     delete Picasso.Shapes.add;

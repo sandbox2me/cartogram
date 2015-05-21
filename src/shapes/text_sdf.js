@@ -4,16 +4,20 @@ define(function(require) {
     var _ = require('underscore'),
         three = require('three'),
 
+        materialStore = require('../stores/materials'),
         Shape = require('./shape'),
         TextShader = require('./shaders/text_shader'),
+        sdfFontStore = require('../stores/sdf_fonts'),
+        settingsStore = require('../stores/settings'),
         TextSDF;
+
 
     TextSDF = Shape.extend({
         initialize: function(options) {
             this.attributes._type = 'text_sdf';
             this.attributes.texture = options.texture;
             this._cache.textSDFMaterials = this._cache.textSDFMaterials || {};
-            this.SDFFont = this.paper.picasso.SDFFonts[this.attributes.font];
+            this.SDFFont = sdfFontStore[this.attributes.font];
 
         },
 
@@ -41,7 +45,7 @@ define(function(require) {
                 uniforms: TextShader.uniforms(
                     this.getTexture(),
                     this.SDFFont.metrics.info.size,
-                    this.paper.picasso.camera.options.maxZoom,
+                    settingsStore.maxZoom,
                     new three.Color(this.attributes.color),
                     this.attributes.maxSmoothing,
                     this.attributes.minSmoothing
@@ -52,7 +56,7 @@ define(function(require) {
             material.transparent = true;
             // material.wireframe = true;
 
-            this.materialCacheIndex = material.materialCacheIndex = this.paper.picasso.materialCache.push(material) - 1;
+            this.materialCacheIndex = material.materialCacheIndex = materialStore.push(material) - 1;
             this._cache.textSDFMaterials['textSDF' + this.getAtlasKey()] = material;
 
             return material;

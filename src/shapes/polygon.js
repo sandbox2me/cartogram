@@ -4,6 +4,9 @@ define(function(require) {
     var three = require('three'),
         pnltri = require('pnltri'),
         _ = require('underscore'),
+
+        Color = require('../color'),
+        settingsStore = require('../stores/settings'),
         SpriteFactory = require('../sprite_factory'),
         Shape = require('./shape'),
         PolygonShader = require('./shaders/polygon_shader'),
@@ -23,7 +26,7 @@ define(function(require) {
      */
     Polygon = Shape.extend({
         initialize: function(options) {
-            if (this.options.paper.picasso.isGL) {
+            if (settingsStore.isGL) {
                 this.useTexture = false;
             }
 
@@ -153,14 +156,14 @@ define(function(require) {
 
         _createMaterial: function(texture) {
             var material;
-            if (this.options.paper.picasso.isGL) {
+            if (settingsStore.isGL) {
                 material = new three.ShaderMaterial({
                     uniforms: PolygonShader.uniforms(),
                     vertexShader: PolygonShader.shaders.vertex,
                     fragmentShader: PolygonShader.shaders.fragment,
                     transparent: true
                 });
-                material.uniforms.fill.value = this.options.paper.picasso.color.colorToVector(this.attributes.fill);
+                material.uniforms.fill.value = Color.colorToVector(this.attributes.fill);
             } else {
                 material = new three.MeshBasicMaterial({
                     transparent: true,

@@ -7,6 +7,7 @@ define(function(require) {
         TrackballControls = require('./lib/TrackballControls'),
         Camera;
 
+
     Camera = function(picasso, options) {
         _.bindAll(
             this,

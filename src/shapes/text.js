@@ -4,6 +4,7 @@ define(function(require) {
     var three = require('three'),
 
         Fontre = require('../fontre'),
+        settingsStore = require('../stores/settings'),
         Shape = require('./shape'),
 
         superSampleRate = 3,
@@ -50,7 +51,7 @@ define(function(require) {
             // texture.minFilter = three.NearestFilter;
             texture.format = three.RGBAFormat;
 
-            if (this.options.paper.picasso.isGL) {
+            if (settingsStore.isGL) {
                 material = new three.MeshBasicMaterial({
                     transparent: true,
                     emissive: 0xffffff,

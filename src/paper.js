@@ -12,6 +12,8 @@ define(function(require) {
         Rect = require('./shapes/rect'),
         RoundRect = require('./shapes/round_rect'),
         Polygon = require('./shapes/polygon'),
+        sdfFontStore = require('./stores/sdf_fonts'),
+        settingsStore = require('./stores/settings'),
         SmoothPolygon = require('./shapes/smooth_polygon'),
         TextSDFShape = require('./shapes/text_sdf'),
         TextShape = require('./shapes/text'),
@@ -229,7 +231,7 @@ define(function(require) {
          * @param {Object} font.metrics Metrics about the font that come from Heiro + Picasso fnt_to_json
          */
         addSDFFont: function(font) {
-            this.picasso.SDFFonts[font.name] = createSDFFont(font);
+            sdfFontStore[font.name] = createSDFFont(font);
         },
 
         _createSDFText: function(options) {
@@ -268,9 +270,9 @@ define(function(require) {
                 SDFFontFace = options.font.split(',')[0].replace(/"/g, ''),
                 text;
 
-            if (this.picasso.isGL &&
-                this.picasso.SDFFonts[SDFFontFace] &&
-                this.picasso.SDFFonts[SDFFontFace].canUseFor(str)
+            if (settingsStore.isGL &&
+                sdfFontStore[SDFFontFace] &&
+                sdfFontStore[SDFFontFace].canUseFor(str)
             ) {
                 options.font = SDFFontFace;
                 text = this._createSDFText(options);

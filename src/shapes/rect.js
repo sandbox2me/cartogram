@@ -2,10 +2,15 @@ define(function(require) {
     'use strict';
 
     var three = require('three'),
+
+        Color = require('../color'),
+        settingsStore = require('../stores/settings'),
         SpriteFactory = require('../sprite_factory'),
         Shape = require('./shape'),
         RectShader = require('./shaders/rect_shader'),
+
         Rect;
+
 
     Rect = Shape.extend({
         initialize: function() {
@@ -50,7 +55,7 @@ define(function(require) {
         _createTextureMaterial: function(texture) {
             var material;
 
-            if (this.options.paper.picasso.isGL) {
+            if (settingsStore.isGL) {
                 material = new three.ShaderMaterial({
                     uniforms: RectShader.uniforms(),
                     vertexShader: RectShader.shaders.vertex,
@@ -58,11 +63,11 @@ define(function(require) {
                 });
                 material.uniforms.strokeWidth.value = this.attributes.strokeWidth * 0.005;
                 if (this.attributes.strokeWidth) {
-                    material.uniforms.stroke.value = this.options.paper.picasso.color.colorToVector(this.attributes.stroke);
+                    material.uniforms.stroke.value = Color.colorToVector(this.attributes.stroke);
                 } else {
-                    material.uniforms.stroke.value = this.options.paper.picasso.color.colorToVector(this.attributes.fill);
+                    material.uniforms.stroke.value = Color.colorToVector(this.attributes.fill);
                 }
-                material.uniforms.fill.value = this.options.paper.picasso.color.colorToVector(this.attributes.fill);
+                material.uniforms.fill.value = Color.colorToVector(this.attributes.fill);
 
             } else {
                 material = new three.MeshBasicMaterial({

@@ -3,15 +3,18 @@ define(function(require) {
 
     var three = require('three'),
         _ = require('underscore'),
+
         SpriteFactory = require('../sprite_factory'),
         Polygon = require('./polygon'),
         // PolygonShader = requ/ire('./shaders/polygon_shader'),
+        //
         SmoothPolygon,
 
         corners = [45, -45, 135, -135],
         straight = [0, 90, -90, 180],
         validAngles = [45, -45, 135, -135, 0, 90, -90, 180],
         angleThreshold = 30;
+
 
     /**
      * @class SmoothPolygon

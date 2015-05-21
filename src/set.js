@@ -3,10 +3,13 @@ define(function(require) {
 
     var three = require('three'),
         _ = require('underscore'),
+
         EventBusMixin = require('./event_bus'),
+        materialStore = require('./stores/materials'),
 
         defaultRotation = new three.Euler(0, 0, 0, 'XYZ'),
         Set;
+
 
     Set = function(picasso, layer) {
         this.layer = (layer === undefined) ? 0 : layer;
@@ -116,7 +119,7 @@ define(function(require) {
             currentMatrix = this.meshLayers[layer].matrix.clone();
             this.meshLayers[layer] = new three.Mesh(
                 this.geometryLayers[layer],
-                new three.MeshFaceMaterial(this.picasso.materialCache)
+                new three.MeshFaceMaterial(materialStore)
             );
             this.meshLayers[layer].matrix = currentMatrix;
             this.meshLayers[layer].position.z = parseFloat(layer);

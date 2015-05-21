@@ -7,12 +7,12 @@ define(function(require) {
     var three = require('three'),
         _ = require('underscore'),
         Backbone = require('backbone'),
-        EventBusMixin = require('../event_bus'),
-        SpriteCollection = require('../sprite_collection'),
 
-        // XXX(parris): extract into its own store
-        cache = {},
-        materialCache = [],
+        cacheStore = require('../stores/cache'),
+        EventBusMixin = require('../event_bus'),
+        materialStore = require('../stores/materials'),
+        settingsStore = require('../stores/settings'),
+        SpriteCollection = require('../sprite_collection'),
 
         spriteCollection = new SpriteCollection(),
 
@@ -47,10 +47,8 @@ define(function(require) {
         this.paper = this.attributes.paper;
 
         // WARNING: shared caches across all objects
-        this._globalMaterialCache = materialCache;
-        this._cache = cache;
-        this._cache.materials = this._cache.materials || {};
-        this._cache.textures = this._cache.textures || {};
+        this._globalMaterialCache = materialStore;
+        this._cache = cacheStore;
 
         this.id = _.uniqueId('s_');
 
@@ -205,7 +203,7 @@ define(function(require) {
         _createMaterial: function(texture) {
             var material;
 
-            if (this.options.paper.picasso.isGL) {
+            if (settingsStore.isGL) {
                 material = new three.MeshBasicMaterial({
                     transparent: true,
                     emissive: 0xffffff,
@@ -401,7 +399,7 @@ define(function(require) {
         },
 
         _setCursor: function(cursorStyle) {
-            this.paper.picasso.el.style.cursor = cursorStyle;
+            document.body.style.cursor = cursorStyle;
         },
 
         /**
