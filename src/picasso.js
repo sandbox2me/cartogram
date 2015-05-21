@@ -15,7 +15,7 @@ define(function(require) {
         AnimationManager = require('./animation_manager'),
         Picasso;
 
-    Picasso = function(el, width, height, options) {
+    Picasso = function(el, options) {
         _.bindAll(
             this,
             'render',
@@ -35,7 +35,7 @@ define(function(require) {
         this.cache = {};
         this.SDFFonts = {};
 
-        this.initializeRenderer(width, height);
+        this.initializeRenderer(options.width, options.height);
         this.initializeModules();
 
         if (this.options.showDebug) {
@@ -44,8 +44,10 @@ define(function(require) {
     };
 
     Picasso.prototype = {
-        initializeRenderer: function(width, height) {
-            var hasWebGL = window.WebGLRenderingContext;
+        initializeRenderer: function(optionalWidth, optionalHeight) {
+            var hasWebGL = window.WebGLRenderingContext,
+                width = optionalWidth || this.el.parentNode.clientWidth,
+                height = optionalHeight || this.el.parentNode.clientHeight;
 
             if (hasWebGL || this.options.forceGL) {
                 try {
@@ -162,8 +164,8 @@ define(function(require) {
             // XXX May need to adjust camera Z position to maintain zoom level
             var width, height;
 
-            width = this.el.clientWidth;
-            height = this.el.clientHeight;
+            width = this.el.parentNode.clientWidth;
+            height = this.el.parentNode.clientHeight;
 
             this.postprocessing.setSize(width, height);
 
