@@ -8,6 +8,7 @@ define(function(require) {
         _ = require('underscore'),
         Backbone = require('backbone'),
 
+        animationManager = require('../animation_manager'),
         cacheStore = require('../stores/cache'),
         EventBusMixin = require('../event_bus'),
         materialStore = require('../stores/materials'),
@@ -467,7 +468,7 @@ define(function(require) {
         },
 
         animate: function(attrs, duration) {
-            var promise = this.options.paper.picasso.animationManager.add({
+            var promise = animationManager.add({
                 picassoObject: this,
                 duration: duration,
                 attrs: attrs

@@ -4,8 +4,7 @@ define(function(require) {
     var _ = require('underscore'),
         AnimationWorker = require('./animation_worker');
 
-    var AnimationManager = function(picasso) {
-        this.picasso = picasso;
+    var AnimationManager = function() {
         this.currentAnimations = [];
     };
 
@@ -35,5 +34,5 @@ define(function(require) {
         }
     };
 
-    return AnimationManager;
+    return new AnimationManager();
 });

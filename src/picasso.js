@@ -12,7 +12,7 @@ define(function(require) {
         PicassoSceneTree = require('./scene_tree'),
         PicassoColor = require('./color'),
         PicassoDebug = require('./debug'),
-        AnimationManager = require('./animation_manager'),
+        animationManager = require('./animation_manager'),
         Picasso;
 
     Picasso = function(el, options) {
@@ -98,7 +98,7 @@ define(function(require) {
             this.interaction = new PicassoInteraction(this);
             this.color = PicassoColor;
 
-            this.animationManager = new AnimationManager(this);
+            this.animationManager = animationManager;
 
             this.postprocessing = new PicassoPostprocessing(this);
             this.postprocessing.setSize(this.width, this.height);
@@ -124,7 +124,7 @@ define(function(require) {
 
         render: function() {
             if (this.options.showDebug) { this.stats.begin(); }
-            this.animationManager.update(this.clock.getDelta());
+            animationManager.update(this.clock.getDelta());
 
             this.camera.update();
             this.interaction.update();
