@@ -83,7 +83,7 @@ define(function(require) {
                 }
             } else {
                 // Picasso Shape
-                // Merge into appropriate layer\
+                // Merge into appropriate layer
                 if (!picassoShape.shape) {
                     debugger;
                 }
@@ -97,6 +97,15 @@ define(function(require) {
                 picassoShape._setGeometryFaceLocation = this.geometryLayers[layer] ? this.geometryLayers[layer].faces.length : 0;
                 picassoShape._setGeometryVertexLocation = this.geometryLayers[layer] ? this.geometryLayers[layer].vertices.length : 0;
                 this._addToLayer(geometry, matrix, picassoShape.materialCacheIndex, layer);
+            }
+
+            if (this.set) {
+                this.set.push(picassoShape);
+            }
+
+            // this occurs when this is a top level shape
+            if (this.scene) {
+                this.scene.add(picassoShape);
             }
 
             return picassoShape;

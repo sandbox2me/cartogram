@@ -57,6 +57,7 @@ define(function(require) {
          * * A `THREE.Mesh`
          */
         add: function(obj) {
+            obj.scene = this;
             if (obj instanceof Shape) {
                 this.scene.add(obj.shape);
                 this.picasso.sceneTree.insert(obj);
