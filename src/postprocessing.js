@@ -15,7 +15,18 @@ define(function(require) {
         this.picasso = picasso;
 
         if (this.picasso.isGL) {
-            this.composer = new EffectComposer(this.picasso.renderer);
+            this.composerRenderTarget = new three.WebGLRenderTarget(
+                this.picasso.width * window.devicePixelRatio,
+                this.picasso.height * window.devicePixelRatio,
+                {
+                    minFilter: THREE.LinearFilter,
+                    magFilter: THREE.LinearFilter,
+                    format: THREE.RGBFormat,
+                    stencilBuffer: false
+                }
+            );
+
+            this.composer = new EffectComposer(this.picasso.renderer, this.composerRenderTarget);
             this.composer.addPass(
                 new RenderPass(
                     this.picasso.paper.scene,
@@ -43,6 +54,7 @@ define(function(require) {
         render: function(useComposer) {
             useComposer = useComposer === undefined ? true : useComposer;
 
+            this.updateSize();
             if (this.composer && useComposer) {
                 this.composer.render();
             } else {
@@ -53,19 +65,34 @@ define(function(require) {
             }
         },
 
-        setSize: function(width, height) {
+        updateSize: function(useComposer) {
+            var width, height;
 
+            if (window.devicePixelRatio !== this.lastSeenPixelRatio) {
+                this.setSize(this.picasso.el.offsetWidth, this.picasso.el.offsetHeight);
+            }
+        },
+
+        setSize: function(width, height) {
             if (this.composer) {
-                this.composer.renderer.devicePixelRatio = window.devicePixelRatio || 1;
                 this.composer.setSize(width, height);
+
+                this.composerRenderTarget.setSize(
+                    width * window.devicePixelRatio,
+                    height * window.devicePixelRatio
+                );
+                this.composer.reset(this.composerRenderTarget);
             }
 
             if (this.picasso.isGL) {
-                this.picasso.renderer.setPixelRatio(window.devicePixelRatio);
+                // Use the true devicePixelRatio of the screen, because window zoom affects this value.
+                this.picasso.renderer.setPixelRatio(Math.round(window.devicePixelRatio));
             } else {
                 this.picasso.renderer.devicePixelRatio = window.devicePixelRatio;
             }
+
             this.picasso.renderer.setSize(width, height);
+            this.lastSeenPixelRatio = window.devicePixelRatio;
         },
 
         update: function() {
