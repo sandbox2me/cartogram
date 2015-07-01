@@ -4,6 +4,7 @@ define(function(require) {
 
     var three = require('three'),
         _ = require('underscore'),
+        packageJson = require('text!../package.json'),
         CanvasRenderer = require('./lib/canvas_renderer'),
         CartogramPaper = require('./paper'),
         CartogramCamera = require('./camera'),
@@ -14,6 +15,8 @@ define(function(require) {
         CartogramDebug = require('./debug'),
         animationManager = require('./animation_manager'),
         Cartogram;
+
+    packageJson = JSON.parse(packageJson);
 
     Cartogram = function(el, options) {
         _.bindAll(
@@ -26,10 +29,11 @@ define(function(require) {
             immediate: true,
             resizeCanvas: true,
             backgroundColor: '#ffffff',
-            showDebug: false
+            showDebug: false,
+            canvas: undefined // Optional option
         }, options);
 
-        this.version = '0.0.1';
+        this.version = packageJson.version;
         this.el = el;
         this.SDFFonts = {};
 
@@ -50,7 +54,7 @@ define(function(require) {
             if (hasWebGL || this.options.forceGL) {
                 try {
                     this.renderer = new three.WebGLRenderer({
-                        canvas: this.el,
+                        canvas: this.options.canvas,
                         precision: 'highp',
                         alpha: true,
                         premultipliedAlpha: true,

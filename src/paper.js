@@ -29,6 +29,9 @@ define(function(require) {
         /** The {Cartogram} instance */
         this.cartogram = cartogram;
 
+        // *** DEPRECATED! ***
+        this.picasso = cartogram;
+
         /** The THREE Scene instance for this paper. */
         this.scene = new three.Scene();
     };

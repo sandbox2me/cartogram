@@ -12,6 +12,7 @@
     "test": "karma start"
   },
   "description": "Super fast shape WebGL 2D rendering engine",
+  "main": "main.js",
   "dependencies": {
     "js-common": "http://packages:8889/package/js-common/latest",
     "pnltri": "^2.1.1",
