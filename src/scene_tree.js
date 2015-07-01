@@ -4,11 +4,11 @@ define(function(require) {
     var rbush = require('rbush'),
         SceneTree;
 
-    SceneTree = function(picasso, includeShape, maxNodeFill) {
+    SceneTree = function(cartogram, includeShape, maxNodeFill) {
         this.maxNodeFill = maxNodeFill || 10;
         this.includeShape = (includeShape === false) ? false : true;
 
-        this.picasso = picasso;
+        this.cartogram = cartogram;
         this.sceneList = [];
 
         this.tree = rbush(this.maxNodeFill);

@@ -11,9 +11,9 @@ define(function(require) {
         Set;
 
 
-    Set = function(picasso, layer) {
+    Set = function(cartogram, layer) {
         this.layer = (layer === undefined) ? 0 : layer;
-        this.picasso = picasso;
+        this.cartogram = cartogram;
         this.clear();
     };
 
@@ -51,64 +51,64 @@ define(function(require) {
         add: function(shape) {
             return this.push(shape);
         },
-        push: function(picassoShape) {
+        push: function(cartogramShape) {
             var geometry,
                 matrix,
                 layer,
                 layerKeys, i, length, childIndex;
 
-            childIndex= this.children.push(picassoShape);
-            picassoShape.setIndex = childIndex - 1;
-            picassoShape.set = this;
+            childIndex= this.children.push(cartogramShape);
+            cartogramShape.setIndex = childIndex - 1;
+            cartogramShape.set = this;
 
             _.each(this._events, function(eventName, eventFunc) {
-                picassoShape.on(eventName, eventFunc);
+                cartogramShape.on(eventName, eventFunc);
             });
 
-            if (picassoShape.geometryLayers) {
+            if (cartogramShape.geometryLayers) {
                 // dealing with a set
                 // Merge its layers into ours
-                layerKeys = picassoShape.getLayerKeys();
+                layerKeys = cartogramShape.getLayerKeys();
                 for (i = 0, length = layerKeys.length; i < length; i++) {
                     layer = layerKeys[i];
-                    geometry = picassoShape.meshLayers[layer].geometry;
-                    matrix = picassoShape.meshLayers[layer].matrix;
-                    picassoShape.meshLayers[layer].updateMatrix();
+                    geometry = cartogramShape.meshLayers[layer].geometry;
+                    matrix = cartogramShape.meshLayers[layer].matrix;
+                    cartogramShape.meshLayers[layer].updateMatrix();
 
-                    picassoShape.geometryLocationLayers[layer] = {
+                    cartogramShape.geometryLocationLayers[layer] = {
                         faceLocation: this.geometryLayers[layer] ? this.geometryLayers[layer].faces.length : 0,
                         vertexLocation: this.geometryLayers[layer] ? this.geometryLayers[layer].vertices.length : 0
                     };
-                    this._addToLayer(geometry, matrix, picassoShape.materialCacheIndex, layer);
+                    this._addToLayer(geometry, matrix, cartogramShape.materialCacheIndex, layer);
                 }
             } else {
-                // Picasso Shape
+                // Cartogram Shape
                 // Merge into appropriate layer
-                if (!picassoShape.shape) {
+                if (!cartogramShape.shape) {
                     debugger;
                 }
-                geometry = picassoShape.shape.geometry;
-                matrix = picassoShape.shape.matrix;
-                picassoShape.shape.updateMatrix();
+                geometry = cartogramShape.shape.geometry;
+                matrix = cartogramShape.shape.matrix;
+                cartogramShape.shape.updateMatrix();
 
-                layer = picassoShape.shape.position.z;
+                layer = cartogramShape.shape.position.z;
 
-                picassoShape._setLayer = layer;
-                picassoShape._setGeometryFaceLocation = this.geometryLayers[layer] ? this.geometryLayers[layer].faces.length : 0;
-                picassoShape._setGeometryVertexLocation = this.geometryLayers[layer] ? this.geometryLayers[layer].vertices.length : 0;
-                this._addToLayer(geometry, matrix, picassoShape.materialCacheIndex, layer);
+                cartogramShape._setLayer = layer;
+                cartogramShape._setGeometryFaceLocation = this.geometryLayers[layer] ? this.geometryLayers[layer].faces.length : 0;
+                cartogramShape._setGeometryVertexLocation = this.geometryLayers[layer] ? this.geometryLayers[layer].vertices.length : 0;
+                this._addToLayer(geometry, matrix, cartogramShape.materialCacheIndex, layer);
             }
 
             if (this.set) {
-                this.set.push(picassoShape);
+                this.set.push(cartogramShape);
             }
 
             // this occurs when this is a top level shape
             if (this.scene) {
-                this.scene.add(picassoShape);
+                this.scene.add(cartogramShape);
             }
 
-            return picassoShape;
+            return cartogramShape;
         },
 
         _addToLayer: function(geometry, matrix, materialCacheIndex, layer) {
@@ -135,11 +135,11 @@ define(function(require) {
             this.meshLayers[layer].updateMatrix();
         },
 
-        updateGeometry: function(picassoShape, layerKey, hasDirtyVertices) {
+        updateGeometry: function(cartogramShape, layerKey, hasDirtyVertices) {
             // console.log('updateGeometry: FIXME!');
             // return;
 
-            var threeShape = objectForShape(picassoShape),
+            var threeShape = objectForShape(cartogramShape),
                 i, j, location, vertexLocation, length, geometry, scale, position, rotation, vertex;
 
             hasDirtyVertices = (hasDirtyVertices === undefined) ? false : hasDirtyVertices;
@@ -147,22 +147,22 @@ define(function(require) {
 
             var meshLayer = this.meshLayers[layerKey];
 
-            if (picassoShape instanceof Set) {
-                geometry = picassoShape.meshLayers[layerKey].geometry;
-                scale = picassoShape.meshLayers[layerKey].scale;
-                position = picassoShape.meshLayers[layerKey].position;
-                rotation = picassoShape.meshLayers[layerKey].rotation || defaultRotation;
+            if (cartogramShape instanceof Set) {
+                geometry = cartogramShape.meshLayers[layerKey].geometry;
+                scale = cartogramShape.meshLayers[layerKey].scale;
+                position = cartogramShape.meshLayers[layerKey].position;
+                rotation = cartogramShape.meshLayers[layerKey].rotation || defaultRotation;
 
-                location = picassoShape.geometryLocationLayers[layerKey].faceLocation;
-                vertexLocation = picassoShape.geometryLocationLayers[layerKey].vertexLocation;
+                location = cartogramShape.geometryLocationLayers[layerKey].faceLocation;
+                vertexLocation = cartogramShape.geometryLocationLayers[layerKey].vertexLocation;
             } else {
-                geometry = picassoShape.shape.geometry;
-                scale = picassoShape.shape.scale;
-                position = picassoShape.shape.position;
-                rotation = picassoShape.shape.rotation || defaultRotation;
+                geometry = cartogramShape.shape.geometry;
+                scale = cartogramShape.shape.scale;
+                position = cartogramShape.shape.position;
+                rotation = cartogramShape.shape.rotation || defaultRotation;
 
-                location = picassoShape._setGeometryFaceLocation;
-                vertexLocation = picassoShape._setGeometryVertexLocation;
+                location = cartogramShape._setGeometryFaceLocation;
+                vertexLocation = cartogramShape._setGeometryVertexLocation;
             }
 
             // Check if size has changed, compensate if so
@@ -176,7 +176,7 @@ define(function(require) {
             }
 
             for (i = 0, length = geometry.faces.length; i < length; i++) {
-                meshLayer.geometry.faces[i + location].materialIndex = geometry.faces[i].materialIndex + (picassoShape.materialCacheIndex || 0);
+                meshLayer.geometry.faces[i + location].materialIndex = geometry.faces[i].materialIndex + (cartogramShape.materialCacheIndex || 0);
                 meshLayer.geometry.faces[i + location].faceVertexUvs = geometry.faces[i].faceVertexUvs;
 
                 if (geometry.faces[i].faceVertexUvs && geometry.faces[i].faceVertexUvs[0].length) {
@@ -402,8 +402,8 @@ define(function(require) {
         },
 
         animate: function(attrs, duration) {
-            var promise = this.options.picasso.animationManager.add({
-                picassoObject: this,
+            var promise = this.options.cartogram.animationManager.add({
+                cartogramObject: this,
                 duration: duration,
                 attrs: attrs
             }).progress(_.bind(function(worker) {

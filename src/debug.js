@@ -19,7 +19,7 @@ define(function(require) {
             debug.containerEl.style.opacity = '0.7';
             debug.containerEl.style.borderBottomLeftRadius = '5px';
 
-            debug.containerEl.innerHTML = 'Picasso Stats';
+            debug.containerEl.innerHTML = 'Cartogram Stats';
 
             debug.modeEl = document.createElement('div');
             debug.modeEl.style.marginTop = '5px';

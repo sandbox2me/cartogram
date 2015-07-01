@@ -8,7 +8,7 @@ define(function(require) {
         Camera;
 
 
-    Camera = function(picasso, options) {
+    Camera = function(cartogram, options) {
         _.bindAll(
             this,
             'zoomIn',
@@ -19,7 +19,7 @@ define(function(require) {
             'panUp'
         );
 
-        this.picasso = picasso;
+        this.cartogram = cartogram;
 
         this.options = {
             enableInteraction: true,
@@ -35,14 +35,14 @@ define(function(require) {
 
         this.currentZoom = 500;
 
-        this.aspect = this.picasso.width / this.picasso.height;
+        this.aspect = this.cartogram.width / this.cartogram.height;
 
         // window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2
         this.camera = new three.OrthographicCamera(
-            this.picasso.width / -2,
-            this.picasso.width / 2,
-            this.picasso.height / 2,
-            this.picasso.height / -2,
+            this.cartogram.width / -2,
+            this.cartogram.width / 2,
+            this.cartogram.height / 2,
+            this.cartogram.height / -2,
             -100,
             this.options.maxZoom + 100
         );
@@ -65,7 +65,7 @@ define(function(require) {
 
     _.extend(Camera.prototype, EventBusMixin, {
         initializeControls: function(options) {
-            this.controls = new TrackballControls(this.camera, this.picasso.renderer.domElement);
+            this.controls = new TrackballControls(this.camera, this.cartogram.renderer.domElement);
 
             this._setControlsSettings(options);
             this._lastPosition = {};
@@ -91,7 +91,7 @@ define(function(require) {
                 }
             }, this));
 
-            if (!this.picasso.isGL) {
+            if (!this.cartogram.isGL) {
                 // Framerate is often quite low in Canvas, disable the friction effect
                 this.controls.staticMoving = true;
 
@@ -192,10 +192,10 @@ define(function(require) {
                 zoom = magic / this.currentZoom / 2;
 
             this.camera.zoom = zoom;
-            this.camera.left = this.picasso.width / -2;
-            this.camera.right = this.picasso.width / 2;
-            this.camera.top = this.picasso.height / 2;
-            this.camera.bottom = this.picasso.height / -2;
+            this.camera.left = this.cartogram.width / -2;
+            this.camera.right = this.cartogram.width / 2;
+            this.camera.top = this.cartogram.height / 2;
+            this.camera.bottom = this.cartogram.height / -2;
 
             this.camera.updateProjectionMatrix();
         },
@@ -222,8 +222,8 @@ define(function(require) {
         },
 
         animate: function(attrs, options) {
-            var promise = this.picasso.animationManager.add({
-                picassoObject: this,
+            var promise = this.cartogram.animationManager.add({
+                cartogramObject: this,
                 duration: options.duration,
                 attrs: attrs
             }).then(_.bind(function(worker) {
@@ -329,8 +329,8 @@ define(function(require) {
 
             percX = (vector.x + 1) / 2;
             percY = (-vector.y + 1) / 2;
-            left = percX * this.picasso.width;
-            top = percY * this.picasso.height;
+            left = percX * this.cartogram.width;
+            top = percY * this.cartogram.height;
             return new three.Vector2(left, top);
         },
 
@@ -339,8 +339,8 @@ define(function(require) {
                 direction, distance;
 
             vector.set(
-                (position.x / this.picasso.width) * 2 - 1,
-                -(position.y / this.picasso.height) * 2 + 1,
+                (position.x / this.cartogram.width) * 2 - 1,
+                -(position.y / this.cartogram.height) * 2 + 1,
                 0.5
             );
             vector.unproject(this.camera);

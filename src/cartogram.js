@@ -5,17 +5,17 @@ define(function(require) {
     var three = require('three'),
         _ = require('underscore'),
         CanvasRenderer = require('./lib/canvas_renderer'),
-        PicassoPaper = require('./paper'),
-        PicassoCamera = require('./camera'),
-        PicassoInteraction = require('./interaction'),
-        PicassoPostprocessing = require('./postprocessing'),
-        PicassoSceneTree = require('./scene_tree'),
-        PicassoColor = require('./color'),
-        PicassoDebug = require('./debug'),
+        CartogramPaper = require('./paper'),
+        CartogramCamera = require('./camera'),
+        CartogramInteraction = require('./interaction'),
+        CartogramPostprocessing = require('./postprocessing'),
+        CartogramSceneTree = require('./scene_tree'),
+        CartogramColor = require('./color'),
+        CartogramDebug = require('./debug'),
         animationManager = require('./animation_manager'),
-        Picasso;
+        Cartogram;
 
-    Picasso = function(el, options) {
+    Cartogram = function(el, options) {
         _.bindAll(
             this,
             'render',
@@ -41,7 +41,7 @@ define(function(require) {
         }
     };
 
-    Picasso.prototype = {
+    Cartogram.prototype = {
         initializeRenderer: function(optionalWidth, optionalHeight) {
             var hasWebGL = window.WebGLRenderingContext,
                 width = optionalWidth || this.el.parentNode.clientWidth,
@@ -92,15 +92,15 @@ define(function(require) {
         initializeModules: function() {
             this.clock = new three.Clock();
 
-            this.paper = new PicassoPaper(this);
-            this.sceneTree = new PicassoSceneTree(this);
-            this.camera = new PicassoCamera(this, this.options);
-            this.interaction = new PicassoInteraction(this);
-            this.color = PicassoColor;
+            this.paper = new CartogramPaper(this);
+            this.sceneTree = new CartogramSceneTree(this);
+            this.camera = new CartogramCamera(this, this.options);
+            this.interaction = new CartogramInteraction(this);
+            this.color = CartogramColor;
 
             this.animationManager = animationManager;
 
-            this.postprocessing = new PicassoPostprocessing(this);
+            this.postprocessing = new CartogramPostprocessing(this);
             this.postprocessing.setSize(this.width, this.height);
             this.postprocessing.initialize([
                 'FXAA'
@@ -118,8 +118,8 @@ define(function(require) {
             this.stats.domElement.style.top = '0px';
             document.body.appendChild( this.stats.domElement );
 
-            PicassoDebug.initialize();
-            PicassoDebug.updateMode('<strong>' + (this.isGL ? '<i class="ico-event ico--large"></i>  WebGL' : 'Canvas') + '</strong>');
+            CartogramDebug.initialize();
+            CartogramDebug.updateMode('<strong>' + (this.isGL ? '<i class="ico-event ico--large"></i>  WebGL' : 'Canvas') + '</strong>');
         },
 
         render: function() {
@@ -141,7 +141,7 @@ define(function(require) {
 
             if (this.options.showDebug) {
                 var rendererInfo = this.renderer.info;
-                PicassoDebug.updateRendererInfo(
+                CartogramDebug.updateRendererInfo(
                     (this.isGL ? '<p>Textures: <strong>' + rendererInfo.memory.textures + '</strong></p>' : '') +
                     (this.isGL ? '<p>Geometries: <strong>' + rendererInfo.memory.geometries + '</strong></p>' : '') +
                     (this.isGL ? '<p>Programs: <strong>' + rendererInfo.memory.programs + '</strong></p>' : '') +
@@ -185,16 +185,16 @@ define(function(require) {
 
     // Create a new instance of Paper so we don't
     // need a global renderer object.
-    Picasso.Shapes = new PicassoPaper({
+    Cartogram.Shapes = new CartogramPaper({
         options: {
             immediate: false
         }
     });
 
     // delete unusable paper methods from the instance
-    delete Picasso.Shapes.clear;
-    delete Picasso.Shapes.remove;
-    delete Picasso.Shapes.add;
+    delete Cartogram.Shapes.clear;
+    delete Cartogram.Shapes.remove;
+    delete Cartogram.Shapes.add;
 
-    return Picasso;
+    return Cartogram;
 });

@@ -55,7 +55,7 @@ define(function(require) {
      * @param {String} font.name The name of your font, which you can use later as you define text in your scene
      * @param {RegExp} font.test A regular expression defining valid characters from this SDF Image
      * @param {Image} font.image Image loaded as text
-     * @param {Object} font.metrics Metrics about the font that come from Heiro + Picasso fnt_to_json
+     * @param {Object} font.metrics Metrics about the font that come from Heiro + Cartogram fnt_to_json
      */
     return function(font) {
         return new SDFFont(font);

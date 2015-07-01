@@ -11,13 +11,13 @@ define(function(require) {
         VignetteShader = require('./shaders/vignette_shader'),
         FXAAShader = require('./shaders/fxaa_shader');
 
-    Postprocessing = function(picasso) {
-        this.picasso = picasso;
+    Postprocessing = function(cartogram) {
+        this.cartogram = cartogram;
 
-        if (this.picasso.isGL) {
+        if (this.cartogram.isGL) {
             this.composerRenderTarget = new three.WebGLRenderTarget(
-                this.picasso.width * window.devicePixelRatio,
-                this.picasso.height * window.devicePixelRatio,
+                this.cartogram.width * window.devicePixelRatio,
+                this.cartogram.height * window.devicePixelRatio,
                 {
                     minFilter: THREE.LinearFilter,
                     magFilter: THREE.LinearFilter,
@@ -26,11 +26,11 @@ define(function(require) {
                 }
             );
 
-            this.composer = new EffectComposer(this.picasso.renderer, this.composerRenderTarget);
+            this.composer = new EffectComposer(this.cartogram.renderer, this.composerRenderTarget);
             this.composer.addPass(
                 new RenderPass(
-                    this.picasso.paper.scene,
-                    this.picasso.paper.getCamera()
+                    this.cartogram.paper.scene,
+                    this.cartogram.paper.getCamera()
                 )
             );
         }
@@ -58,9 +58,9 @@ define(function(require) {
             if (this.composer && useComposer) {
                 this.composer.render();
             } else {
-                this.picasso.renderer.render(
-                    this.picasso.paper.scene,
-                    this.picasso.camera.camera
+                this.cartogram.renderer.render(
+                    this.cartogram.paper.scene,
+                    this.cartogram.camera.camera
                 );
             }
         },
@@ -69,7 +69,7 @@ define(function(require) {
             var width, height;
 
             if (window.devicePixelRatio !== this.lastSeenPixelRatio) {
-                this.setSize(this.picasso.el.offsetWidth, this.picasso.el.offsetHeight);
+                this.setSize(this.cartogram.el.offsetWidth, this.cartogram.el.offsetHeight);
             }
         },
 
@@ -84,14 +84,14 @@ define(function(require) {
                 this.composer.reset(this.composerRenderTarget);
             }
 
-            if (this.picasso.isGL) {
+            if (this.cartogram.isGL) {
                 // Use the true devicePixelRatio of the screen, because window zoom affects this value.
-                this.picasso.renderer.setPixelRatio(Math.round(window.devicePixelRatio));
+                this.cartogram.renderer.setPixelRatio(Math.round(window.devicePixelRatio));
             } else {
-                this.picasso.renderer.devicePixelRatio = window.devicePixelRatio;
+                this.cartogram.renderer.devicePixelRatio = window.devicePixelRatio;
             }
 
-            this.picasso.renderer.setSize(width, height);
+            this.cartogram.renderer.setSize(width, height);
             this.lastSeenPixelRatio = window.devicePixelRatio;
         },
 
@@ -112,7 +112,7 @@ define(function(require) {
         },
 
         updateShaderfxaa: function() {
-            this.shaders.fxaa.uniforms['resolution'].value = new three.Vector2(1 / this.picasso.width, 1 / this.picasso.height);
+            this.shaders.fxaa.uniforms['resolution'].value = new three.Vector2(1 / this.cartogram.width, 1 / this.cartogram.height);
         },
 
         addShaderVignette: function(renderToScreen) {

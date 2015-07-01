@@ -36,7 +36,7 @@ var requireConfig = {
         {
             name: 'cartogram',
             location: './node_modules/cartogram/src',
-            main: './picasso'
+            main: './cartogram'
         }
     ],
 };

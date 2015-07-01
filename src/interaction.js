@@ -4,7 +4,7 @@ define(function(require) {
     var _ = require('underscore'),
         three = require('three');
 
-    var Interaction = function(picasso) {
+    var Interaction = function(cartogram) {
         _.bindAll(
             this,
             'updateMousePosition',
@@ -21,23 +21,23 @@ define(function(require) {
             'handleTouchCancel'
         );
 
-        this.picasso = picasso;
+        this.cartogram = cartogram;
         this.mousePosition = new three.Vector2(-Infinity, -Infinity);
         this._previousMousePosition = this.mousePosition.clone();
 
         this.raycaster = new three.Raycaster();
 
-        this.picasso.renderer.domElement.addEventListener('mouseout', this.handleMouseOut, false);
-        this.picasso.renderer.domElement.addEventListener('mousemove', this.handleMouseMove, false);
-        this.picasso.renderer.domElement.addEventListener('mousedown', this.handleMouseDown, false);
-        this.picasso.renderer.domElement.addEventListener('mouseup', this.handleMouseUp, false);
-        this.picasso.renderer.domElement.addEventListener('click', this.handleClick, false);
-        this.picasso.renderer.domElement.addEventListener('dblclick', this.handleDoubleClick, false);
+        this.cartogram.renderer.domElement.addEventListener('mouseout', this.handleMouseOut, false);
+        this.cartogram.renderer.domElement.addEventListener('mousemove', this.handleMouseMove, false);
+        this.cartogram.renderer.domElement.addEventListener('mousedown', this.handleMouseDown, false);
+        this.cartogram.renderer.domElement.addEventListener('mouseup', this.handleMouseUp, false);
+        this.cartogram.renderer.domElement.addEventListener('click', this.handleClick, false);
+        this.cartogram.renderer.domElement.addEventListener('dblclick', this.handleDoubleClick, false);
 
-        this.picasso.renderer.domElement.addEventListener('touchstart', this.handleTouchStart, false);
-        this.picasso.renderer.domElement.addEventListener('touchend', this.handleTouchEnd, false);
-        this.picasso.renderer.domElement.addEventListener('touchmove', this.handleTouchMove, false);
-        this.picasso.renderer.domElement.addEventListener('touchcancel', this.handleTouchCancel, false);
+        this.cartogram.renderer.domElement.addEventListener('touchstart', this.handleTouchStart, false);
+        this.cartogram.renderer.domElement.addEventListener('touchend', this.handleTouchEnd, false);
+        this.cartogram.renderer.domElement.addEventListener('touchmove', this.handleTouchMove, false);
+        this.cartogram.renderer.domElement.addEventListener('touchcancel', this.handleTouchCancel, false);
 
         this.longPressDelay = 1000;
     };
@@ -49,9 +49,9 @@ define(function(require) {
         },
 
         updateMousePosition: function(e) {
-            var height = this.picasso.renderer.domElement.scrollHeight,
-                width = this.picasso.renderer.domElement.scrollWidth,
-                elBBox = this.picasso.renderer.domElement.getBoundingClientRect(),
+            var height = this.cartogram.renderer.domElement.scrollHeight,
+                width = this.cartogram.renderer.domElement.scrollWidth,
+                elBBox = this.cartogram.renderer.domElement.getBoundingClientRect(),
                 touches = e.changedTouches,
                 x, y;
 
@@ -84,7 +84,7 @@ define(function(require) {
             }
 
             if (!this.mousePosition.equals(this._previousMousePosition)) {
-                this.picasso.paper.trigger('mousemove', e, this);
+                this.cartogram.paper.trigger('mousemove', e, this);
             }
         },
 
@@ -94,7 +94,7 @@ define(function(require) {
             if (this.intersected) {
                 this.intersected.shape.trigger('mousedown', this.intersected.shape, e, this);
             } else {
-                this.picasso.paper.trigger('mousedown', e, this);
+                this.cartogram.paper.trigger('mousedown', e, this);
             }
         },
 
@@ -103,7 +103,7 @@ define(function(require) {
             if (this.intersected) {
                 this.intersected.shape.trigger('mouseup', this.intersected.shape, e, this);
             } else {
-                this.picasso.paper.trigger('mouseup', e, this);
+                this.cartogram.paper.trigger('mouseup', e, this);
             }
         },
 
@@ -130,7 +130,7 @@ define(function(require) {
             if (this.intersected && intersected && this.intersected.shape.id === intersected.shape.id) {
                 this.intersected.shape.trigger('click', this.intersected.shape, e, this);
             } else if (!this.intersected) {
-                this.picasso.paper.trigger('click', e, this);
+                this.cartogram.paper.trigger('click', e, this);
             }
         },
         handleDoubleClick: function(e) {
@@ -139,7 +139,7 @@ define(function(require) {
             if (this.intersected && intersected && this.intersected.shape.id === intersected.shape.id) {
                 this.intersected.shape.trigger('dblclick', this.intersected.shape, e, this);
             } else if (!this.intersected) {
-                this.picasso.paper.trigger('dblclick', e, this);
+                this.cartogram.paper.trigger('dblclick', e, this);
             }
         },
 
@@ -151,12 +151,12 @@ define(function(require) {
             if (this.intersected && intersected && this.intersected.shape.id === intersected.shape.id) {
                 this.intersected.shape.trigger('longpress', this.intersected.shape, e, this);
             } else if (!this.intersected) {
-                this.picasso.paper.trigger('longpress', e, this);
+                this.cartogram.paper.trigger('longpress', e, this);
             }
         },
 
         handleTouchStart: function(e) {
-            this.picasso.renderer.domElement.removeEventListener('mousemove', this.handleMouseMove);
+            this.cartogram.renderer.domElement.removeEventListener('mousemove', this.handleMouseMove);
 
             this.hasMouseDown = true;
             this.updateMousePosition(e);
@@ -166,7 +166,7 @@ define(function(require) {
             if  (this.intersected) {
                 this.intersected.shape.trigger('touchstart', this.intersected.shape, e, this);
             } else {
-                this.picasso.paper.trigger('touchstart', e, this);
+                this.cartogram.paper.trigger('touchstart', e, this);
             }
         },
         handleTouchEnd: function(e) {
@@ -184,9 +184,9 @@ define(function(require) {
                     this.intersected.shape.trigger('click', this.intersected.shape, e, this);
                 }
             } else {
-                this.picasso.paper.trigger('touchend', e, this);
+                this.cartogram.paper.trigger('touchend', e, this);
                 if (!this.isDragging) {
-                    this.picasso.paper.trigger('click', e, this);
+                    this.cartogram.paper.trigger('click', e, this);
                 }
             }
 
@@ -205,7 +205,7 @@ define(function(require) {
             if (this.intersected) {
                 this.intersected.shape.trigger('touchmove', this.intersected.shape, e, this);
             } else {
-                this.picasso.paper.trigger('touchmove', e, this);
+                this.cartogram.paper.trigger('touchmove', e, this);
             }
         },
         handleTouchCancel: function(e) {
@@ -218,7 +218,7 @@ define(function(require) {
             if (this.intersected) {
                 this.intersected.shape.trigger('touchcancel', this.intersected.shape, e, this);
             } else {
-                this.picasso.paper.trigger('touchcancel', e, this);
+                this.cartogram.paper.trigger('touchcancel', e, this);
             }
             this.handleMouseOut(e);
         },
@@ -270,14 +270,14 @@ define(function(require) {
                 i, length,
                 shape;
 
-            this.raycaster.setFromCamera(mouseVector, this.picasso.paper.getCamera());
-            intersections = this.raycaster.intersectObjects(this.picasso.paper.scene.children);
+            this.raycaster.setFromCamera(mouseVector, this.cartogram.paper.getCamera());
+            intersections = this.raycaster.intersectObjects(this.cartogram.paper.scene.children);
 
             if (intersections.length > 0){
                 intersected = intersections[0];
                 intersected.point.y = -intersected.point.y;
 
-                var treesect = this.picasso.sceneTree.searchPoint(intersected.point);
+                var treesect = this.cartogram.sceneTree.searchPoint(intersected.point);
 
                 for (i = 0, length = treesect.length; i < length; i++) {
                     shape = treesect[i][4].shape;

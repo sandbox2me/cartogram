@@ -15,7 +15,7 @@ define(function(require) {
     /**
      * AnimationWorker constructor
      * @param {object} options - Insantiation options
-     * @param {Camera|Shape} options.picassoObject - A picasso object (camera or shape) to animate
+     * @param {Camera|Shape} options.cartogramObject - A cartogram object (camera or shape) to animate
      * @param {integer} options.duration - Duration in milliseconds for the animation to run
      * @param {object} options.attrs - Attributes to animate
      * @param {THREE.Vector3} [options.attrs.position] - New position to move to
@@ -27,12 +27,12 @@ define(function(require) {
                 easing: 'linear'
             }, options);
 
-        if (!this.options.picassoObject) {
-            throw new Error('Missing Picasso object to animate');
+        if (!this.options.cartogramObject) {
+            throw new Error('Missing Cartogram object to animate');
         }
 
-        if (!this.options.picassoObject.getAnimatableObject) {
-            throw new Error('Picasso object has not implemented `getAnimatableObject`');
+        if (!this.options.cartogramObject.getAnimatableObject) {
+            throw new Error('Cartogram object has not implemented `getAnimatableObject`');
         }
 
         if (!this.options.duration) {
@@ -43,8 +43,8 @@ define(function(require) {
             throw new Error('Missing attributes to animate');
         }
 
-        this.picassoObject = options.picassoObject;
-        this.object3d = this.picassoObject.getAnimatableObject();
+        this.cartogramObject = options.cartogramObject;
+        this.object3d = this.cartogramObject.getAnimatableObject();
         this.duration = options.duration;
         this._timePassed = 0;
 
@@ -99,13 +99,13 @@ define(function(require) {
             if (this.newOpacity !== undefined) {
                 var opacity = this._easingFn(this._timePassed, this.startOpacity, this.opacityDelta, this.duration);
 
-                this.picassoObject.attr({
+                this.cartogramObject.attr({
                     opacity: opacity
                 });
             }
 
             if (this.newScale !== undefined) {
-                this.picassoObject.attr({
+                this.cartogramObject.attr({
                     width: this._easingFn(this._timePassed, this.startScale.x, this.scaleDelta.x, this.duration),
                     height: this._easingFn(this._timePassed, this.startScale.y, this.scaleDelta.y, this.duration)
                 });

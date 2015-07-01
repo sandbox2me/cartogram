@@ -4,7 +4,7 @@ Signed Distance Fields
 What?
 ----
 
-Signed distance fields help text look better. Picasso provides a mechanism to make
+Signed distance fields help text look better. Cartogram provides a mechanism to make
 text look better. You can provide a font and using a couple tools we can optimize
 the rendering for a webgl scene.
 

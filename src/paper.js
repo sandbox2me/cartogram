@@ -23,11 +23,11 @@ define(function(require) {
      * Public interface for creating and adding shapes to the scene.
      * @constructor
      * @alias paper
-     * @param {Picasso} picasso - The instance of Picasso to use.
+     * @param {Cartogram} cartogram - The instance of Cartogram to use.
      */
-    Paper = function(picasso) {
-        /** The {Picasso} instance */
-        this.picasso = picasso;
+    Paper = function(cartogram) {
+        /** The {Cartogram} instance */
+        this.cartogram = cartogram;
 
         /** The THREE Scene instance for this paper. */
         this.scene = new three.Scene();
@@ -41,11 +41,11 @@ define(function(require) {
          * @returns {THREE.Camera} THREE Camera object.
          */
         getCamera: function() {
-            return this.picasso.camera.camera;
+            return this.cartogram.camera.camera;
         },
 
-        getPicassoCamera: function() {
-            return this.picasso.camera;
+        getCartogramCamera: function() {
+            return this.cartogram.camera;
         },
 
         /**
@@ -60,13 +60,13 @@ define(function(require) {
             obj.scene = this;
             if (obj instanceof Shape) {
                 this.scene.add(obj.shape);
-                this.picasso.sceneTree.insert(obj);
+                this.cartogram.sceneTree.insert(obj);
             } else if (obj instanceof Set) {
                 obj.forEachMeshLayer(function(layer) {
                     this.scene.add(layer);
                 }, this);
 
-                this.picasso.sceneTree.insertSet(obj);
+                this.cartogram.sceneTree.insertSet(obj);
             } else {
                 this.scene.add(obj);
             }
@@ -85,14 +85,14 @@ define(function(require) {
         remove: function(obj) {
             if (obj instanceof Shape) {
                 this.scene.remove(obj.shape);
-                // this.picasso.sceneTree.remove(obj);
+                // this.cartogram.sceneTree.remove(obj);
             } else if (obj instanceof Set) {
                 obj.forEachMeshLayer(function(layer) {
                     this.scene.remove(layer);
                 }, this);
 
                 // this.scene.remove(obj.mesh);
-                // this.picasso.sceneTree.remove(obj);
+                // this.cartogram.sceneTree.remove(obj);
             } else {
                 this.scene.remove(obj);
             }
@@ -108,7 +108,7 @@ define(function(require) {
                 sceneObject.parent = undefined;
             }, this));
             this.scene.children = [];
-            this.picasso.sceneTree.clear();
+            this.cartogram.sceneTree.clear();
         },
 
         /**
@@ -117,9 +117,9 @@ define(function(require) {
          * @returns {Set}
          */
         set: function(layer) {
-            var set = new Set(this.picasso, layer);
+            var set = new Set(this.cartogram, layer);
 
-            if (this.picasso.options.immediate) {
+            if (this.cartogram.options.immediate) {
                 this.add(set.sceneSet);
             }
             return set;
@@ -151,7 +151,7 @@ define(function(require) {
                 yRadius: yRadius
             }, attrs));
 
-            if (this.picasso.options.immediate) {
+            if (this.cartogram.options.immediate) {
                 this.add(circle);
             }
 
@@ -183,7 +183,7 @@ define(function(require) {
                 height: height
             }, attrs));
 
-            if (this.picasso.options.immediate) {
+            if (this.cartogram.options.immediate) {
                 this.add(rect);
             }
 
@@ -217,7 +217,7 @@ define(function(require) {
                 cornerRadius: radius
             }, attrs));
 
-            if (this.picasso.options.immediate) {
+            if (this.cartogram.options.immediate) {
                 this.add(roundRect);
             }
 
@@ -229,7 +229,7 @@ define(function(require) {
          * @param {String} font.name The name of your font, which you can use later as you define text in your scene
          * @param {RegExp} font.test A regular expression defining valid characters from this SDF Image
          * @param {Image} font.image Image loaded as text
-         * @param {Object} font.metrics Metrics about the font that come from Heiro + Picasso fnt_to_json
+         * @param {Object} font.metrics Metrics about the font that come from Heiro + Cartogram fnt_to_json
          */
         addSDFFont: function(font) {
             sdfFontStore[font.name] = createSDFFont(font);
@@ -281,7 +281,7 @@ define(function(require) {
                 text = this._createSafeText(options);
             }
 
-            if (this.picasso.options.immediate) {
+            if (this.cartogram.options.immediate) {
                 this.add(text);
             }
 
@@ -307,7 +307,7 @@ define(function(require) {
                 vertices: vertices
             }, attrs));
 
-            if (this.picasso.options.immediate) {
+            if (this.cartogram.options.immediate) {
                 this.add(polygon);
             }
 
@@ -334,7 +334,7 @@ define(function(require) {
                 vertices: vertices
             }, attrs));
 
-            if (this.picasso.options.immediate) {
+            if (this.cartogram.options.immediate) {
                 this.add(polygon);
             }
 

@@ -469,7 +469,7 @@ define(function(require) {
 
         animate: function(attrs, duration) {
             var promise = animationManager.add({
-                picassoObject: this,
+                cartogramObject: this,
                 duration: duration,
                 attrs: attrs
             }).progress(_.bind(function(worker) {
