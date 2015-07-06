@@ -314,6 +314,10 @@ define(function(require) {
             return position;
         },
 
+        translateGeometry: function(vector) {
+            this.geometry.applyMatrix(new three.Matrix4().makeTranslation(vector.x, vector.y, 0));
+        },
+
         /**
          * Get or set the rotation Vector3 of the shape.
          *

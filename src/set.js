@@ -271,6 +271,12 @@ define(function(require) {
             return intersects;
         },
 
+        translateGeometry: function(vector) {
+            this.forEachMeshLayer(function(layer) {
+                layer.geometry.applyMatrix(new three.Matrix4().makeTranslation(vector.x, vector.y, 0));
+            });
+        },
+
         position: function(obj) {
             var layerKeys = this.getLayerKeys();
 
