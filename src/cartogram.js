@@ -89,7 +89,7 @@ define(function(require) {
             this.renderer.sortObjects = true;
 
             if (this.options.resizeCanvas) {
-                window.addEventListener('resize', this.updateCanvasDimensions, false);
+                window.addEventListener('resize', _.debounce(this.updateCanvasDimensions, 100), false);
             }
         },
 
