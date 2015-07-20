@@ -290,9 +290,13 @@ define(function(require) {
                 return position;
             }
 
-            this.forEachMeshLayer(function(layer) {
+            this.forEachMeshLayer(function(layer, layerKey) {
                 _.extend(layer.position, obj);
-            });
+
+                if (this.set) {
+                    this.set.updateGeometry(this, layerKey, true);
+                }
+            }, this);
         },
 
         absolutePosition: function() {
