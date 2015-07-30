@@ -30,10 +30,6 @@ var requireConfig = {
     },
     packages: [
         {
-            name: 'js-common',
-            location: './node_modules/js-common/src'
-        },
-        {
             name: 'cartogram',
             location: './node_modules/cartogram/src',
             main: './cartogram'

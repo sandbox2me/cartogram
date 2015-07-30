@@ -5,9 +5,6 @@ module.exports = function(grunt) {
         'grunt-*'
     ]});
 
-    // load js-common tasks
-    require('js-common/src/tasks/release')(grunt);
-
     // load local tasks
     grunt.loadTasks('tasks');
 

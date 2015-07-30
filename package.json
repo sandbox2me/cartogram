@@ -5,9 +5,6 @@
     "type": "git",
     "url": "git@github.com:eventbrite/cartogram.git"
   },
-  "publishConfig": {
-    "registry": "http://packages:8889"
-  },
   "scripts": {
     "test": "karma start"
   },
