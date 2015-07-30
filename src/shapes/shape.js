@@ -426,8 +426,8 @@ define(function(require) {
          * @instance
          * @returns {BoundingBox}
          */
-        getBBox: function() {
-            if (this._bbox) {
+        getBBox: function(forceRecalculation) {
+            if (this._bbox && !forceRecalculation) {
                 return this._bbox;
             }
 
@@ -496,17 +496,60 @@ define(function(require) {
             this.on('longpress', handler);
         },
 
+        _dragStart: function(e) {
+            this.isDragStarted = true;
+            this.lastDragPosition = {
+                x: e.clientX,
+                y: e.clientY
+            };
+        },
+
+        _dragEnd: function() {
+            this.isDragStarted = false;
+            this.lastDragPosition = {
+                x: 0,
+                y: 0
+            }
+        },
+
+        _dragMove: function(onMove) {
+            return function(e) {
+                if (this.isDragStarted) {
+                    onMove(e, {
+                        x: e.clientX - this.lastDragPosition.x,
+                        y: e.clientY - this.lastDragPosition.y
+                    });
+                    this.lastDragPosition = {
+                        x: e.clientX,
+                        y: e.clientY
+                    };
+                }
+            }.bind(this);
+        },
+
+        _dragMouseUpHandler: function(onEnd) {
+            return function(e) {
+                this._dragEnd(e);
+                document.body.removeEventListener('mousemove', this.dragMoveHandler);
+                document.body.removeEventListener('mouseup', this.dragEndHandler);
+                if (onEnd) {
+                    onEnd(e);
+                }
+            }.bind(this);
+        },
+
         drag: function(onMove, onStart, onEnd) {
-            var self = this;
-            this.on('mousedown', function(shape) {
-                onStart(shape);
-                self.on('mousemove', function(shape) {
-                    onMove(shape);
-                });
-                self.on('mouseup', function(shape) {
-                    onEnd();
-                });
-            });
+            this.dragMoveHandler = this._dragMove(onMove);
+            this.dragEndHandler = this._dragMouseUpHandler(onEnd);
+
+            this.on('mousedown', function(shape, e) {
+                this._dragStart(e);
+                if (onStart) {
+                    onStart(e);
+                }
+                document.body.addEventListener('mousemove', this.dragMoveHandler);
+                document.body.addEventListener('mouseup', this.dragEndHandler);
+            }, this);
         },
 
         mousedown: function(handler) {

@@ -5,6 +5,7 @@ define(function(require) {
         three = require('three'),
         Paper,
 
+        CartogramSceneTree = require('./scene_tree'),
         createSDFFont = require('./sdf_font'),
         Set = require('./set'),
         Shape = require('./shapes/shape'),
@@ -47,8 +48,38 @@ define(function(require) {
             return this.cartogram.camera.camera;
         },
 
+        disableCameraMovement: function() {
+            this.cartogram.camera.enableInteraction = false;
+            this.cartogram.camera._eventsBlocked = true;
+        },
+
+        enableCameraMovement: function() {
+            this.cartogram.camera.enableInteraction = true;
+            this.cartogram.camera._eventsBlocked = false;
+        },
+
         getCartogramCamera: function() {
             return this.cartogram.camera;
+        },
+
+        /**
+         * Recreates the scene tree from the existing scene
+         */
+        regenerateSceneTree: function(sceneSet) {
+            var newSceneTree = new CartogramSceneTree(this.cartogram);
+
+            newSceneTree.insertSet(sceneSet, true);
+            this.cartogram.sceneTree.clear();
+            // iterate through the current shapes and push them into the new scene tree
+            // this.cartogram.sceneTree.sceneList.forEach(function(obj) {
+            //     if (obj instanceof Shape) {
+            //         newSceneTree.insert(obj);
+            //     } else if (obj instanceof Set) {
+            //     }
+            // }.bind(this));
+
+            this.cartogram.sceneTree = newSceneTree;
+            console.log(this.cartogram.sceneTree.tree.toJSON());
         },
 
         /**

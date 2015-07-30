@@ -293,6 +293,8 @@ define(function(require) {
             this.forEachMeshLayer(function(layer, layerKey) {
                 _.extend(layer.position, obj);
 
+                layer.updateMatrix();
+
                 if (this.set) {
                     this.set.updateGeometry(this, layerKey, true);
                 }
@@ -365,7 +367,7 @@ define(function(require) {
             return this;
         },
 
-        getBBox: function() {
+        getBBox: function(should) {
             var layerBoxes = [],
                 grossBBox,
                 bbox;

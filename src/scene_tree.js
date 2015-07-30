@@ -15,8 +15,8 @@ define(function(require) {
     };
 
     SceneTree.prototype = {
-        _RTreeDataForShape: function(shape) {
-            var bbox = shape.getBBox(),
+        _RTreeDataForShape: function(shape, forceBBoxRecalculation) {
+            var bbox = shape.getBBox(forceBBoxRecalculation),
                 data = [
                     bbox.x,
                     bbox.y,
@@ -31,14 +31,14 @@ define(function(require) {
             return data;
         },
 
-        insert: function(shape) {
-            this.tree.insert(this._RTreeDataForShape(shape));
+        insert: function(shape, forceBBoxRecalculation) {
+            this.tree.insert(this._RTreeDataForShape(shape, forceBBoxRecalculation));
             this.sceneList.push(shape);
 
             return this;
         },
 
-        insertSet: function(set) {
+        insertSet: function(set, forceBBoxRecalculation) {
             var i,
                 length,
                 child;
@@ -47,9 +47,9 @@ define(function(require) {
                 child = set.children[i];
 
                 if (child.children) {
-                    this.insertSet(child);
+                    this.insertSet(child, forceBBoxRecalculation);
                 } else {
-                    this.insert(child);
+                    this.insert(child, forceBBoxRecalculation);
                 }
             }
         },

@@ -464,7 +464,9 @@ define(function(require) {
 
             }
 
-            _this.object.cameraObject.trigger('panned');
+            if (!_this.object.cameraObject._eventsBlocked) {
+                _this.object.cameraObject.trigger('panned');
+            }
 
         }
 
