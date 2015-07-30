@@ -4,6 +4,7 @@ cartogram
 Super fast shape WebGL 2D rendering engine
 
 TODO:
-- Use UMD for open source libraries
-- Use AMD for internal libraries
-- Add build process
+- Make a better build process
+- UMD'ify
+- Remove dependence on threeJS
+- Add ReactJS bindings
