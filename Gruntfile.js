@@ -8,4 +8,8 @@ module.exports = function(grunt) {
     // load local tasks
     grunt.loadTasks('tasks');
 
+    grunt.registerTask('default', [
+        'build'
+    ]);
+
 };

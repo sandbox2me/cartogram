@@ -1,4 +1,4 @@
 define(function(require) {
-    var Cartogram = require('cartogram/src/cartogram');
+    var Cartogram = require('./src/cartogram');
     return Cartogram;
 });

@@ -3,12 +3,16 @@ var requireConfig = {
     baseUrl: '',
 
     paths: {
-        'q': './node_modules/q/q',
+        'backbone': './node_modules/backbone/backbone',
+        'jquery': './node_modules/jquery/dist/jquery',
         'pnltri': './node_modules/pnltri/pnltri',
+        'q': './node_modules/q/q',
         'rbush': './node_modules/rbush/rbush',
         'sinon': './node_modules/sinon/lib/sinon',
+        'text': './src/lib/require-text',
         'three': './node_modules/three/three',
-        'tinycolor': './node_modules/tinycolor2/tinycolor'
+        'tinycolor': './node_modules/tinycolor2/tinycolor',
+        'underscore': './node_modules/underscore/underscore'
     },
     shim: {
         backbone: {
