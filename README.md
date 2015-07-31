@@ -13,7 +13,6 @@ We have NO docs right now. We will add them as we go. We have a few major refact
 Roadmap
 ----
 
-- Make a better build process
 - Make the repo usable across various module systems
-- Remove dependence on threeJS
+- Remove dependence on threeJS, backbone, underscore, requirejs, etc
 - Add ReactJS bindings
