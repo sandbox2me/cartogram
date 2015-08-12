@@ -84,7 +84,7 @@ define(function(require) {
             }
 
             if (!this.mousePosition.equals(this._previousMousePosition)) {
-                this.cartogram.paper.trigger('mousemove', e, this);
+                this.cartogram.paper.trigger('mousemove', null, e, this);
             }
         },
 
@@ -94,7 +94,7 @@ define(function(require) {
             if (this.intersected) {
                 this.intersected.shape.trigger('mousedown', this.intersected.shape, e, this);
             } else {
-                this.cartogram.paper.trigger('mousedown', e, this);
+                this.cartogram.paper.trigger('mousedown', null, e, this);
             }
         },
 
@@ -103,7 +103,7 @@ define(function(require) {
             if (this.intersected) {
                 this.intersected.shape.trigger('mouseup', this.intersected.shape, e, this);
             } else {
-                this.cartogram.paper.trigger('mouseup', e, this);
+                this.cartogram.paper.trigger('mouseup', null, e, this);
             }
         },
 
@@ -129,8 +129,9 @@ define(function(require) {
 
             if (this.intersected && intersected && this.intersected.shape.id === intersected.shape.id) {
                 this.intersected.shape.trigger('click', this.intersected.shape, e, this);
+                this.cartogram.paper.trigger('click', this.intersected.shape, e, this);
             } else if (!this.intersected) {
-                this.cartogram.paper.trigger('click', e, this);
+                this.cartogram.paper.trigger('click', null, e, this);
             }
         },
         handleDoubleClick: function(e) {
@@ -138,8 +139,9 @@ define(function(require) {
             var intersected = this.getValidIntersection();
             if (this.intersected && intersected && this.intersected.shape.id === intersected.shape.id) {
                 this.intersected.shape.trigger('dblclick', this.intersected.shape, e, this);
+                this.cartogram.paper.trigger('dblclick', this.intersected.shape, e, this);
             } else if (!this.intersected) {
-                this.cartogram.paper.trigger('dblclick', e, this);
+                this.cartogram.paper.trigger('dblclick', null, e, this);
             }
         },
 
@@ -150,8 +152,9 @@ define(function(require) {
 
             if (this.intersected && intersected && this.intersected.shape.id === intersected.shape.id) {
                 this.intersected.shape.trigger('longpress', this.intersected.shape, e, this);
+                this.cartogram.paper.trigger('longpress', this.intersected.shape, e, this);
             } else if (!this.intersected) {
-                this.cartogram.paper.trigger('longpress', e, this);
+                this.cartogram.paper.trigger('longpress', null, e, this);
             }
         },
 
@@ -163,10 +166,10 @@ define(function(require) {
 
             this.startLongPressDetection();
 
-            if  (this.intersected) {
+            if (this.intersected) {
                 this.intersected.shape.trigger('touchstart', this.intersected.shape, e, this);
             } else {
-                this.cartogram.paper.trigger('touchstart', e, this);
+                this.cartogram.paper.trigger('touchstart', null, e, this);
             }
         },
         handleTouchEnd: function(e) {
@@ -184,9 +187,9 @@ define(function(require) {
                     this.intersected.shape.trigger('click', this.intersected.shape, e, this);
                 }
             } else {
-                this.cartogram.paper.trigger('touchend', e, this);
+                this.cartogram.paper.trigger('touchend', null, e, this);
                 if (!this.isDragging) {
-                    this.cartogram.paper.trigger('click', e, this);
+                    this.cartogram.paper.trigger('click', null, e, this);
                 }
             }
 
@@ -205,7 +208,7 @@ define(function(require) {
             if (this.intersected) {
                 this.intersected.shape.trigger('touchmove', this.intersected.shape, e, this);
             } else {
-                this.cartogram.paper.trigger('touchmove', e, this);
+                this.cartogram.paper.trigger('touchmove', null, e, this);
             }
         },
         handleTouchCancel: function(e) {
@@ -218,7 +221,7 @@ define(function(require) {
             if (this.intersected) {
                 this.intersected.shape.trigger('touchcancel', this.intersected.shape, e, this);
             } else {
-                this.cartogram.paper.trigger('touchcancel', e, this);
+                this.cartogram.paper.trigger('touchcancel', null, e, this);
             }
             this.handleMouseOut(e);
         },
@@ -268,7 +271,8 @@ define(function(require) {
                 intersected,
                 mouseVector = new three.Vector2(this.mousePosition.x, this.mousePosition.y),
                 i, length,
-                shape;
+                shape,
+                treesect;
 
             this.raycaster.setFromCamera(mouseVector, this.cartogram.paper.getCamera());
             intersections = this.raycaster.intersectObjects(this.cartogram.paper.scene.children);
@@ -277,7 +281,7 @@ define(function(require) {
                 intersected = intersections[0];
                 intersected.point.y = -intersected.point.y;
 
-                var treesect = this.cartogram.sceneTree.searchPoint(intersected.point);
+                treesect = this.cartogram.sceneTree.searchPoint(intersected.point);
 
                 for (i = 0, length = treesect.length; i < length; i++) {
                     shape = treesect[i][4].shape;
