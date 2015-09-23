@@ -105,8 +105,6 @@ define(function(require) {
             var heightRatio = this.cartogram.height / 1080,
                 panSpeed = this.options.basePanSpeed * heightRatio;
 
-            console.log(this.options.basePanSpeed, panSpeed);
-
             this.controls.noRotate = true;
             this.controls.noRoll = true;
             this.controls.noKeys = true;
