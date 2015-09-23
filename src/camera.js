@@ -23,12 +23,12 @@ define(function(require) {
 
         this.options = {
             enableInteraction: true,
-            panSpeed: 0.7,
-            panDamping: 0.3,
+            basePanSpeed: 2,
+            panDamping: 0.8,
             zoomSpeed: 0.2,
             minZoom: 50,
             maxZoom: 2000,
-            staticMoving: false,
+            staticMoving: true,
             step: 200
         };
         this.updateSettings(options);
@@ -58,16 +58,16 @@ define(function(require) {
         window.setTimeout(_.bind(function() {
             this.enableInteraction = this.options.enableInteraction;
             if (this.enableInteraction) {
-                this.initializeControls(this.options);
+                this.initializeControls();
             }
         }, this));
     };
 
     _.extend(Camera.prototype, EventBusMixin, {
-        initializeControls: function(options) {
+        initializeControls: function() {
             this.controls = new TrackballControls(this.camera, this.cartogram.renderer.domElement);
 
-            this._setControlsSettings(options);
+            this._updateControlsSettings();
             this._lastPosition = {};
 
             var epsilon = 0.5;
@@ -101,18 +101,23 @@ define(function(require) {
             }
         },
 
-        _setControlsSettings: function(options) {
+        _updateControlsSettings: function() {
+            var heightRatio = this.cartogram.height / 1080,
+                panSpeed = this.options.basePanSpeed * heightRatio;
+
+            console.log(this.options.basePanSpeed, panSpeed);
+
             this.controls.noRotate = true;
             this.controls.noRoll = true;
             this.controls.noKeys = true;
 
-            this.controls.panSpeed = options.panSpeed;
-            this.controls.zoomSpeed = options.zoomSpeed;
-            this.controls.minDistance = options.minZoom;
-            this.controls.maxDistance = options.maxZoom;
+            this.controls.panSpeed = panSpeed;
+            this.controls.zoomSpeed = this.options.zoomSpeed;
+            this.controls.minDistance = this.options.minZoom;
+            this.controls.maxDistance = this.options.maxZoom;
 
-            this.controls.staticMoving = options.staticMoving;
-            this.controls.dynamicDampingFactor = options.panDamping;
+            this.controls.staticMoving = this.options.staticMoving;
+            this.controls.dynamicDampingFactor = this.options.panDamping;
         },
 
         updateSettings: function(options) {
@@ -128,7 +133,7 @@ define(function(require) {
             }
 
             if (this.controls) {
-                this._setControlsSettings(this.options);
+                this._updateControlsSettings();
             }
 
             this.trigger('zoomRangeUpdate');
@@ -198,6 +203,10 @@ define(function(require) {
             this.camera.bottom = this.cartogram.height / -2;
 
             this.camera.updateProjectionMatrix();
+
+            this.controls.handleResize();
+
+            this._updateControlsSettings();
         },
 
         update: function() {

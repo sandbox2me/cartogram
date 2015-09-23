@@ -123,7 +123,7 @@ define(function(require) {
 
             return function ( pageX, pageY ) {
                 vector.set(
-                    ( pageX - _this.screen.left ) / _this.screen.width,
+                    ( pageX - _this.screen.left ) / _this.screen.height,
                     ( pageY - _this.screen.top ) / _this.screen.height
                 );
 
