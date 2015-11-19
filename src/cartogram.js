@@ -76,12 +76,12 @@ define(function(require) {
             this.renderer.setClearColor((new three.Color(this.options.backgroundColor)).getHex(), 1);
             // this.renderer.setClearColor(0x88aa00, 1);
             if (this.isGL) {
-                this.renderer.setBlending(
-                    three.CustomBlending,
-                    three.AddEquation,
-                    three.SrcAlphaFactor,
-                    three.OneMinusSrcAlphaFactor
-                );
+                // this.renderer.setBlending(
+                //     three.CustomBlending,
+                //     three.AddEquation,
+                //     three.SrcAlphaFactor,
+                //     three.OneMinusSrcAlphaFactor
+                // );
             }
 
             this.renderer.setPixelRatio(window.devicePixelRatio);
