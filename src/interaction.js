@@ -24,6 +24,7 @@ define(function(require) {
         this.cartogram = cartogram;
         this.mousePosition = new three.Vector2(-Infinity, -Infinity);
         this._previousMousePosition = this.mousePosition.clone();
+        this._previousFrameMousePosition = this.mousePosition.clone();
 
         this.raycaster = new three.Raycaster();
 
@@ -237,10 +238,16 @@ define(function(require) {
                     this.intersected.shape.trigger('mouseout', this.intersected.shape, this.intersected);
                     this.intersected = null;
                 }
+                this._previousFrameMousePosition = this.mousePosition.clone();
                 return;
             }
 
             if (!this._previousMousePosition.equals(this.mousePosition) && this.isDragging) {
+                this._previousFrameMousePosition = this.mousePosition.clone();
+                return;
+            }
+
+            if (this._previousFrameMousePosition.equals(this.mousePosition)) {
                 return;
             }
 
@@ -259,6 +266,8 @@ define(function(require) {
                     this.intersected = null;
                 }
             }
+
+            this._previousFrameMousePosition = this.mousePosition.clone();
         },
 
         startLongPressDetection: function() {
@@ -282,7 +291,15 @@ define(function(require) {
                 intersected.point.y = -intersected.point.y;
 
                 treesect = this.cartogram.sceneTree.searchPoint(intersected.point);
-
+                treesect.sort(function(a, b) {
+                    if (a[4].shape.interactionPriority < b[4].shape.interactionPriority) {
+                        return 1;
+                    }
+                    if (a[4].shape.interactionPriority > b[4].shape.interactionPriority) {
+                        return -1;
+                    }
+                    return 0;
+                });
                 for (i = 0, length = treesect.length; i < length; i++) {
                     shape = treesect[i][4].shape;
                     if (

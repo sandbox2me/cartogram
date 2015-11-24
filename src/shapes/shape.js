@@ -64,6 +64,9 @@ define(function(require) {
 
         this._updatePosition();
         this._updateSize();
+
+        this.interactionPriority = 0;
+
         this.on('change', function() {
             this.material = this.getMaterial(this.attributes);
             this.shape.material = this.material;
