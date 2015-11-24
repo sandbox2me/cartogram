@@ -6,7 +6,7 @@ define(function(require) {
 
     SceneTree = function(cartogram, includeShape, maxNodeFill) {
         this.maxNodeFill = maxNodeFill || 10;
-        this.includeShape = (includeShape === false) ? false : true;
+        this.includeShape = false; //(includeShape === false) ? false : true;
 
         this.cartogram = cartogram;
         this.sceneList = [];

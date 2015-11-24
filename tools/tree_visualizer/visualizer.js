@@ -46,7 +46,24 @@ Visualizer.prototype = {
             this.frame.height * this.scaleY
         );
 
+
+        // this.ctx.strokeRect(0, 0, 1, 1);
+        // this.ctx.strokeRect(this.center.x, this.center.y, 1, 1);
+        // this.ctx.strokeRect(this.center.x - 10, this.center.y - 10, 20, 20);
+
+        console.log(this.mapJSON.bbox, this.frame)
         this.drawChildren(this.mapJSON.children);
+
+        // var aspect = this.frame.width / this.frame.height;
+        // if (aspect < 0) {
+        //     // tall
+        //     this.xScale = 0;
+        //     this.yScale = 1;
+        // } else {
+        //     // wide
+        //     this.xScale = 1;
+        //     this.yScale = this.frame.height / this.canvas.height;
+        // }
     },
 
     drawChildren: function(children) {
