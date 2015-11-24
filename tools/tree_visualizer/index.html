@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Scene Tree Visualizer</title>
+    </head>
+    <body>
+        <h3>Visualize</h3>
+        <canvas id="canvas" width="1280" height="720"></canvas>
+        <p><textarea id="treeSrc" rows="50" cols="100"></textarea></p>
+        <p><button id="generate">Generate</button></p>
+
+        <script type="text/javascript" src="../../node_modules/jquery/dist/jquery.js"></script>
+        <script type="text/javascript" src="../../node_modules/underscore/underscore.js"></script>
+        <script type="text/javascript" src="visualizer.js"></script>
+        <script type="text/javascript">
+            var viz = new Visualizer('#canvas');
+        </script>
+    </body>
+</html>
