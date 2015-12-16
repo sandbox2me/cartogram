@@ -91,6 +91,14 @@ define(function(require) {
                 }
             }, this));
 
+            this.controls.addEventListener('panned', _.bind(_.debounce(function() {
+                this.trigger('panned:direct');
+            }, 100), this));
+
+            this.controls.addEventListener('zoomed', _.bind(_.debounce(function() {
+                this.trigger('zoomed:direct');
+            }, 500), this));
+
             if (!this.cartogram.isGL) {
                 // Framerate is often quite low in Canvas, disable the friction effect
                 this.controls.staticMoving = true;

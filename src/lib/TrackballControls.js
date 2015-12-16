@@ -81,6 +81,9 @@ define(function(require) {
         var startEvent = { type: 'start'};
         var endEvent = { type: 'end'};
 
+        var pannedEvent = { type: 'panned' };
+        var zoomedEvent = { type: 'zoomed' };
+
 
         // methods
 
@@ -229,6 +232,7 @@ define(function(require) {
                 var factor = _touchZoomDistanceStart / _touchZoomDistanceEnd;
                 _touchZoomDistanceStart = _touchZoomDistanceEnd;
                 _eye.multiplyScalar( factor );
+                _this.dispatchEvent( zoomedEvent );
 
             } else {
 
@@ -247,6 +251,8 @@ define(function(require) {
                         _zoomStart.y += ( _zoomEnd.y - _zoomStart.y ) * this.dynamicDampingFactor;
 
                     }
+
+                    _this.dispatchEvent( zoomedEvent );
 
                 }
 
@@ -283,6 +289,8 @@ define(function(require) {
                         _panStart.add( mouseChange.subVectors( _panEnd, _panStart ).multiplyScalar( _this.dynamicDampingFactor ) );
 
                     }
+
+                    _this.dispatchEvent( pannedEvent );
 
                 }
             }
