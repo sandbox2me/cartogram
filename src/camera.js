@@ -77,9 +77,9 @@ define(function(require) {
                 if (!this._lastPosition.x) {
                     this._lastPosition = position;
                 } else if (
-                    position.x - this._lastPosition.x > epsilon ||
-                    position.y - this._lastPosition.y > epsilon ||
-                    position.z - this._lastPosition.z > epsilon
+                    Math.abs(position.x - this._lastPosition.x) > epsilon ||
+                    Math.abs(position.y - this._lastPosition.y) > epsilon ||
+                    Math.abs(position.z - this._lastPosition.z) > epsilon
                 ) {
                     this._lastPosition = position;
 
@@ -98,6 +98,13 @@ define(function(require) {
             this.controls.addEventListener('zoomed', _.bind(_.debounce(function() {
                 this.trigger('zoomed:direct');
             }, 500), this));
+
+            this.controls.addEventListener('start', _.bind(function() {
+                this.trigger('interaction:start');
+            }, this));
+            this.controls.addEventListener('end', _.bind(function() {
+                this.trigger('interaction:end');
+            }, this));
 
             if (!this.cartogram.isGL) {
                 // Framerate is often quite low in Canvas, disable the friction effect
@@ -151,6 +158,13 @@ define(function(require) {
 
         getZoomLevel: function() {
             return this.currentZoom;
+        },
+
+        getZoomPercent: function() {
+            var range = this.options.maxZoom - this.options.minZoom,
+                percent = 1 - ((this.currentZoom - this.options.minZoom) / range);
+
+            return percent;
         },
 
         getFrustum: function() {
