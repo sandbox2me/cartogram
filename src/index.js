@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { combineReducers } from 'redux';
 
 import createStore from './reducers/initializer';
-import reducers from './reducers';
+import * as reducers from './reducers';
 
 const defaultOptions = {
     resizeCanvas: true,
@@ -57,6 +57,7 @@ class Cartogram {
     }
 
     _initializeData() {
+        debugger
         let rootReducer = combineReducers(reducers);
 
         this.store = createStore(rootReducer);
@@ -107,3 +108,5 @@ class Cartogram {
         // Do rendering loop
     }
 }
+
+export default Cartogram;
