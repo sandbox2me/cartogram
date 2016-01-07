@@ -10,7 +10,9 @@
         <script type="text/javascript" src="../node_modules/three/three.js"></script>
         <script type="text/javascript" src="../dist/cartogram-dev.js"></script>
         <script type="text/javascript">
-            var cartogram = new Cartogram(document.getElementById('container'));
+            var cartogram = new Cartogram(document.getElementById('container'), {
+                backgroundColor: '#000000'
+            });
             var scene = new Cartogram.Scene('main');
             var circles = [];
             var range = 2000;

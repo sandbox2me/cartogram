@@ -5,12 +5,12 @@ const initialState = Map({});
 const handlers = {
     'ADD_TYPE': (state, action) => {
         // Types are immutable
-        if (state.has(action.type.name)) {
+        if (state.has(action.typedef.name)) {
             return state;
         }
 
         return state.merge({
-            [action.type.name]: action.type
+            [action.typedef.name]: action.typedef
         });
     },
     'REMOVE_TYPE_NAMED': (state, action) => {

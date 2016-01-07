@@ -4,8 +4,9 @@ import {
 } from 'redux';
 
 import thunk from 'redux-thunk';
-import logger from 'redux-logger';
+import createLogger from 'redux-logger';
 
-let createStoreWithMiddleware = applyMiddleware(logger, thunk)(createStore);
+const logger = createLogger();
+const createStoreWithMiddleware = applyMiddleware(thunk, logger)(createStore);
 
 export default createStoreWithMiddleware;
