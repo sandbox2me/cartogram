@@ -48,8 +48,9 @@
                 shapes: circles
             });
 
-            scene.addActor(actor);
-            cartogram.addScene(scene);
+            // scene.addActor(actor);
+            // cartogram.addScene(scene);
+            cartogram.setActiveScene(scene.name);
 
             cartogram.render();
         </script>

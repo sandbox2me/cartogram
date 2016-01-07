@@ -1,6 +1,6 @@
 import { List, Map } from 'immutable';
 
-const initialState = Map({
+const initialSceneState = Map({
     camera: Map({
         maxZoom: 100,
         minZoom: 100,
@@ -16,9 +16,25 @@ const initialState = Map({
     materials: List([]),
 });
 
+const initialState = Map({
+    scenes: Map({}),
+    active: undefined
+});
+
 const handlers = {
+    'CREATE_SCENE': (state, action) => {
+        let scenes = state.get('scenes');
+        scenes = scenes.set(action.sceneName, initialSceneState);
+        return state.set('scenes', scenes);
+    },
+
+    'SET_ACTIVE_SCENE': (state, action) => {
+        return state.set('active', action.name);
+    },
+
     'UPDATE_CAMERA_POSITION': (state, action) => {
-        let camera = state.get('camera');
+        let scene = state.get('scenes').get(action.scene);
+        let camera = scene.get('camera');
 
         camera = camera.set('position', action.position);
 

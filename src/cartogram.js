@@ -103,7 +103,7 @@ class Cartogram {
     }
 
     addScene(scene) {
-        actions.scenes.add({ scene });
+        this.dispatch(actions.scenes.add(scene));
     }
 
     removeScene(scene) {
@@ -114,6 +114,10 @@ class Cartogram {
         }
 
         remove(scene);
+    }
+
+    setActiveScene(name) {
+        this.dispatch(actions.scenes.setActive(name));
     }
 
     render() {
