@@ -1,0 +1,134 @@
+Cartogram 2.0 Architecture Notes
+
+
+Layers
+    * actors
+    * groups
+    * groups of groups
+    * scene
+    * shape types
+    * rtree
+    * camera view
+
+actors can be composed of 1+ shape types. When adding an actor to a scene, cartogram determines optimal ways of breaking the actor down into appropriate rendering groups.
+
+
+Shape types
+    * Circle
+    * Rectangle
+    * Text
+    * PointSquare
+    * PointCircle
+    * Polygon
+
+
+Actor definition
+
+    var chair = new Actor({
+            position: { x: 0, y: 0 },
+            rotation: 0,
+            id: 1,
+            shapes: [
+                {
+                    type: 'PointCircle',
+                    radius: 20,
+                    position: { x: 0, y: 0 },
+                    fill: { r: 1.0, g: 0.0, b: 0.0 },
+                    stroke: { r: 1.0, g: 1.0, b: 0.0 },
+                    strokeWidth: 5.0
+                },
+                {
+                    type: 'Text',
+                    position: { x: 0, y: 0 },
+                    value: '10',
+                    size: 10.0,
+                    family: 'Benton'
+                }
+            ]
+        });
+
+    var table = new Group({
+        position: { x: 0, y: 0 },
+        rotation: 0,
+        id: 1,
+        actors: [
+            roundTableTop,
+            chair1,
+            chair2,
+            chair3,
+            chair4,
+            chair5
+        ]
+    });
+
+    var lodTable = new LODGroup({
+        position: { x: 0, y: 0 },
+        rotation: 0,
+        id: 2,
+        lods: {
+            low: [
+                tableOutline
+            ],
+            high: [
+                roundTableTop,
+                chair1,
+                chair2,
+                chair3,
+                chair4,
+                chair5
+            ]
+        }
+    })
+
+    var lowLod = new LOD({
+        id: 'low',
+        cameraMin: 200
+    });
+
+    var highLod = new LOD({
+        id: 'high',
+        cameraMin: 0,
+        cameraMax: 200
+    });
+
+    cartogram.LOD.register(lowLod);
+    cartogram.LOD.register(highLod);
+
+
+API
+
+
+    Cartogram
+        - addScene
+        - registerLOD
+        - unregisterLOD
+        - render
+    Cartogram.Scene
+        - addActor
+        - removeActor
+        - findActor
+        - addGroup
+        - removeGroup
+        - findGroup
+        - recalculateScene
+    Cartogram.Actor
+        - addShape
+        - removeShape
+        - findShape
+        - onClick
+        - onDblClick
+        - onMouseover
+        - onMouseout
+    Cartogram.Group
+        - addActor
+        - removeActor
+        - findActor
+        - onClick
+        - onDblClick
+        - onMouseover
+        - onMouseout
+        - onDrag
+    Cartogram.LODGroup
+        - addActor(lodGroup, actor)
+        - removeActorFromGroup(lodGroup, actorName)
+    Cartogram.LOD
