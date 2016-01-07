@@ -1,7 +1,9 @@
 import three from 'three';
 import _ from 'lodash';
+import { combineReducers } from 'redux';
 
 import createStore from './reducers/initializer';
+import reducers from './reducers';
 
 const defaultOptions = {
     resizeCanvas: true,
@@ -48,13 +50,16 @@ class Cartogram {
         this.renderer.setSize(this.width, this.height);
         this.renderer.sortObjects = true;
 
+        // XXX Move this to the scene component
         if (this.options.resizeCanvas) {
             window.addEventListener('resize', _.debounce(this._updateCanvasDimensions, 100), false);
         }
     }
 
     _initializeData() {
-        this.store = createStore()
+        let rootReducer = combineReducers(reducers);
+
+        this.store = createStore(rootReducer);
     }
 
     _initializeModules() {
