@@ -2,8 +2,9 @@ import { List, Map } from 'immutable';
 
 const initialState = Map({
     camera: Map({
-        maxZoom: 100,
-        minZoom: 100,
+        maxZoom: 2000,
+        minZoom: 50,
+        currentZoom: 100,
         position: { x: 0, y: 0 }
     }),
 

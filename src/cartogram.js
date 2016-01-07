@@ -8,13 +8,15 @@ import * as actions from './actions';
 
 import typeInitializer from './types/initializer';
 
+import Scene from './components/scene';
+
 const defaultOptions = {
     resizeCanvas: true,
     backgroundColor: '#ffffff',
 };
 
 class Cartogram {
-    constructor(el, options=defaultOptions) {
+    constructor(el, options={}) {
         if (el.length) {
             // Handle jQuery selectors
             this.el = el[0];
@@ -22,9 +24,9 @@ class Cartogram {
             this.el = el;
         }
 
-        this.options = Object.assign({
-            width: this.el.parentNode.clientWidth,
-            height: this.el.parentNode.clientHeight
+        this.options = Object.assign({}, defaultOptions, {
+            width: document.body.parentNode.clientWidth,
+            height: document.body.parentNode.clientHeight
         }, options);
 
         this.width = this.options.width;
@@ -33,6 +35,8 @@ class Cartogram {
         this._initializeRenderer();
         this._initializeData();
         this._initializeModules();
+
+        this.render = this.render.bind(this);
     }
 
     _initializeRenderer() {
@@ -48,14 +52,14 @@ class Cartogram {
             stencil: true
         });
 
-        this.renderer.setClearColor((new three.Color(this.options.backgroundColor)).getHex(), 1);
-        this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.setSize(this.width, this.height);
+        this.renderer.setClearColor((new three.Color(this.options.backgroundColor)).getHex());
+        this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.sortObjects = true;
 
         // XXX Move this to the scene component
         if (this.options.resizeCanvas) {
-            window.addEventListener('resize', _.debounce(this._updateCanvasDimensions, 100), false);
+            window.addEventListener('resize', _.debounce(this._updateCanvasDimensions.bind(this), 100), false);
         }
     }
 
@@ -76,7 +80,7 @@ class Cartogram {
     }
 
     _initializeModules() {
-        this._defaultScene = new Scene('default');
+        this._defaultScene = new Scene('default', this.store);
     }
 
     _updateCanvasDimensions() {
@@ -91,7 +95,10 @@ class Cartogram {
         this.width = width;
         this.height = height;
 
-        // this.camera.updateSize();
+        this.dispatch(actions.core.updateScreenSize({
+            width: width,
+            height: height
+        }));
     }
 
     // Public API
@@ -108,6 +115,8 @@ class Cartogram {
 
     render() {
         // Do rendering loop
+        this._defaultScene.render(this.renderer);
+        window.requestAnimationFrame(this.render);
     }
 }
 

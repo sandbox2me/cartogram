@@ -3,6 +3,12 @@
     <head>
         <meta charset="utf-8">
         <title>Cartogram 2 - Circles Test</title>
+        <style type="text/css">
+            body {
+                margin: 0;
+                padding: 0;
+            }
+        </style>
     </head>
     <body>
         <div id="container"></div>
@@ -48,9 +54,9 @@
                 shapes: circles
             });
 
-            // scene.addActor(actor);
+            scene.addActor(actor);
             // cartogram.addScene(scene);
-            cartogram.setActiveScene(scene.name);
+            // cartogram.setActiveScene(scene.name);
 
             cartogram.render();
         </script>
