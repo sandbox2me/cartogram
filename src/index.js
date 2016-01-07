@@ -1,4 +1,7 @@
 import three from 'three';
+import _ from 'lodash';
+
+import createStore from './reducers/initializer';
 
 const defaultOptions = {
     resizeCanvas: true,
@@ -22,12 +25,12 @@ class Cartogram {
         this.width = this.options.width;
         this.height = this.options.height;
 
-        this.initializeRenderer();
-        this.initializeData();
-        this.initializeModules();
+        this._initializeRenderer();
+        this._initializeData();
+        this._initializeModules();
     }
 
-    initializeRenderer() {
+    _initializeRenderer() {
         this.canvas = document.createElement('canvas');
         this.canvas.id = 'cartogram-webgl-canvas';
         this.el.appendChild(this.canvas);
@@ -46,19 +49,19 @@ class Cartogram {
         this.renderer.sortObjects = true;
 
         if (this.options.resizeCanvas) {
-            window.addEventListener('resize', _.debounce(this.updateCanvasDimensions, 100), false);
+            window.addEventListener('resize', _.debounce(this._updateCanvasDimensions, 100), false);
         }
     }
 
-    initializeData() {
+    _initializeData() {
+        this.store = createStore()
+    }
+
+    _initializeModules() {
 
     }
 
-    initializeModules() {
-
-    }
-
-    updateCanvasDimensions() {
+    _updateCanvasDimensions() {
         var width, height;
 
         width = this.el.parentNode.clientWidth;
@@ -71,6 +74,28 @@ class Cartogram {
         this.height = height;
 
         // this.camera.updateSize();
+    }
+
+    // Public API
+    registerType(name, definition) {
+        typeActions.register({
+            name,
+            definition
+        });
+    }
+
+    addScene(scene) {
+        sceneActions.add({ scene });
+    }
+
+    removeScene(scene) {
+        var remove = sceneActions.remove;
+
+        if (typeof scene === 'string') {
+            remove = sceneActions.removeWithName;
+        }
+
+        remove(scene);
     }
 
     render() {
