@@ -1,3 +1,5 @@
+import three from 'three';
+
 import Camera from './camera';
 import RTree from './rtree';
 

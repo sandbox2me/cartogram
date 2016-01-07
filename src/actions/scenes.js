@@ -1,19 +1,27 @@
 
-function create(scene) {
+function updateCameraPosition(position) {
     return {
-        type: 'CREATE_SCENE',
-        scene
+        type: 'UPDATE_CAMERA_POSITION',
+        position
     };
 }
 
-function setActive(name) {
+function addActor(actor) {
     return {
-        type: 'SET_ACTIVE_SCENE',
-        name
+        type: 'ADD_ACTOR',
+        actor
+    };
+}
+
+function addGroup(group) {
+    return {
+        type: 'ADD_GROUP',
+        group
     };
 }
 
 export default {
-    create,
-    setActive,
+    addActor,
+    addGroup,
+    updateCameraPosition,
 };

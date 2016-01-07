@@ -76,7 +76,7 @@ class Cartogram {
     }
 
     _initializeModules() {
-
+        this._defaultScene = new Scene('default');
     }
 
     _updateCanvasDimensions() {
@@ -102,22 +102,8 @@ class Cartogram {
         }));
     }
 
-    addScene(scene) {
-        this.dispatch(actions.scenes.add(scene));
-    }
-
-    removeScene(scene) {
-        var remove = actions.scenes.remove;
-
-        if (typeof scene === 'string') {
-            remove = sceneActions.removeWithName;
-        }
-
-        remove(scene);
-    }
-
-    setActiveScene(name) {
-        this.dispatch(actions.scenes.setActive(name));
+    getDefaultScene() {
+        return this._defaultScene;
     }
 
     render() {
