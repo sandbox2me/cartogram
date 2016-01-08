@@ -13,11 +13,13 @@
   "license": "Apache 2",
   "devDependencies": {
     "babel-core": "^5.8.34",
+    "babel-loader": "^5.4.0",
     "grunt": "^0.4.5",
     "grunt-contrib-watch": "^0.6.1",
     "grunt-release": "^0.13.0",
     "grunt-webpack": "^1.0.11",
     "load-grunt-tasks": "^3.4.0",
+    "raw-loader": "^0.5.1",
     "react": "^0.14.6",
     "redux-devtools": "^3.0.1",
     "redux-logger": "^2.3.1",

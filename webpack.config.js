@@ -12,8 +12,12 @@ module.exports = {
     },
     module: {
         loaders: [
-            { test: /\.js$/, loader: "babel-loader" }
+            { test: /\.js$/, loader: 'babel-loader' },
+            { test: /\.glsl$/, loader: 'raw-loader' }
         ]
+    },
+    resolve: {
+        root: path.join(__dirname, 'src')
     },
     plugins: [],
     externals: {

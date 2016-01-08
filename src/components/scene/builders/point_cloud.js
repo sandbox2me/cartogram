@@ -4,9 +4,13 @@ import {
     Color,
     Points,
     PointsMaterial,
-    SphereBufferGeometry,
+    ShaderMaterial,
     Vector3,
 } from 'three';
+
+import pointFragment from 'shaders/point_fragment.glsl';
+import pointVertex from 'shaders/point_vertex.glsl';
+
 
 export default class PointCloudBuilder {
     /**
@@ -41,7 +45,12 @@ export default class PointCloudBuilder {
     }
 
     _createMesh() {
-        this.material = new PointsMaterial({ color: 0xffffff, size: 20.0 });
+        // this.material = new PointsMaterial({ color: 0xffffff, size: 20.0 });
+        this.material = new ShaderMaterial({
+            vertexShader: pointVertex,
+            fragmentShader: pointFragment,
+            transparent: true
+        });
         this.mesh = new Points(this.geometry, this.material);
     }
 
