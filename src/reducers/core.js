@@ -1,4 +1,5 @@
 import { Map } from 'immutable';
+import createReducer from 'utils/create_reducer';
 
 const initialState = Map({
     size: {
@@ -26,11 +27,6 @@ const handlers = {
     },
 };
 
-const reducer = (state = initialState, action) => {
-    if (!(action.type in handlers)) {
-        return state;
-    }
-    return handlers[action.type](state, action);
-};
+const reducer = createReducer(handlers, initialState);
 
 export default reducer;

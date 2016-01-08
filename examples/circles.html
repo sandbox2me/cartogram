@@ -59,6 +59,9 @@
 
             console.timeEnd('add actor')
 
+            var cameraController = new Cartogram.PanAndZoomCameraController();
+            scene.addCameraController(cameraController);
+
             cartogram.render();
         </script>
     </body>
