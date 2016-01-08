@@ -19,7 +19,6 @@ class Actor {
             maxY = -Infinity;
 
         this.definition.shapes.forEach((shape) => {
-
             let bbox;
             let type = new Types[shape.type](shape);
 
@@ -44,14 +43,15 @@ class Actor {
             if (!actorTypes[shape.type]) {
                 actorTypes[shape.type] = [];
             }
-            actorTypes[shape.type].push((Object.assign(
-                {},
+
+            // I originally destructured shape here, and inserted bbox and type
+            // to create a new object. Turns out it's roughly twice as slow to
+            // do that, compared to not manipulating the object at all.
+            actorTypes[shape.type].push({
                 shape,
-                {
-                    bbox,
-                    typeObject: type
-                }
-            )));
+                bbox,
+                type
+            });
         });
 
         this.bbox = {
