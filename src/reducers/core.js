@@ -13,7 +13,7 @@ const initialState = Map({
 
 const handlers = {
     'RECEIVE_SIZE': (state, action) => {
-        return state.merge(action.size);
+        return state.set('size', action.size);
     },
     'RECEIVE_EL': (state, action) => {
         return state.set('el', action.el);

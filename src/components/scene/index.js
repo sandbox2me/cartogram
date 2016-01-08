@@ -9,6 +9,8 @@ import RTree from './rtree';
 import Actor from '../actor';
 import * as Types from '../../types';
 
+import { PointCloudBuilder } from './builders';
+
 
 class Scene {
     constructor(name, store) {
@@ -44,7 +46,7 @@ class Scene {
 
     stateDidChange(oldState) {
         this.camera.setState(
-            this.state.get('camera').set('screenSize', this.state.get('core').size)
+            this.state.get('camera').set('screenSize', this.state.get('core').get('size'))
         );
 
         if (this.state.get('actors').size && !this.state.get('meshes').size) {
@@ -52,6 +54,7 @@ class Scene {
             this.generateMeshes();
         } else if (oldState && this.state.get('actors') !== oldState.get('actors')) {
             // actors changed, update scene
+            console.log('Updating scene')
         }
     }
 
@@ -90,15 +93,20 @@ class Scene {
         });
 
         // XXX Implement rtree based mesh grouping optimization in the future
-
+        console.log('Building meshes');
         let meshes = [];
         _.forEach(types, (shapes, type) => {
             if (type === 'PointCircle') {
                 // Generate point cloud
+                let points = _.chain(shapes).pluck('shape').pluck('position').value();
+                let cloud = new PointCloudBuilder(points);
+
+                meshes.push(cloud.getMesh());
             } else {
                 // Use type class to create the appropriate shape
             }
         });
+        this.threeScene.add(...meshes);
     }
 };
 

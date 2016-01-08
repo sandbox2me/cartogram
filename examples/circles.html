@@ -35,14 +35,15 @@
                 }
             });
 
-            for (var i = 0; i < 150000; i++) {
+            for (var i = 0; i < 50000; i++) {
                 circles.push({
                     type: 'PointCircle',
                     id: i,
                     radius: 20,
                     position: {
-                        x: Math.floor(Math.random() * range),
-                        y: Math.floor(Math.random() * range)
+                        x: (-range / 2) + Math.floor(Math.random() * (range * 2)),
+                        y: (-range / 2) + Math.floor(Math.random() * (range * 2)),
+                        z: 0
                     },
                     fill: { r: Math.random(), g: Math.random(), b: Math.random() }
                 });
@@ -51,13 +52,11 @@
             console.time('add actor')
             var actor = scene.addActor({
                 name: 'cloud',
-                position: { x: 0, y: 0 },
+                position: { x: 0, y: 0, z: 0 },
                 shapes: circles
             });
 
             console.timeEnd('add actor')
-            // cartogram.addScene(scene);
-            // cartogram.setActiveScene(scene.name);
 
             cartogram.render();
         </script>

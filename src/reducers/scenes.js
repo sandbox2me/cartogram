@@ -4,7 +4,7 @@ const initialState = Map({
     camera: Map({
         maxZoom: 2000,
         minZoom: 50,
-        currentZoom: 100,
+        currentZoom: 300,
         position: { x: 0, y: 0 }
     }),
 

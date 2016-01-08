@@ -40,22 +40,13 @@ class Cartogram {
     }
 
     _initializeRenderer() {
-        this.canvas = document.createElement('canvas');
-        this.canvas.id = 'cartogram-webgl-canvas';
-        this.el.appendChild(this.canvas);
-
-        this.renderer = new three.WebGLRenderer({
-            canvas: this.canvas,
-            precision: 'highp',
-            alpha: true,
-            premultipliedAlpha: true,
-            stencil: true
-        });
-
+        this.renderer = new three.WebGLRenderer();
         this.renderer.setSize(this.width, this.height);
         this.renderer.setClearColor((new three.Color(this.options.backgroundColor)).getHex());
         this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.sortObjects = true;
+
+        this.el.appendChild(this.renderer.domElement);
 
         // XXX Move this to the scene component
         if (this.options.resizeCanvas) {
@@ -68,6 +59,12 @@ class Cartogram {
 
         this.store = createStore(rootReducer);
         this.dispatch = this.store.dispatch;
+
+        // FIXME
+        this.dispatch(actions.core.updateScreenSize({
+            width: this.width,
+            height: this.height
+        }));
 
         this._registerPrimitiveTypes();
     }
@@ -91,9 +88,7 @@ class Cartogram {
 
         // this.postprocessing.setSize(width, height);
         this.renderer.setSize(width, height);
-
-        this.width = width;
-        this.height = height;
+        this.renderer.setPixelRatio(window.devicePixelRatio);
 
         this.dispatch(actions.core.updateScreenSize({
             width: width,
@@ -115,8 +110,8 @@ class Cartogram {
 
     render() {
         // Do rendering loop
-        this._defaultScene.render(this.renderer);
         window.requestAnimationFrame(this.render);
+        this._defaultScene.render(this.renderer);
     }
 }
 
