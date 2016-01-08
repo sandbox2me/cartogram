@@ -1,5 +1,5 @@
 import { Map } from 'immutable';
-import { OrthographicCamera, PerspectiveCamera } from 'three';
+import { OrthographicCamera, PerspectiveCamera, Vector3 } from 'three';
 
 class Camera {
     constructor() {}
@@ -10,7 +10,7 @@ class Camera {
         this.state = newState;
 
         if (!oldState) {
-            this._initializePerspectiveCamera();
+            this._initializeCamera();
         } else {
             this._updateCameraState();
         }
@@ -28,12 +28,12 @@ class Camera {
             1,
             maxZoom + 100
         );
-        // this.camera.cameraObject = this;
-        // this.camera._target = new Vector3(0, 0, 0);
-        // this.camera.lookAt(this.camera._target);
+        this.camera.cameraObject = this;
+        this.camera._target = new Vector3(0, 0, 0);
+        this.camera.lookAt(this.camera._target);
         this.camera.position.z = currentZoom;
 
-        // this.camera.updateProjectionMatrix();
+        this.camera.updateProjectionMatrix();
     }
 
     _initializePerspectiveCamera() {
