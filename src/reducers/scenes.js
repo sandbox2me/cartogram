@@ -8,10 +8,8 @@ const initialState = Map({
         position: { x: 0, y: 0 }
     }),
 
-    actors: List([]),
+    actors: Map({}),
     groups: List([]),
-
-    actorMap: Map({}),
 
     meshes: List([]),
     materials: List([]),
@@ -31,7 +29,7 @@ const handlers = {
     'ADD_ACTOR': (state, action) => {
         let actors = state.get('actors');
 
-        actors = actors.push(action.actor);
+        actors = actors.set(action.actor.name, action.actor);
 
         return state.set('actors', actors);
     },

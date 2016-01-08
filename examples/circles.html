@@ -37,7 +37,7 @@
 
             for (var i = 0; i < 50000; i++) {
                 circles.push({
-                    type: 'HoverCircle',
+                    type: 'PointCircle',
                     id: i,
                     radius: 20,
                     position: {
@@ -48,13 +48,14 @@
                 });
             }
 
-            var actor = new Cartogram.Actor({
+            console.time('add actor')
+            var actor = scene.addActor({
+                name: 'cloud',
                 position: { x: 0, y: 0 },
-                id: 'cloud',
                 shapes: circles
             });
 
-            scene.addActor(actor);
+            console.timeEnd('add actor')
             // cartogram.addScene(scene);
             // cartogram.setActiveScene(scene.name);
 
