@@ -19,7 +19,7 @@ class Scene {
         this.dispatch = this.store.dispatch;
 
         this.threeScene = new three.Scene();
-        this.camera = new Camera();
+        this.camera = new Camera(store);
         this.rtree = new RTree();
 
         this._initializeStoreObserver();
@@ -27,7 +27,7 @@ class Scene {
 
     // XXX Consider extracting this into a helper...
     _select(state) {
-        return state.scene.set('core', state.core);
+        return state.scene;
     }
 
     _initializeStoreObserver() {
@@ -45,10 +45,6 @@ class Scene {
     }
 
     stateDidChange(oldState) {
-        this.camera.setState(
-            this.state.get('camera').set('screenSize', this.state.get('core').get('size'))
-        );
-
         if (this.state.get('actors').size && !this.state.get('meshes').size) {
             // 1+ actors are in the scene, but no mesh data has been generated yet. Get to it!
             this.generateMeshes();

@@ -2,13 +2,33 @@ import { Map } from 'immutable';
 import { OrthographicCamera, PerspectiveCamera, Vector3 } from 'three';
 
 class Camera {
-    constructor() {}
+    constructor(store) {
+        this.store = store;
+        this.dispatch = this.store.dispatch;
 
-    setState(newState) {
-        let oldState = this.state;
+        this._initializeStoreObserver();
+    }
 
-        this.state = newState;
+    // XXX Consider extracting this into a helper...
+    _select(state) {
+        return state.camera.set('screenSize', state.core.get('size'));
+    }
 
+    _initializeStoreObserver() {
+        let handleChange = () => {
+            let state = this.state;
+            let nextState = this._select(this.store.getState());
+
+            if (nextState !== state) {
+                this.state = nextState;
+                this.stateDidChange(state);
+            }
+        }
+        this.store.subscribe(handleChange);
+        handleChange();
+    }
+
+    stateDidChange(oldState) {
         if (!oldState) {
             this._initializeCamera();
         } else {

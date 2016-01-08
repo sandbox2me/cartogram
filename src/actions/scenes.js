@@ -1,11 +1,4 @@
 
-function updateCameraPosition(position) {
-    return {
-        type: 'UPDATE_CAMERA_POSITION',
-        position
-    };
-}
-
 function addActor(actor) {
     return {
         type: 'ADD_ACTOR',
@@ -23,5 +16,4 @@ function addGroup(group) {
 export default {
     addActor,
     addGroup,
-    updateCameraPosition,
 };
