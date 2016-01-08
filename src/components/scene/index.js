@@ -1,4 +1,5 @@
 import { List, Map } from 'immutable';
+import _ from 'lodash';
 import three from 'three';
 
 import { scene as sceneActions } from '../../actions';
@@ -6,6 +7,8 @@ import Camera from './camera';
 import RTree from './rtree';
 
 import Actor from '../actor';
+import * as Types from '../../types';
+
 
 class Scene {
     constructor(name, store) {
@@ -64,25 +67,37 @@ class Scene {
     }
 
     generateMeshes() {
+        let actorObjects = [];
+        let types = {};
+
+        this.rtree.reset();
+
         this.state.get('actors').forEach((actor, name) => {
             console.log(`Generating for actor "${ name }"`);
             let actorObject = new Actor(actor);
 
             console.log(actorObject.bbox);
-            // Iterate through actor, grouping its shapes by type
-            // let actorTypes = {};
-            // let minX = Infinity,
-            //     maxX = -Infinity,
-            //     minY = Infinity,
-            //     maxY = -Infinity;
 
-            // actor.shapes.forEach((shape) => {
-            //     if (!actorTypes[shape.type]) {
-            //         actorTypes[shape.type] = [];
-            //     }
-            //     actorTypes[shape.type].push(shape);
-            // });
-            // actorTypes = Map(actorTypes);
+            actorObject.types.forEach((shapeList, type) => {
+                if (!types[type]) {
+                    types[type] = [];
+                }
+                types[type] = [...types[type], ...shapeList];
+                this.rtree.insertShapes(shapeList);
+            });
+
+            actorObjects.push(actorObject);
+        });
+
+        // XXX Implement rtree based mesh grouping optimization in the future
+
+        let meshes = [];
+        _.forEach(types, (shapes, type) => {
+            if (type === 'PointCircle') {
+                // Generate point cloud
+            } else {
+                // Use type class to create the appropriate shape
+            }
         });
     }
 };
