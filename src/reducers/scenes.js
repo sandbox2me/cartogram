@@ -5,7 +5,7 @@ const initialState = Map({
     cameraController: undefined,
 
     actors: Map({}),
-    groups: List([]),
+    groups: Map([]),
 
     meshes: List([]),
     materials: List([]),
@@ -28,7 +28,7 @@ const handlers = {
     'ADD_GROUP': (state, action) => {
         let groups = state.get('groups');
 
-        groups = groups.push(action.group);
+        groups = groups.set(action.group.name, action.group);
 
         return state.set('groups', groups);
     },

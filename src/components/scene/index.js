@@ -48,6 +48,8 @@ class Scene {
         if (this.state.get('actors').size && !this.state.get('meshes').size) {
             // 1+ actors are in the scene, but no mesh data has been generated yet. Get to it!
             this.generateMeshes();
+        } else if (this.state.get('groups').size && !this.state.get('meshes').size) {
+            this.generateMeshes();
         } else if (oldState && this.state.get('actors') !== oldState.get('actors')) {
             // actors changed, update scene
             console.log('Updating scene')
@@ -62,6 +64,10 @@ class Scene {
 
     addActor(actor) {
         this.dispatch(sceneActions.addActor(actor));
+    }
+
+    addGroup(group) {
+        this.dispatch(sceneActions.addGroup(group));
     }
 
     update(userCallback) {
@@ -91,6 +97,24 @@ class Scene {
 
         this.rtree.reset();
 
+        this.state.get('groups').forEach((group, name) => {
+            console.log(`Generating for group "${ name }"`);
+
+            group.actors.forEach((actor) => {
+                let actorObject = new Actor(actor);
+                actorObjects.push(actorObject);
+
+                actorObject.types.forEach((shapeList, type) => {
+                    if (!types[type]) {
+                        types[type] = [];
+                    }
+                    types[type] = [...types[type], ...shapeList];
+                });
+            });
+
+            // this.rtree.insertActors(actorObjects);
+        });
+
         this.state.get('actors').forEach((actor, name) => {
             console.log(`Generating for actor "${ name }"`);
             let actorObject = new Actor(actor);
@@ -114,7 +138,7 @@ class Scene {
         _.forEach(types, (shapes, type) => {
             if (type === 'PointCircle') {
                 // Generate point cloud
-                let points = _.chain(shapes).pluck('shape').pluck('position').value();
+                let points = _.chain(shapes).pluck('type').pluck('position').value();
                 let cloud = new PointCloudBuilder(points);
 
                 meshes.push(cloud.getMesh());
@@ -122,7 +146,10 @@ class Scene {
                 // Use type class to create the appropriate shape
             }
         });
-        this.threeScene.add(...meshes);
+
+        if (meshes.length) {
+            this.threeScene.add(...meshes);
+        }
     }
 };
 

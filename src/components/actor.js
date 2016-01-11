@@ -5,10 +5,15 @@ import * as Types from '../types';
 class Actor {
     constructor(definition) {
         this.definition = definition;
+        this.position = this.definition.position;
         this.types = Map({});
         this.bbox = {};
 
         this._iterateChildren();
+    }
+
+    getPosition() {
+        return this.position;
     }
 
     _iterateChildren() {
@@ -20,9 +25,10 @@ class Actor {
 
         this.definition.shapes.forEach((shape) => {
             let bbox;
-            let type = new Types[shape.type](shape);
+            let type = new Types[shape.type](shape, this);
 
             bbox = type.getBBox();
+            console.log(bbox);
 
             if (bbox.x < minX) {
                 minX = bbox.x;
