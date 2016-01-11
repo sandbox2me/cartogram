@@ -1,3 +1,9 @@
+function addCameraController(controller) {
+    return {
+        type: 'ADD_CAMERA_CONTROLLER',
+        controller
+    };
+}
 
 function addActor(actor) {
     return {
@@ -14,6 +20,7 @@ function addGroup(group) {
 }
 
 export default {
+    addCameraController,
     addActor,
     addGroup,
 };

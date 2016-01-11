@@ -6,6 +6,22 @@ function updateScreenSize(size) {
     };
 }
 
+function setRenderer(renderer) {
+    return {
+        type: 'RECEIVE_RENDERER',
+        renderer
+    };
+}
+
+function setCanvas(canvas) {
+    return {
+        type: 'RECEIVE_CANVAS',
+        canvas
+    };
+}
+
 export default {
-    updateScreenSize
+    updateScreenSize,
+    setRenderer,
+    setCanvas,
 };

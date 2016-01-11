@@ -2,6 +2,8 @@ import { List, Map } from 'immutable';
 import createReducer from 'utils/create_reducer';
 
 const initialState = Map({
+    cameraController: undefined,
+
     actors: Map({}),
     groups: List([]),
 
@@ -11,6 +13,10 @@ const initialState = Map({
 
 
 const handlers = {
+    'ADD_CAMERA_CONTROLLER': (state, action) => {
+        return state.set('cameraController', action.controller);
+    },
+
     'ADD_ACTOR': (state, action) => {
         let actors = state.get('actors');
 

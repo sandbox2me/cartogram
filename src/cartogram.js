@@ -66,6 +66,9 @@ class Cartogram {
             height: this.height
         }));
 
+        this.dispatch(actions.core.setRenderer(this.renderer));
+        this.dispatch(actions.core.setCanvas(this.renderer.domElement));
+
         this._registerPrimitiveTypes();
     }
 

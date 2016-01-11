@@ -36,7 +36,7 @@
                 }
             });
 
-            for (var i = 0; i < 50000; i++) {
+            for (var i = 0; i < 150000; i++) {
                 circles.push({
                     type: 'PointCircle',
                     id: i,
@@ -59,7 +59,12 @@
 
             console.timeEnd('add actor')
 
-            var cameraController = new Cartogram.PanAndZoomCameraController();
+            var cameraController = new Cartogram.PanAndZoomCameraController({
+                buttons: {
+                    0: 'pan',
+                    3: 'zoom'
+                }
+            });
             scene.addCameraController(cameraController);
 
             cartogram.render();

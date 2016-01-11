@@ -1,6 +1,8 @@
 import { Map } from 'immutable';
 import { OrthographicCamera, PerspectiveCamera, Vector3 } from 'three';
 
+import { camera as cameraActions } from 'actions';
+
 class Camera {
     constructor(store) {
         this.store = store;
@@ -11,7 +13,7 @@ class Camera {
 
     // XXX Consider extracting this into a helper...
     _select(state) {
-        return state.camera.set('screenSize', state.core.get('size'));
+        return state.camera.set('screenSize', state.core.get('size')).set('canvas', state.core.get('canvas'));
     }
 
     _initializeStoreObserver() {
@@ -49,8 +51,8 @@ class Camera {
             maxZoom + 100
         );
         this.camera.cameraObject = this;
-        this.camera._target = new Vector3(0, 0, 0);
-        this.camera.lookAt(this.camera._target);
+        // this.camera._target = new Vector3(0, 0, 0);
+        // this.camera.lookAt(this.camera._target);
         this.camera.position.z = currentZoom;
 
         this.camera.updateProjectionMatrix();
@@ -71,7 +73,16 @@ class Camera {
 
     _updateCameraState() {
         // debugger
+        console.log('Updating camera state')
     }
+
+    updatePosition() {
+        this.dispatch(cameraActions.updatePosition({
+            x: this.camera.position.x,
+            y: this.camera.position.y
+        }));
+    }
+
 };
 
 export default Camera;

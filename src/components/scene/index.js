@@ -54,11 +54,31 @@ class Scene {
         }
     }
 
+    addCameraController(controller) {
+        controller.setScene(this);
+
+        this.dispatch(sceneActions.addCameraController(controller));
+    }
+
     addActor(actor) {
         this.dispatch(sceneActions.addActor(actor));
     }
 
+    update(userCallback) {
+        if (typeof userCallback === 'function') {
+            userCallback(this);
+        }
+
+        let cameraController = this.state.get('cameraController');
+        if (cameraController) {
+            cameraController.update();
+        }
+
+    }
+
     render(renderer) {
+        this.update();
+
         renderer.render(
             this.threeScene,
             this.camera.camera
