@@ -37,13 +37,23 @@
             });
 
             console.time('add group')
-            var shapes = [{
-                            type: 'PointCircle',
-                            id: 1,
-                            radius: 20,
-                            position: { x: 0, y: 0, z: 0 },
-                            fill: { r: Math.random(), g: Math.random(), b: Math.random() }
-                        }];
+            var shapes = [
+                {
+                    type: 'PointCircle',
+                    id: 1,
+                    radius: 20,
+                    position: { x: 0, y: 0, z: 0 },
+                    fill: { r: Math.random(), g: Math.random(), b: Math.random() }
+                },
+                {
+                    type: 'Text',
+                    id: 2,
+                    position: { x: 0, y: 0, z: 0 },
+                    value: '10',
+                    family: 'benton',
+                    fill: { r: 0, g: 0, b: 0 }
+                }
+            ];
 
             var group = scene.addGroup({
                 position: { x: 0, y: 0, z: 0 },
@@ -103,7 +113,8 @@
                 buttons: {
                     0: 'pan',
                     3: 'zoom'
-                }
+                },
+                panSpeed: 3
             });
             scene.addCameraController(cameraController);
 

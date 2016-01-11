@@ -25,10 +25,15 @@ class Actor {
 
         this.definition.shapes.forEach((shape) => {
             let bbox;
-            let type = new Types[shape.type](shape, this);
+            let type;
+
+            if (!Types[shape.type]) {
+                throw new Error(`Shape type "${ shape.type }" not found!`);
+            }
+
+            type = new Types[shape.type](shape, this);
 
             bbox = type.getBBox();
-            console.log(bbox);
 
             if (bbox.x < minX) {
                 minX = bbox.x;
