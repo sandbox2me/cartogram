@@ -17,6 +17,18 @@ class RTree {
         ];
     }
 
+    _dataForActor(actor) {
+        let bbox = actor.bbox;
+
+        return [
+            bbox.x,
+            bbox.y,
+            bbox.x + bbox.width,
+            bbox.y + bbox.height,
+            { actor }
+        ];
+    }
+
     insert(shapeType) {
 
 
@@ -28,6 +40,14 @@ class RTree {
     insertShapes(shapes) {
         let bboxes = shapes.map((shape) => {
             return this._dataForShape(shape);
+        });
+
+        this.tree.load(bboxes);
+    }
+
+    insertActors(actors) {
+        let bboxes = actors.map((actor) => {
+            return this._dataForActor(actor);
         });
 
         this.tree.load(bboxes);

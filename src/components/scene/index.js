@@ -70,6 +70,10 @@ class Scene {
         this.dispatch(sceneActions.addGroup(group));
     }
 
+    addGroups(groups) {
+        this.dispatch(sceneActions.addGroups(groups));
+    }
+
     update(userCallback) {
         if (typeof userCallback === 'function') {
             userCallback(this);
@@ -108,11 +112,12 @@ class Scene {
                     if (!types[type]) {
                         types[type] = [];
                     }
-                    types[type] = [...types[type], ...shapeList];
+
+                    for(let i = 0; i < shapeList.length; i++) {
+                        types[type].push(shapeList[i]);
+                    }
                 });
             });
-
-            // this.rtree.insertActors(actorObjects);
         });
 
         this.state.get('actors').forEach((actor, name) => {
@@ -131,6 +136,8 @@ class Scene {
 
             actorObjects.push(actorObject);
         });
+
+        this.rtree.insertActors(actorObjects);
 
         // XXX Implement rtree based mesh grouping optimization in the future
         console.log('Building meshes');

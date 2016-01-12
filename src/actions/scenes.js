@@ -19,8 +19,16 @@ function addGroup(group) {
     };
 }
 
+function addGroups(groups) {
+    return {
+        type: 'ADD_GROUPS',
+        groups
+    };
+}
+
 export default {
     addCameraController,
     addActor,
     addGroup,
+    addGroups,
 };

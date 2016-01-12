@@ -32,6 +32,19 @@ const handlers = {
 
         return state.set('groups', groups);
     },
+
+    'ADD_GROUPS': (state, action) => {
+        let groups = state.get('groups');
+        let groupMap = {};
+
+        action.groups.forEach((group) => {
+            groupMap[group.name] = group;
+        });
+
+        groups = groups.merge(groupMap);
+
+        return state.set('groups', groups);
+    },
 };
 
 const reducer = createReducer(handlers, initialState);
