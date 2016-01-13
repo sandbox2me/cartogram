@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Cartogram 2 - Circles Test</title>
+        <style type="text/css">
+            body {
+                margin: 0;
+                padding: 0;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="container"></div>
+
+        <script type="text/javascript" src="../node_modules/three/three.js"></script>
+        <script type="text/javascript" src="../node_modules/lodash/index.js"></script>
+        <script type="text/javascript" src="../dist/cartogram-dev.js"></script>
+        <script type="text/javascript">
+            var cartogram = new Cartogram(document.getElementById('container'), {
+                backgroundColor: '#000000'
+            });
+            var scene = cartogram.getDefaultScene();
+            var circles = [];
+            var range = 2000;
+
+            cartogram.registerType('HoverCircle', {
+                parent: 'PointCircle',
+                onMouseover: function(state) {
+                    this.set('oldFill', state.fill);
+                    this.set('fill', { r: 0, g: 0, b: 1.0 });
+                },
+                onMouseout: function(state) {
+                    this.set('fill', state.oldFill);
+                    this.set('oldFill', undefined);
+                }
+            });
+
+            var circle = {
+                type: 'PointCircle',
+                id: i,
+                radius: 20,
+                position: {
+                    x: 0,
+                    y: 0,
+                    z: 0
+                },
+                fill: { r: Math.random(), g: Math.random(), b: Math.random() }
+            };
+
+            for (var i = 0; i < 50000; i++) {
+                circles.push({
+                    name: `actor${ i }`,
+                    position: {
+                        x: (-range / 2) + Math.floor(Math.random() * (range * 2)),
+                        y: (-range / 2) + Math.floor(Math.random() * (range * 2)),
+                        z: 0
+                    },
+                    shapes: [circle]
+                });
+            }
+
+            console.time('add groups')
+            var groups = scene.addGroup({
+                position: { x: 0, y: 0, z: 0 },
+                name: 'group1',
+                actors: circles
+            });
+
+            console.timeEnd('add groups')
+
+            var cameraController = new Cartogram.PanAndZoomCameraController({
+                buttons: {
+                    0: 'pan',
+                    3: 'zoom'
+                }
+            });
+            scene.addCameraController(cameraController);
+
+            cartogram.render();
+        </script>
+    </body>
+</html>

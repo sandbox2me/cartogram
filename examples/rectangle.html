@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Cartogram 2 - Circles Test</title>
+        <style type="text/css">
+            body {
+                margin: 0;
+                padding: 0;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="container"></div>
+
+        <script type="text/javascript" src="http://raw.githack.com/mrdoob/stats.js/master/build/stats.min.js"></script>
+        <script type="text/javascript" src="../node_modules/three/three.js"></script>
+        <script type="text/javascript" src="../node_modules/lodash/index.js"></script>
+        <script type="text/javascript" src="../dist/cartogram-dev.js"></script>
+        <script type="text/javascript">
+            var cartogram = new Cartogram(document.getElementById('container'), {
+                backgroundColor: '#000000'
+            });
+            var scene = cartogram.getDefaultScene();
+            var shapes = [];
+            var range = 200000;
+            var origin = -400;
+
+            for (var i = 0; i < range; i++) {
+                shapes.push({
+                    type: 'Rectangle',
+                    id: i,
+                    size: {
+                        width: 2 + (Math.random() * 8),
+                        height: 2 + (Math.random() * 8)
+                    },
+                    position: {
+                        x: origin + ((i % 100) * 30),
+                        y: i * 0.35,
+                        z: 0.0
+                    },
+                    fill: { r: Math.random(), g: Math.random(), b: Math.random() }
+                });
+            }
+
+            console.time('add actor')
+            var actor = scene.addActor({
+                name: 'rect',
+                position: { x: 0, y: 0, z: 0 },
+                shapes: shapes
+            });
+
+            console.timeEnd('add actor')
+
+            var cameraController = new Cartogram.PanAndZoomCameraController({
+                buttons: {
+                    0: 'pan',
+                    3: 'zoom'
+                }
+            });
+            scene.addCameraController(cameraController);
+
+            var stats = new Stats();
+            stats.setMode( 0 ); // 0: fps, 1: ms, 2: mb
+
+            // align top-left
+            stats.domElement.style.position = 'absolute';
+            stats.domElement.style.left = '0px';
+            stats.domElement.style.top = '0px';
+
+            document.body.appendChild( stats.domElement );
+
+            cartogram.render(function() {
+                stats.begin();
+                stats.end();
+            });
+        </script>
+    </body>
+</html>
