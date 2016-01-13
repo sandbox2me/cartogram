@@ -26,9 +26,17 @@ function addGroups(groups) {
     };
 }
 
+function addMeshes(meshes) {
+    return {
+        type: 'ADD_MESHES',
+        meshes
+    };
+}
+
 export default {
     addCameraController,
     addActor,
     addGroup,
     addGroups,
+    addMeshes,
 };

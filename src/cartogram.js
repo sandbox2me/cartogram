@@ -111,10 +111,14 @@ class Cartogram {
         return this._defaultScene;
     }
 
-    render() {
+    render(userCallback) {
+        if (typeof userCallback === 'function') {
+            this._userRenderCallback = userCallback;
+        }
+
         // Do rendering loop
+        this._defaultScene.render(this.renderer, this._userRenderCallback);
         window.requestAnimationFrame(this.render);
-        this._defaultScene.render(this.renderer);
     }
 }
 

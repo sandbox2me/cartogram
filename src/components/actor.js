@@ -72,7 +72,7 @@ class Actor {
             height: maxY - minY
         };
 
-        this.types = Map(actorTypes);
+        this.types = actorTypes;
     }
 };
 

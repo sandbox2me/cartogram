@@ -9,7 +9,7 @@ import RTree from './rtree';
 import Actor from '../actor';
 import * as Types from '../../types';
 
-import { PointCloudBuilder } from './builders';
+import * as Builders from './builders';
 
 
 class Scene {
@@ -86,8 +86,8 @@ class Scene {
 
     }
 
-    render(renderer) {
-        this.update();
+    render(renderer, userCallback) {
+        this.update(userCallback);
 
         renderer.render(
             this.threeScene,
@@ -108,7 +108,7 @@ class Scene {
                 let actorObject = new Actor(actor);
                 actorObjects.push(actorObject);
 
-                actorObject.types.forEach((shapeList, type) => {
+                _.forEach(actorObject.types, (shapeList, type) => {
                     if (!types[type]) {
                         types[type] = [];
                     }
@@ -126,7 +126,7 @@ class Scene {
 
             console.log(actorObject.bbox);
 
-            actorObject.types.forEach((shapeList, type) => {
+            _.forEach(actorObject.types, (shapeList, type) => {
                 if (!types[type]) {
                     types[type] = [];
                 }
@@ -146,16 +146,42 @@ class Scene {
             if (type === 'PointCircle') {
                 // Generate point cloud
                 let points = _.chain(shapes).pluck('type').pluck('position').value();
-                let cloud = new PointCloudBuilder(points);
+                let cloud = new Builders.PointCloud(points);
 
                 meshes.push(cloud.getMesh());
             } else {
-                // Use type class to create the appropriate shape
+                // Use type class to create the appropriate shapes
+
+                let builder = new Builders[type](shapes);
+                meshes.push(builder.mesh);
+
+                // meshes = meshes.concat(shapes.map((shape) => {
+                //     let built = new Builders[type](shape);
+                //     let mesh = built.getMesh();
+                //     return mesh;
+                // }));
             }
         });
 
+
+        // Check we're within drawcall limits
+        if (meshes.length > this.state.get('targetDrawCallLimit')) {
+            // merge geometries now
+            console.log('draw call limit passed!')
+
+            // Split meshes into smaller master Object3Ds
+            let i = 0;
+            let groups = [new three.Object3D(), new three.Object3D()];
+            for (i; i < meshes.length; i++) {
+                groups[i % 2].add(meshes[i]);
+            }
+
+            meshes = groups;
+        }
+
         if (meshes.length) {
             this.threeScene.add(...meshes);
+            this.dispatch(sceneActions.addMeshes(meshes));
         }
     }
 };

@@ -1,20 +1,12 @@
+import BaseType from './base';
 
-class PointCircle {
+class PointCircle extends BaseType {
     constructor(shape, actor) {
         if (shape.type !== 'PointCircle') {
             throw new Error(`Type mismatch, expected 'PointCircle' got '${ shape.type }'`);
         }
 
-        this.actor = actor;
-        this.shape = shape;
-    }
-
-    get position() {
-        return {
-            x: this.shape.position.x + this.actor.getPosition().x,
-            y: this.shape.position.y + this.actor.getPosition().y,
-            z: this.shape.position.z + this.actor.getPosition().z,
-        };
+        super(shape, actor);
     }
 
     getBBox() {

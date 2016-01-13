@@ -4,6 +4,8 @@ import createReducer from 'utils/create_reducer';
 const initialState = Map({
     cameraController: undefined,
 
+    targetDrawCallLimit: 400,
+
     actors: Map({}),
     groups: Map([]),
 
@@ -45,6 +47,15 @@ const handlers = {
 
         return state.set('groups', groups);
     },
+
+    'ADD_MESHES': (state, action) => {
+        let meshes = state.get('meshes');
+
+        // XXX Map actors to meshes
+        meshes = meshes.merge(action.meshes);
+
+        return state.set('meshes', meshes);
+    }
 };
 
 const reducer = createReducer(handlers, initialState);
