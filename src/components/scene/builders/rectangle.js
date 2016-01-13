@@ -23,9 +23,7 @@ class Rectangle {
 
     initialize() {
         this._constructVertices();
-        this._offset();
-        this._scales();
-        this._colors();
+        this._attributes();
     }
 
     _constructVertices() {
@@ -50,37 +48,25 @@ class Rectangle {
         this.geometry.addAttribute('position', new BufferAttribute(vertices, 3));
     }
 
-    _offset() {
+    _attributes() {
         this.offsets = new InstancedBufferAttribute(new Float32Array(this.shapes.length * 3), 3);
+        this.scales = new InstancedBufferAttribute(new Float32Array(this.shapes.length * 2), 2);
+        this.colors = new InstancedBufferAttribute(new Float32Array(this.shapes.length * 4), 4);
 
         this.shapes.forEach((shape, i) => {
             let position = shape.type.position;
             this.offsets.setXYZ(i, position.x, position.y, position.z);
-        });
-        this.offsets.needsUpdate = true;
-        this.geometry.addAttribute('offset', this.offsets);
-    }
 
-    _scales() {
-        this.scales = new InstancedBufferAttribute(new Float32Array(this.shapes.length * 2), 2);
-
-        this.shapes.forEach((shape, i) => {
             let size = shape.shape.size;
             this.scales.setXY(i, size.width, size.height);
-        });
 
-        this.geometry.addAttribute('scale', this.scales);
-    }
-
-    _colors() {
-        this.colors = new InstancedBufferAttribute(new Float32Array(this.shapes.length * 4), 4);
-
-        this.shapes.forEach((shape, i) => {
             // Assuming r,g,b object. Handle other things plz.
             let color = shape.shape.fill;
             this.colors.setXYZW(i, color.r, color.g, color.b, 1.0);
         });
 
+        this.geometry.addAttribute('offset', this.offsets);
+        this.geometry.addAttribute('scale', this.scales);
         this.geometry.addAttribute('color', this.colors);
     }
 
@@ -105,9 +91,12 @@ class Rectangle {
     }
 
     get mesh() {
-        let mesh = new Mesh(this.geometry, this.material);
-        mesh.frustumCulled = false;
-        return mesh;
+        if (!this._mesh) {
+            this._mesh = new Mesh(this.geometry, this.material);
+            this._mesh.frustumCulled = false;
+        }
+
+        return this._mesh;
     }
 }
 
