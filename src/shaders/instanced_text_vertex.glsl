@@ -1,23 +1,29 @@
-precision mediump float;
+precision highp float;
 
+uniform mat4 modelViewMatrix;
+uniform mat4 projectionMatrix;
+
+attribute vec3 position;
+attribute vec3 offset;
+attribute vec2 scale;
+attribute vec4 color;
+attribute float fontSize;
+attribute vec4 texOffset;
+
+varying vec4 vColor;
+varying float vFontSize;
+varying vec4 vTexOffset;
 varying vec2 vUv;
 varying float vDepth;
 
-varying sampler2D vSampler;
-varying float vFontSize;
-varying float vMaxZoom;
-varying vec3 vColor;
-varying float vMaxSmoothing;
-varying float vMinSmoothing;
+void main() {
+    vec3 vPosition = position * vec3(scale, 0);
 
-const float cBuffer = 0.5;
+    vColor = color;
+    vFontSize = fontSize;
+    vTexOffset = texOffset;
+    vUv = uv;
+    vDepth = cameraPosition.z;
 
-void main(void) {
-    float smoothing = vDepth / vMaxZoom * (vMaxSmoothing - vMinSmoothing) + vMinSmoothing;
-    float gamma = (smoothing * 1.4142) / vFontSize;
-
-    float dist = texture2D(vSampler, vUv).a;
-    float alpha = smoothstep(cBuffer - gamma, cBuffer + gamma, dist);
-    // gl_FragColor = vec4(0.5, 0.5, 0.5, 1.0);
-    gl_FragColor = vec4(vColor.rgb, alpha);
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(offset + vPosition, 1.0);
 }

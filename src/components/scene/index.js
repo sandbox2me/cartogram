@@ -158,7 +158,7 @@ class Scene {
                 meshes.push(cloud.getMesh());
             } else {
                 // Use type class to create the appropriate shapes
-                let builder = new Builders[type](shapes, this.typedTrees[type]);
+                let builder = new Builders[type](shapes, this.typedTrees[type], this.state);
                 meshes.push(builder.mesh);
 
                 // meshes = meshes.concat(shapes.map((shape) => {

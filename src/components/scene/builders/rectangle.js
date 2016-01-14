@@ -13,7 +13,8 @@ import fragmentShader from 'shaders/instanced_rectangle_fragment.glsl';
 
 
 class Rectangle {
-    constructor(shapes, rtree) {
+    constructor(shapes, rtree, sceneState) {
+        this.sceneState = sceneState;
         this.shapes = shapes;
 
         this.geometry = new InstancedBufferGeometry();
@@ -83,7 +84,7 @@ class Rectangle {
             this._material = new RawShaderMaterial({
                 vertexShader: this.vertexShader,
                 fragmentShader: this.fragmentShader,
-                transparent: false
+                transparent: true
             });
         }
 

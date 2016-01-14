@@ -19,6 +19,9 @@ class Text extends BaseType {
         let chunks = [];
         let x = 0;
 
+        let textureWidth = font.metrics.common.scaleW;
+        let textureHeight = font.metrics.common.scaleH;
+
         if (!font) {
             throw new Error(`Font '${ this.shape.font }' not found`);
         }
@@ -33,12 +36,65 @@ class Text extends BaseType {
             let charX = x - minX;
             let charY = -minY - yOffset;
 
+            let charMetrics = font.metrics.chars[character];
+            let charLeft = charMetrics.x / textureWidth;
+            let charTop = 1 - charMetrics.y / textureHeight;
+
+            let uvs = [
+                [
+                    Math.min(charLeft, 1),
+                    Math.min(charTop - (charMetrics.height / textureHeight), 1),
+                ],
+                [
+                    Math.min(charLeft + (charMetrics.width / textureWidth), 1),
+                    Math.min(charTop - (charMetrics.height / textureHeight), 1),
+                ],
+                [
+                    Math.min(charLeft + (charMetrics.width / textureWidth), 1),
+                    Math.min(charTop, 1),
+                ],
+                [
+                    Math.min(charLeft, 1),
+                    Math.min(charTop, 1)
+                ]
+            ];
+
+            let rawLocations = [
+                // Top left
+                charMetrics.x,
+                1 - charMetrics.y - charMetrics.height,
+
+                // Top right
+                charMetrics.x + charMetrics.width,
+                1 - charMetrics.y - charMetrics.height,
+
+                // Bottom right
+                charMetrics.x + charMetrics.width,
+                1 - charMetrics.y,
+
+                // Bottom left
+                charMetrics.x,
+                1 - charMetrics.y
+            ]
+
+            let texBBox = {
+                x: charMetrics.x,
+                y: 1 - charMetrics.y,
+                width: charMetrics.width,
+                height: charMetrics.height
+            };
+
+            console.log(`coordinates for '${ character }': ${ uvs }`);
+            console.log(`raw coordinates for '${ character }': ${ rawLocations }`);
+            console.log(`raw bbox for '${ character }': ${ texBBox }`);
+
             chunks.push({
                 character,
                 width,
                 height,
                 x: charX,
-                y: charY
+                y: charY,
+                uv: texBBox
             });
 
             x += xAdvance - xOffset;

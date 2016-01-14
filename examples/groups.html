@@ -24,6 +24,11 @@
             var circles = [];
             var range = 2000;
 
+            // Register a new SDF font
+            cartogram.registerFont('benton', {
+                texture: 'benton.jpg'
+            });
+
             cartogram.registerType('HoverCircle', {
                 parent: 'PointCircle',
                 onMouseover: function(state) {
