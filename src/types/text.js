@@ -27,7 +27,7 @@ class Text extends BaseType {
             console.log(`chunking '${ character }'`)
 
             let { width, height, xOffset, yOffset, xAdvance } = font.getDimensionsForSize(character, this.shape.size);
-            let minX = -(width / 2);
+            let minX = (width / 2);
             let minY = height / 2;
 
             let charX = x - minX;
@@ -41,7 +41,7 @@ class Text extends BaseType {
                 y: charY
             });
 
-            x += xAdvance;
+            x += xAdvance - xOffset;
         });
 
         this.chunks = chunks;

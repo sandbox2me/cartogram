@@ -41,29 +41,44 @@ class Text extends Rectangle {
     }
 
     parseStrings() {
-        this.chunkedStrings = {};
-
-        this.shapes.forEach((shape, i) => {
-            // let string = shape.shape.te
-        });
+        this.objectCount = 0;
+        this.shapes.forEach((shape) => { this.objectCount += shape.type.chunks.length; });
     }
 
     _scales() {
-        this.scales = new InstancedBufferAttribute(new Float32Array(this.shapes.length * 2), 2);
+        this.scales = new InstancedBufferAttribute(new Float32Array(this.objectCount * 2), 2);
 
         this.shapes.forEach((shape, i) => {
-            let size = shape.type.size;
-            this.scales.setXY(i, size.width, size.height);
+            shape.type.chunks.forEach((chunk, j) => {
+                this.scales.setXY(i + j, chunk.width, chunk.height);
+            });
         });
 
         this.geometry.addAttribute('scale', this.scales);
     }
 
-    _colors() {
-        this.colors = new InstancedBufferAttribute(new Float32Array(this.shapes.length * 4), 4);
+    _offset() {
+        this.offsets = new InstancedBufferAttribute(new Float32Array(this.objectCount * 3), 3);
 
         this.shapes.forEach((shape, i) => {
-            this.colors.setXYZW(i, 1.0, 1.0, 1.0, 1.0);
+            let position = shape.type.position;
+            let bbox = shape.type.bbox;
+            shape.type.chunks.forEach((chunk, j) => {
+                console.log(i + j, chunk.x * 1.2, chunk.y, this.objectCount);
+                this.offsets.setXYZ(i + j, (chunk.x * 3) - position.x - bbox.width / 2, position.y - (-chunk.y) , position.z);
+            });
+        });
+
+        this.geometry.addAttribute('offset', this.offsets);
+    }
+
+    _colors() {
+        this.colors = new InstancedBufferAttribute(new Float32Array(this.objectCount * 4), 4);
+
+        this.shapes.forEach((shape, i) => {
+            shape.type.chunks.forEach((chunk, j) => {
+                this.colors.setXYZW(i + j, 1.0, 1.0, 1.0, 1.0);
+            });
         });
 
         this.geometry.addAttribute('color', this.colors);
