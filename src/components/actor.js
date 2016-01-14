@@ -5,6 +5,7 @@ import * as Types from '../types';
 class Actor {
     constructor(definition) {
         this.definition = definition;
+        this.scene = this.definition.scene;
         this.position = this.definition.position;
         this.types = Map({});
         this.bbox = {};

@@ -27,7 +27,7 @@ class Scene {
 
     // XXX Consider extracting this into a helper...
     _select(state) {
-        return state.scene;
+        return state.scene.set('fonts', state.fonts);
     }
 
     _initializeStoreObserver() {
@@ -63,14 +63,17 @@ class Scene {
     }
 
     addActor(actor) {
+        actor.scene = this;
         this.dispatch(sceneActions.addActor(actor));
     }
 
     addGroup(group) {
+        group.scene = this;
         this.dispatch(sceneActions.addGroup(group));
     }
 
     addGroups(groups) {
+        groups.forEach((group) => { group.scene = this; });
         this.dispatch(sceneActions.addGroups(groups));
     }
 

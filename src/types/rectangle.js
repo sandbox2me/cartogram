@@ -1,8 +1,4 @@
-import { PlaneGeometry } from 'three';
-
 import BaseType from './base';
-
-let sharedGeometry = new PlaneGeometry(10, 10);
 
 class Rectangle extends BaseType {
     constructor(shape, actor) {

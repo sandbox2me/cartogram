@@ -1,7 +1,6 @@
 // Generates an instanced geometry of rectangles, shader controlled scaling/rotation/color
 import {
     BufferAttribute,
-    DoubleSide,
     InstancedBufferAttribute,
     InstancedBufferGeometry,
     Mesh,
@@ -19,6 +18,10 @@ class Rectangle {
 
         this.geometry = new InstancedBufferGeometry();
 
+        this.initialize();
+    }
+
+    initialize() {
         this._constructVertices();
         this._offset();
         this._scales();
@@ -81,12 +84,19 @@ class Rectangle {
         this.geometry.addAttribute('color', this.colors);
     }
 
+    get vertexShader() {
+        return vertexShader;
+    }
+
+    get fragmentShader() {
+        return fragmentShader;
+    }
+
     get material() {
         if (!this._material) {
             this._material = new RawShaderMaterial({
-                vertexShader: vertexShader,
-                fragmentShader: fragmentShader,
-                side: DoubleSide,
+                vertexShader: this.vertexShader,
+                fragmentShader: this.fragmentShader,
                 transparent: false
             });
         }

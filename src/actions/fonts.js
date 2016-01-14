@@ -32,14 +32,19 @@ class SDFFont {
 }
 
 function register(name, fontDef) {
+    return registerSync(name, new SDFFont(name, fontDef));
+
     return (dispatch) => {
         loader.load(fontDef.textureUrl, (texture) => {
+            debugger
             dispatch(registerSync(name, new SDFFont(name, fontDef, texture)));
+        }, undefined, (xhr) => {
+            throw new Error(`Error loading texture '${ fontDef.textureUrl }': ${ xhr }`);
         });
     };
 }
 
-function registerSync(name, fontDef) {
+function registerSync(name, font) {
     return {
         type: 'REGISTER_FONT',
         name,

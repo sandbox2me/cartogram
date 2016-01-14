@@ -101,10 +101,10 @@ class Cartogram {
 
     // Public API
     registerFont(name, definition) {
-        this.dispatch(actions.fonts.register({
+        this.dispatch(actions.fonts.register(
             name,
             definition
-        }));
+        ));
     }
 
     registerType(name, definition) {
