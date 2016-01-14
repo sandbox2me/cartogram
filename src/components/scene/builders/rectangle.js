@@ -13,7 +13,7 @@ import fragmentShader from 'shaders/instanced_rectangle_fragment.glsl';
 
 
 class Rectangle {
-    constructor(shapes) {
+    constructor(shapes, rtree) {
         this.shapes = shapes;
 
         this.geometry = new InstancedBufferGeometry();

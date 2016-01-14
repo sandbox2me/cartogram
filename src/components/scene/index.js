@@ -21,6 +21,7 @@ class Scene {
         this.threeScene = new three.Scene();
         this.camera = new Camera(store);
         this.rtree = new RTree();
+        this.typedTrees = {};
 
         this._initializeStoreObserver();
     }
@@ -114,6 +115,7 @@ class Scene {
                 _.forEach(actorObject.types, (shapeList, type) => {
                     if (!types[type]) {
                         types[type] = [];
+                        this.typedTrees[type] = new RTree();
                     }
 
                     for(let i = 0; i < shapeList.length; i++) {
@@ -132,9 +134,11 @@ class Scene {
             _.forEach(actorObject.types, (shapeList, type) => {
                 if (!types[type]) {
                     types[type] = [];
+                    this.typedTrees[type] = new RTree();
                 }
                 types[type] = [...types[type], ...shapeList];
                 this.rtree.insertShapes(shapeList);
+                this.typedTrees[type].insertShapes(shapeList);
             });
 
             actorObjects.push(actorObject);
@@ -154,8 +158,7 @@ class Scene {
                 meshes.push(cloud.getMesh());
             } else {
                 // Use type class to create the appropriate shapes
-
-                let builder = new Builders[type](shapes);
+                let builder = new Builders[type](shapes, this.typedTrees[type]);
                 meshes.push(builder.mesh);
 
                 // meshes = meshes.concat(shapes.map((shape) => {
