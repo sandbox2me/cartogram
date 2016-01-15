@@ -39,7 +39,8 @@ export default class PointCloudBuilder {
         this.sizes = new BufferAttribute(new Float32Array(this.shapes.length), 1);
 
         this.shapes.forEach((shape, i) => {
-            let { position, radius, fill } = shape.shape;
+            let { radius, fill } = shape.shape;
+            let position = shape.type.position;
 
             this.vertices.setXYZ(i, position.x, position.y, position.z);
             this.sizes.setX(i, radius);
