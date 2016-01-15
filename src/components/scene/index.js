@@ -159,12 +159,6 @@ class Scene {
                 // Use type class to create the appropriate shapes
                 let builder = new Builders[type](shapes, this.typedTrees[type], this.state);
                 meshes.push(builder.mesh);
-
-                // meshes = meshes.concat(shapes.map((shape) => {
-                //     let built = new Builders[type](shape);
-                //     let mesh = built.getMesh();
-                //     return mesh;
-                // }));
             }
         });
 
