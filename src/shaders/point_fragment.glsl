@@ -1,14 +1,12 @@
 #extension GL_OES_standard_derivatives : enable
-// varying vec3 vFill;
+precision highp float;
 
-// uniform vec4 fill;
 // uniform vec4 stroke;
 // uniform float strokeWidth;
 
-varying vec2 vUv;
+varying vec4 vFill;
 
 void main() {
-    vec4 fill = vec4(1.0, 0.5, 0.0, 1.0);
     vec4 stroke = vec4(1.0, 0.5, 0.0, 1.0);
     float strokeWidth = 0.0;
     float inset = 0.01;
@@ -19,9 +17,13 @@ void main() {
     float outerStep = smoothstep(radius - afwidth, radius + afwidth, distance);
     float innerStep = smoothstep(radius - inset, radius, distance + strokeWidth);
 
+    if (strokeWidth < 0.01) {
+        stroke = vFill;
+    }
+
     if (distance > (radius - strokeWidth)) {
         gl_FragColor = mix(stroke, vec4(1, 1, 1, 0.0), outerStep);
     } else {
-        gl_FragColor = mix(fill, stroke, innerStep);
+        gl_FragColor = mix(vFill, stroke, innerStep);
     }
 }

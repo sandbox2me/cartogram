@@ -4,7 +4,7 @@ import {
     Color,
     Points,
     PointsMaterial,
-    ShaderMaterial,
+    RawShaderMaterial,
     Vector3,
 } from 'three';
 
@@ -20,11 +20,10 @@ export default class PointCloudBuilder {
      *
      * @param  {[Object]} points An array of basic vectors
      */
-    constructor(points) {
-        this.points = points;
+    constructor(shapes) {
+        this.shapes = shapes;
 
         // Create initial array
-        this.vertices = new Float32Array(this.points.length * 3);
 
         this.geometry = new BufferGeometry();
         this.mesh = null;
@@ -35,18 +34,26 @@ export default class PointCloudBuilder {
     }
 
     _assignVertices() {
-        this.points.forEach((point, i) => {
-            this.vertices[i * 3 + 0] = point.x;
-            this.vertices[i * 3 + 1] = point.y;
-            this.vertices[i * 3 + 2] = point.z;
+        this.vertices = new BufferAttribute(new Float32Array(this.shapes.length * 3), 3);
+        this.colors = new BufferAttribute(new Float32Array(this.shapes.length * 4), 4);
+        this.sizes = new BufferAttribute(new Float32Array(this.shapes.length), 1);
+
+        this.shapes.forEach((shape, i) => {
+            let { position, radius, fill } = shape.shape;
+
+            this.vertices.setXYZ(i, position.x, position.y, position.z);
+            this.sizes.setX(i, radius);
+            this.colors.setXYZW(i, fill.r, fill.g, fill.b, 1.0);
         });
 
-        this.geometry.addAttribute('position', new BufferAttribute(this.vertices, 3));
+        this.geometry.addAttribute('position', this.vertices);
+        this.geometry.addAttribute('fill', this.colors);
+        this.geometry.addAttribute('size', this.sizes);
     }
 
     _createMesh() {
         // this.material = new PointsMaterial({ color: 0xffffff, size: 20.0 });
-        this.material = new ShaderMaterial({
+        this.material = new RawShaderMaterial({
             vertexShader: pointVertex,
             fragmentShader: pointFragment,
             transparent: true

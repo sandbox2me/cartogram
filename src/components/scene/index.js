@@ -152,8 +152,7 @@ class Scene {
         _.forEach(types, (shapes, type) => {
             if (type === 'PointCircle') {
                 // Generate point cloud
-                let points = _.chain(shapes).pluck('type').pluck('position').value();
-                let cloud = new Builders.PointCloud(points);
+                let cloud = new Builders.PointCloud(shapes);
 
                 meshes.push(cloud.getMesh());
             } else {
