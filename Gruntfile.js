@@ -50,12 +50,24 @@ module.exports = function(grunt) {
                 host: '0.0.0.0',
                 showDir: true
             }
+        },
+        'concurrent': {
+            dev: {
+                tasks: ['dev-watch', 'http-server'],
+                options: {
+                    logConcurrentOutput: true
+                }
+            }
         }
     });
 
-    grunt.registerTask('dev', [
+    grunt.registerTask('dev-watch', [
         'webpack:dev',
         'watch:lib'
+    ]);
+
+    grunt.registerTask('dev', [
+        'concurrent:dev'
     ]);
 
     grunt.registerTask('default', [
