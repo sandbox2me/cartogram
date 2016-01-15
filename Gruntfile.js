@@ -42,6 +42,14 @@ module.exports = function(grunt) {
                     spawn: false
                 }
             }
+        },
+        'http-server': {
+            dev: {
+                root: __dirname,
+                port: 8080,
+                host: '0.0.0.0',
+                showDir: true
+            }
         }
     });
 
