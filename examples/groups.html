@@ -46,17 +46,19 @@
                 {
                     type: 'PointCircle',
                     id: 1,
-                    radius: 20,
+                    radius: 40,
                     position: { x: 0, y: 0, z: 0 },
                     fill: { r: Math.random(), g: Math.random(), b: Math.random() }
                 },
                 {
-                    type: 'Text',
+                    type: 'Rectangle',
                     id: 2,
                     position: { x: 0, y: 0, z: 0 },
-                    value: '10',
-                    family: 'benton',
-                    fill: { r: 0, g: 0, b: 0 }
+                    size: {
+                        width: 25,
+                        height: 17
+                    },
+                    fill: { r: 1, g: 1, b: 1 }
                 }
             ];
 
@@ -66,22 +68,22 @@
                 actors: [
                     {
                         name: 'circle1',
-                        position: { x: -30, y: 30, z: 0 },
+                        position: { x: -50, y: 50, z: 0 },
                         shapes: shapes
                     },
                     {
                         name: 'circle2',
-                        position: { x: 0, y: 30, z: 0 },
+                        position: { x: 0, y: 50, z: 0 },
                         shapes: shapes
                     },
                     {
                         name: 'circle3',
-                        position: { x: 30, y: 30, z: 0 },
+                        position: { x: 50, y: 50, z: 0 },
                         shapes: shapes
                     },
                     {
                         name: 'circle1',
-                        position: { x: -30, y: 0, z: 0 },
+                        position: { x: -50, y: 0, z: 0 },
                         shapes: shapes
                     },
                     {
@@ -91,22 +93,22 @@
                     },
                     {
                         name: 'circle3',
-                        position: { x: 30, y: 0, z: 0 },
+                        position: { x: 50, y: 0, z: 0 },
                         shapes: shapes
                     },
                     {
                         name: 'circle1',
-                        position: { x: -30, y: -30, z: 0 },
+                        position: { x: -50, y: -50, z: 0 },
                         shapes: shapes
                     },
                     {
                         name: 'circle2',
-                        position: { x: 0, y: -30, z: 0 },
+                        position: { x: 0, y: -50, z: 0 },
                         shapes: shapes
                     },
                     {
                         name: 'circle3',
-                        position: { x: 30, y: -30, z: 0 },
+                        position: { x: 50, y: -50, z: 0 },
                         shapes: shapes
                     },
                 ]
