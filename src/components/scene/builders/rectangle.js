@@ -43,13 +43,13 @@ class Rectangle {
         ]);
 
         let indices = new Uint16Array([
-            0, 1, 2,
-            2, 1, 3,
+            2, 1, 0,
+            3, 1, 2,
         ]);
 
-    	this.geometry.setIndex(new BufferAttribute(indices, 1));
     	this.geometry.addAttribute('position', new BufferAttribute(vertices, 3));
     	this.geometry.addAttribute('uv', new BufferAttribute(uvs, 2));
+        this.geometry.setIndex(new BufferAttribute(indices, 1));
     }
 
     _attributes() {

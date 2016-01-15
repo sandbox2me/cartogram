@@ -6,7 +6,6 @@ import {
     MeshBasicMaterial,
     RawShaderMaterial,
     Vector4,
-    DoubleSide,
 } from 'three';
 
 // What is text other than a whole bunch of little rectangles next to each other?
@@ -106,7 +105,6 @@ class Text extends Rectangle {
                 },
                 vertexShader: this.vertexShader,
                 fragmentShader: this.fragmentShader,
-                side: DoubleSide,
                 transparent: true
             });
         }
