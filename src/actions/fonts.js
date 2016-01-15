@@ -1,4 +1,4 @@
-import { TextureLoader } from 'three';
+import { Texture, TextureLoader } from 'three';
 
 const loader = new TextureLoader();
 
@@ -31,16 +31,57 @@ class SDFFont {
     }
 }
 
-function register(name, fontDef) {
-    return registerSync(name, new SDFFont(name, fontDef));
+function registerAsync(name, fontDef) {
+    throw new Error('registerAsync is not fully implemented!');
 
     return (dispatch) => {
         loader.load(fontDef.textureUrl, (texture) => {
-            debugger
             dispatch(registerSync(name, new SDFFont(name, fontDef, texture)));
         }, undefined, (xhr) => {
             throw new Error(`Error loading texture '${ fontDef.textureUrl }': ${ xhr }`);
         });
+    };
+}
+
+function registerWithData(name, fontDef) {
+    return (dispatch) => {
+        let img = new Image();
+        img.src = fontDef.dataURI;
+
+        dispatch(registerSync(
+            name,
+            new SDFFont(
+                name,
+                fontDef,
+                new Texture(img)
+            )
+        ));
+    };
+}
+
+function registerWithImage(name, fontDef) {
+    return (dispatch) => {
+        dispatch(registerSync(
+            name,
+            new SDFFont(
+                name,
+                fontDef,
+                new Texture(fontDef.image)
+            )
+        ));
+    };
+}
+
+function registerWithTexture(name, fontDef) {
+    return (dispatch) => {
+        dispatch(registerSync(
+            name,
+            new SDFFont(
+                name,
+                fontDef,
+                fontDef.texture
+            )
+        ));
     };
 }
 
@@ -53,5 +94,8 @@ function registerSync(name, font) {
 }
 
 export default {
-    register,
+    registerAsync,
+    registerWithData,
+    registerWithImage,
+    registerWithTexture
 };

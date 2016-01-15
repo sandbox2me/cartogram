@@ -6,7 +6,7 @@ uniform float uMaxSmoothing;
 uniform float uMinSmoothing;
 uniform vec2 texSize;
 
-varying vec3 vColor;
+varying vec4 vColor;
 varying float vFontSize;
 varying vec4 vTexOffset;
 
@@ -19,8 +19,8 @@ void main(void) {
     vec2 uv;
 
     // Calculate sampler coordinate
-    uv.x = ((vTexOffset.x + vTexOffset.z) * uv.x) / texSize.x;
-    uv.y = ((vTexOffset.y + vTexOffset.w) * uv.y) / texSize.y;
+    uv.x = vTexOffset.x + (vUv.x * vTexOffset.z);
+    uv.y = vTexOffset.y - (vUv.y * vTexOffset.w);
 
     float smoothing = vDepth / uMaxZoom * (uMaxSmoothing - uMinSmoothing) + uMinSmoothing;
     float gamma = (smoothing * 1.4142) / vFontSize;
@@ -28,6 +28,5 @@ void main(void) {
     float dist = texture2D(uSampler, uv).a;
     float alpha = smoothstep(cBuffer - gamma, cBuffer + gamma, dist);
 
-    // gl_FragColor = vec4(0.5, 0.5, 0.5, 1.0);
-    gl_FragColor = vec4(vColor, alpha);
+    gl_FragColor = vec4(vColor.xyz, alpha);
 }

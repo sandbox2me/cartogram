@@ -3,8 +3,10 @@ import {
     InstancedBufferAttribute,
     InstancedBufferGeometry,
     Mesh,
+    MeshBasicMaterial,
     RawShaderMaterial,
     Vector4,
+    DoubleSide,
 } from 'three';
 
 // What is text other than a whole bunch of little rectangles next to each other?
@@ -20,26 +22,8 @@ class Text extends Rectangle {
 
         this.parseStrings();
         this._constructVertices();
-        this._constructUVs();
 
         this._attributes();
-    }
-
-    _constructUVs() {
-        this.uvs = new BufferAttribute(new Float32Array([
-            0, 0,
-            1, 0,
-            0, 1,
-            1, 1
-        ]), 2);
-
-        this.geometry.addAttribute('uv', this.uvs);
-
-        let fontTextureSize = new BufferAttribute(new Float32Array([
-            this.font.metrics.common.scaleW,
-            this.font.metrics.common.scaleH
-        ]), 2);
-        this.geometry.addAttribute('texSize', fontTextureSize);
     }
 
     parseStrings() {
@@ -56,6 +40,7 @@ class Text extends Rectangle {
 
         this.shapes.forEach((shape, i) => {
             let { position, bbox } = shape.type;
+            let { size, fill } = shape.shape;
 
             shape.type.chunks.forEach((chunk, j) => {
                 let index = i + j;
@@ -64,14 +49,14 @@ class Text extends Rectangle {
                 this.scales.setXY(index, chunk.width, chunk.height);
 
                 // Pass in font size
-                this.fontSizes.setX(index, shape.shape.size);
+                this.fontSizes.setX(index, size);
 
                 // Position character
                 // console.log(index, chunk.x * 1.2, chunk.y, this.objectCount);
-                this.offsets.setXYZ(index, chunk.x - position.x - bbox.width / 2, position.y - (-chunk.y) , position.z);
+                this.offsets.setXYZ(index, chunk.x - bbox.width / 2 - position.x, chunk.y + bbox.height / 2 + position.y, position.z);
 
                 // Color character
-                this.colors.setXYZW(index, 1.0, 1.0, 1.0, 1.0);
+                this.colors.setXYZW(index, fill.r, fill.g, fill.b, 1.0);
 
                 // Character texture UV offsets
                 this.texOffsets.setXYZW(index, chunk.uv.x, chunk.uv.y, chunk.uv.width, chunk.uv.height);
@@ -95,27 +80,33 @@ class Text extends Rectangle {
 
     get material() {
         if (!this._material) {
+            // debugger
             this._material = new RawShaderMaterial({
                 uniforms: {
+                    uSampler: {
+                        type: 't',
+                        value: this.font.texture
+                    },
                     uTexSize: {
                         type: 'v2',
                         value: { x: this.font.metrics.common.scaleW, y: this.font.metrics.common.scaleH }
                     },
                     uMaxZoom: {
                         type: 'f',
-                        value: maxZoom
+                        value: 100, //maxZoom
                     },
                     uMaxSmoothing: {
                         type: 'f',
-                        value: maxSmoothing
+                        value: 8.0, //maxSmoothing
                     },
                     uMinSmoothing: {
                         type: 'f',
-                        value: minSmoothing
+                        value: 1.0, //minSmoothing
                     }
                 },
                 vertexShader: this.vertexShader,
                 fragmentShader: this.fragmentShader,
+                side: DoubleSide,
                 transparent: true
             });
         }

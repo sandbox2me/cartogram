@@ -30,7 +30,7 @@ class Text extends BaseType {
             console.log(`chunking '${ character }'`)
 
             let { width, height, xOffset, yOffset, xAdvance } = font.getDimensionsForSize(character, this.shape.size);
-            let minX = (width / 2);
+            let minX = -(width / 2);
             let minY = height / 2;
 
             let charX = x - minX;
@@ -39,54 +39,8 @@ class Text extends BaseType {
             let charMetrics = font.metrics.chars[character];
             let charLeft = charMetrics.x / textureWidth;
             let charTop = 1 - charMetrics.y / textureHeight;
-
-            let uvs = [
-                [
-                    Math.min(charLeft, 1),
-                    Math.min(charTop - (charMetrics.height / textureHeight), 1),
-                ],
-                [
-                    Math.min(charLeft + (charMetrics.width / textureWidth), 1),
-                    Math.min(charTop - (charMetrics.height / textureHeight), 1),
-                ],
-                [
-                    Math.min(charLeft + (charMetrics.width / textureWidth), 1),
-                    Math.min(charTop, 1),
-                ],
-                [
-                    Math.min(charLeft, 1),
-                    Math.min(charTop, 1)
-                ]
-            ];
-
-            let rawLocations = [
-                // Top left
-                charMetrics.x,
-                1 - charMetrics.y - charMetrics.height,
-
-                // Top right
-                charMetrics.x + charMetrics.width,
-                1 - charMetrics.y - charMetrics.height,
-
-                // Bottom right
-                charMetrics.x + charMetrics.width,
-                1 - charMetrics.y,
-
-                // Bottom left
-                charMetrics.x,
-                1 - charMetrics.y
-            ]
-
-            let texBBox = {
-                x: charMetrics.x,
-                y: 1 - charMetrics.y,
-                width: charMetrics.width,
-                height: charMetrics.height
-            };
-
-            console.log(`coordinates for '${ character }': ${ uvs }`);
-            console.log(`raw coordinates for '${ character }': ${ rawLocations }`);
-            console.log(`raw bbox for '${ character }': ${ texBBox }`);
+            let charTexWidth = charMetrics.width / textureWidth;
+            let charTexHeight = charMetrics.height / textureHeight;
 
             chunks.push({
                 character,
@@ -94,10 +48,15 @@ class Text extends BaseType {
                 height,
                 x: charX,
                 y: charY,
-                uv: texBBox
+                uv: {
+                    x: charLeft,
+                    y: charTop,
+                    width: charTexWidth,
+                    height: charTexHeight
+                }
             });
 
-            x += xAdvance - xOffset;
+            x += xAdvance; // - xOffset;
         });
 
         this.chunks = chunks;
