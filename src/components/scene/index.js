@@ -70,6 +70,7 @@ class Scene {
 
     addGroup(group) {
         group.scene = this;
+        group.actors.forEach((actor) => { actor.scene = this; });
         this.dispatch(sceneActions.addGroup(group));
     }
 

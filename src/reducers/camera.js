@@ -4,8 +4,8 @@ import createReducer from 'utils/create_reducer';
 const initialState = Map({
     maxZoom: 2000,
     minZoom: 50,
-    currentZoom: 300,
-    position: { x: 0, y: 0 }
+    currentZoom: 500,
+    position: { x: 0, y: 0, z: 500 }
 });
 
 const handlers = {

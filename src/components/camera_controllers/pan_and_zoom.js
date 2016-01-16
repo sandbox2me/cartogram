@@ -25,6 +25,8 @@ export default class PanAndZoomCameraController {
         this.panStart = new Vector2();
         this.panEnd = new Vector2();
         this._eye = new Vector3();
+        this._zoomStart = new Vector2();
+        this._zoomEnd = new Vector2();
 
         this._target = new Vector3();
         this._mouseVector = new Vector3();
@@ -57,6 +59,7 @@ export default class PanAndZoomCameraController {
 
     _registerInputHandlers() {
         this.canvas.addEventListener('mousedown', this._handleMouseDown, false);
+        this.canvas.addEventListener('mousewheel', this._handleMouseWheel, false);
     }
 
     @autobind
@@ -99,6 +102,26 @@ export default class PanAndZoomCameraController {
         this.canvas.removeEventListener('mouseup', this._handleMouseUp);
     }
 
+    @autobind
+    _handleMouseWheel(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        let delta = 0;
+
+        if (event.deltaY) {
+            // Most browsers support deltaY from the wheel event
+            delta = -event.deltaY;
+        } else if (event.detail) {
+            // Firefox versions
+            delta = -event.detail;
+        } else if (event.wheelDelta) {
+            delta = event.wheelDelta / 40;
+        }
+
+        this._zoomStart.y += delta * 0.01;
+    }
+
     doPan() {
         if (!this._mouseChange) {
             return;
@@ -119,9 +142,24 @@ export default class PanAndZoomCameraController {
         }
     }
 
+    doZoom() {
+        let factor = 1.0 + ( this._zoomEnd.y - this._zoomStart.y ) * 0.2; //this.zoomSpeed;
+
+        if (factor !== 1.0 && factor > 0.0) {
+            this._eye.multiplyScalar(factor);
+            this._zoomStart.copy( this._zoomEnd );
+
+            this.threeCamera.position.addVectors(this._target, this._eye);
+            this.threeCamera.lookAt(this._target);
+            console.log(`dozoom: ${ this.threeCamera.position.z }`)
+            this.camera.updatePosition();
+        }
+    }
+
     update() {
         this._eye.subVectors(this.threeCamera.position, this._target);
 
+        this.doZoom();
         this.doPan();
     }
 };

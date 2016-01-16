@@ -34,7 +34,7 @@ class Camera {
         if (!oldState) {
             this._initializeCamera();
         } else {
-            this._updateCameraState();
+            this._updateCameraState(oldState);
         }
     }
 
@@ -71,15 +71,37 @@ class Camera {
         this.camera.position.z = 400;
     }
 
-    _updateCameraState() {
-        // debugger
-        console.log('Updating camera state')
+    _updateCameraState(oldState) {
+        if (oldState.get('position').z !== this.state.get('position').z) {
+            this.camera.zoom = Math.abs(this.state.get('position').z - 2050) / 400;
+        }
+
+        if (oldState.get('screenSize').width !== this.state.get('screenSize').width || oldState.get('screenSize').height !== this.state.get('screenSize').height) {
+            let screenSize = this.state.get('screenSize');
+
+            this.camera.left = screenSize.width / -2;
+            this.camera.right = screenSize.width / 2;
+            this.camera.top = screenSize.height / 2;
+            this.camera.bottom = screenSize.height / -2;
+        }
+        this.camera.updateProjectionMatrix();
+
     }
 
     updatePosition() {
+        let maxZoom = this.state.get('maxZoom');
+        let minZoom = this.state.get('minZoom');
+
+        if (this.camera.position.z > maxZoom) {
+            this.camera.position.z = maxZoom;
+        } else if (this.camera.position.z < minZoom) {
+            this.camera.position.z = minZoom;
+        }
+
         this.dispatch(cameraActions.updatePosition({
             x: this.camera.position.x,
-            y: this.camera.position.y
+            y: this.camera.position.y,
+            z: this.camera.position.z,
         }));
     }
 
