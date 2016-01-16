@@ -9,6 +9,17 @@ class PointCircle extends BaseType {
         super(shape, actor);
     }
 
+    get size() {
+        if (!this._size || this.type.radius !== this._size.width) {
+            this._size = {
+                width: this.shape.radius,
+                height: this.shape.radius,
+            };
+        }
+
+        return this._size;
+    }
+
     getBBox() {
         if (!this.bbox) {
             let { radius } = this.shape;

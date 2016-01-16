@@ -23,8 +23,8 @@ void main() {
     // vStroke = stroke;
     // vStrokeWidth = strokeWidth;
 
-
     vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-    gl_PointSize = size * (300.0 / length(mvPosition.xyz));
+    float fac = abs(cameraPosition.z - 2000.0) / 400.0;
+    gl_PointSize = size * fac;
     gl_Position = projectionMatrix * mvPosition;
 }

@@ -13,6 +13,7 @@
     <body>
         <div id="container"></div>
 
+        <script type="text/javascript" src="http://raw.githack.com/mrdoob/stats.js/master/build/stats.min.js"></script>
         <script type="text/javascript" src="../node_modules/three/three.js"></script>
         <script type="text/javascript" src="../node_modules/lodash/index.js"></script>
         <script type="text/javascript" src="../dist/cartogram-dev.js"></script>
@@ -53,65 +54,91 @@
                 {
                     type: 'Rectangle',
                     id: 2,
+                    position: { x: -12, y: 0, z: 0 },
+                    size: {
+                        width: 12,
+                        height: 17
+                    },
+                    fill: { r: 1, g: 1, b: 1 }
+                },
+                {
+                    type: 'Rectangle',
+                    id: 2,
                     position: { x: 0, y: 0, z: 0 },
                     size: {
-                        width: 25,
-                        height: 17
+                        width: 12,
+                        height: 10
                     },
                     fill: { r: 1, g: 1, b: 1 }
                 }
             ];
 
+            var actors = [];
+            var count = 100000;
+            var range = 2000;
+            for (var i = 0; i < count; i++) {
+                actors.push({
+                    name: i,
+                    position: {
+                        x: (-range / 2) + Math.floor(Math.random() * (range * 2)),
+                        y: (-range / 2) + Math.floor(Math.random() * (range * 2)),
+                        z: 0
+                    },
+                    shapes: shapes
+                });
+            }
+
             var group = scene.addGroup({
                 position: { x: 0, y: 0, z: 0 },
                 name: 'group1',
-                actors: [
-                    {
-                        name: 'circle1',
-                        position: { x: -50, y: 50, z: 0 },
-                        shapes: shapes
-                    },
-                    {
-                        name: 'circle2',
-                        position: { x: 0, y: 50, z: 0 },
-                        shapes: shapes
-                    },
-                    {
-                        name: 'circle3',
-                        position: { x: 50, y: 50, z: 0 },
-                        shapes: shapes
-                    },
-                    {
-                        name: 'circle1',
-                        position: { x: -50, y: 0, z: 0 },
-                        shapes: shapes
-                    },
-                    {
-                        name: 'circle2',
-                        position: { x: 0, y: 0, z: 0 },
-                        shapes: shapes
-                    },
-                    {
-                        name: 'circle3',
-                        position: { x: 50, y: 0, z: 0 },
-                        shapes: shapes
-                    },
-                    {
-                        name: 'circle1',
-                        position: { x: -50, y: -50, z: 0 },
-                        shapes: shapes
-                    },
-                    {
-                        name: 'circle2',
-                        position: { x: 0, y: -50, z: 0 },
-                        shapes: shapes
-                    },
-                    {
-                        name: 'circle3',
-                        position: { x: 50, y: -50, z: 0 },
-                        shapes: shapes
-                    },
-                ]
+                actors: actors
+                // [
+                //     {
+                //         name: 'circle1',
+                //         position: { x: -50, y: 50, z: 0 },
+                //         shapes: shapes
+                //     },
+                //     {
+                //         name: 'circle2',
+                //         position: { x: 0, y: 50, z: 0 },
+                //         shapes: shapes
+                //     },
+                //     {
+                //         name: 'circle3',
+                //         position: { x: 50, y: 50, z: 0 },
+                //         shapes: shapes
+                //     },
+                //     {
+                //         name: 'circle1',
+                //         position: { x: -50, y: 0, z: 0 },
+                //         shapes: shapes
+                //     },
+                //     {
+                //         name: 'circle2',
+                //         position: { x: 0, y: 0, z: 0 },
+                //         shapes: shapes
+                //     },
+                //     {
+                //         name: 'circle3',
+                //         position: { x: 50, y: 0, z: 0 },
+                //         shapes: shapes
+                //     },
+                //     {
+                //         name: 'circle1',
+                //         position: { x: -50, y: -50, z: 0 },
+                //         shapes: shapes
+                //     },
+                //     {
+                //         name: 'circle2',
+                //         position: { x: 0, y: -50, z: 0 },
+                //         shapes: shapes
+                //     },
+                //     {
+                //         name: 'circle3',
+                //         position: { x: 50, y: -50, z: 0 },
+                //         shapes: shapes
+                //     },
+                // ]
             })
 
             console.timeEnd('add group')
@@ -125,7 +152,20 @@
             });
             scene.addCameraController(cameraController);
 
-            cartogram.render();
+            var stats = new Stats();
+            stats.setMode( 0 ); // 0: fps, 1: ms, 2: mb
+
+            // align top-left
+            stats.domElement.style.position = 'absolute';
+            stats.domElement.style.left = '0px';
+            stats.domElement.style.top = '0px';
+
+            document.body.appendChild( stats.domElement );
+
+            cartogram.render(function() {
+                stats.begin();
+                stats.end();
+            });
         </script>
     </body>
 </html>
