@@ -151,16 +151,16 @@ class Scene {
         console.log('Building meshes');
         let meshes = [];
         _.forEach(types, (shapes, type) => {
-            // if (type === 'PointCircle') {
-            //     // Generate point cloud
-            //     let cloud = new Builders.PointCloud(shapes);
-            //
-            //     meshes.push(cloud.getMesh());
-            // } else {
+            if (type === 'PointCircle' && this.usePointClouds) {
+                // Generate point cloud
+                let cloud = new Builders.PointCloud(shapes);
+
+                meshes.push(cloud.getMesh());
+            } else {
                 // Use type class to create the appropriate shapes
                 let builder = new Builders[type](shapes, this.typedTrees[type], this.state);
                 meshes.push(builder.mesh);
-            // }
+            }
         });
 
 
