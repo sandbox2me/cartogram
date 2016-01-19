@@ -184,6 +184,36 @@ class Scene {
             this.dispatch(sceneActions.addMeshes(meshes));
         }
     }
+
+    worldToScreenPositionVector(position) {
+        let vector = new three.Vector3(position.x, position.y, -1);
+        vector.project(this.camera);
+
+        let percX = (vector.x + 1) / 2;
+        let percY = (-vector.y + 1) / 2;
+        let left = percX * this.state.core.get('size').width;
+        let top = percY * this.state.core.get('size').height;
+
+        return new three.Vector2(left, top);
+    }
+
+    screenToWorldPosition(position) {
+        let camera = this.camera.getCamera();
+
+        let vector = new three.Vector3();
+
+        vector.set(
+            (position.x / this.state.core.get('size').width) * 2 - 1,
+            -(position.y / this.state.core.get('size').height) * 2 + 1,
+            0.5
+        );
+        vector.unproject(camera);
+
+        let direction = vector.sub(camera.position).normalize();
+        let distance = -camera.position.z / direction.z;
+
+        return camera.position.clone().add(direction.multiplyScalar(distance));
+    }
 };
 
 export default Scene;

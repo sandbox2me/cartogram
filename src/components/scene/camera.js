@@ -88,6 +88,10 @@ class Camera {
 
     }
 
+    getCamera() {
+        return this.camera;
+    }
+
     updatePosition() {
         let maxZoom = this.state.get('maxZoom');
         let minZoom = this.state.get('minZoom');
