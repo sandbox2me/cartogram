@@ -14,6 +14,17 @@ class Actor {
         this._iterateChildren();
     }
 
+    get path() {
+        let segments = [];
+
+        if (this.definition.group) {
+            segments.push(this.definition.group.name);
+        }
+        segments.push(this.definition.name);
+
+        return `/${ segments.join('/') }`;
+    }
+
     getPosition() {
         return this.position;
     }
@@ -24,6 +35,7 @@ class Actor {
 
     _iterateChildren() {
         let actorTypes = {};
+        let children = {};
         let minX = Infinity,
             maxX = -Infinity,
             minY = Infinity,
@@ -38,6 +50,7 @@ class Actor {
             }
 
             type = new Types[shape.type](shape, this);
+            children[shape.name] = type;
 
             bbox = type.getBBox();
 
@@ -84,6 +97,7 @@ class Actor {
         };
 
         this.types = actorTypes;
+        this.children = children;
     }
 };
 

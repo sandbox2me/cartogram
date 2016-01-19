@@ -26,6 +26,13 @@ function addGroups(groups) {
     };
 }
 
+function addActorObjects(actorObjects) {
+    return {
+        type: 'ADD_ACTOR_OBJECTS',
+        actorObjects
+    };
+}
+
 function addMeshes(meshes) {
     return {
         type: 'ADD_MESHES',
@@ -38,5 +45,6 @@ export default {
     addActor,
     addGroup,
     addGroups,
+    addActorObjects,
     addMeshes,
 };

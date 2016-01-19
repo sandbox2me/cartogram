@@ -46,7 +46,7 @@
             var shapes = [
                 {
                     type: 'PointCircle',
-                    id: 1,
+                    name: 'circle',
                     radius: 20,
                     position: { x: 0, y: 0, z: 0 },
                     fill: { r: Math.random(), g: Math.random(), b: Math.random() },
@@ -54,7 +54,7 @@
                 },
                 {
                     type: 'Rectangle',
-                    id: 2,
+                    name: 'rectLeft',
                     position: { x: -6, y: 0, z: 0 },
                     size: {
                         width: 12,
@@ -64,7 +64,7 @@
                 },
                 {
                     type: 'Rectangle',
-                    id: 2,
+                    name: 'rectRight',
                     position: { x: 6, y: -3, z: 0 },
                     size: {
                         width: 12,
@@ -143,9 +143,11 @@
                 var actors = scene.actorsAtScreenPosition({ x: e.clientX, y: e.clientY });
 
                 if (actors.length) {
-                    console.log(position, actors[0].definition.name);
+                    console.log(position, actors[0]);
+                    debugger
                 }
             });
+
 
             var stats = new Stats();
             stats.setMode( 0 ); // 0: fps, 1: ms, 2: mb

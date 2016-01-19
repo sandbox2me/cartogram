@@ -7,6 +7,7 @@ const initialState = Map({
     targetDrawCallLimit: 400,
 
     actors: Map({}),
+    actorObjects: Map({}),
     groups: Map([]),
 
     meshes: List([]),
@@ -46,6 +47,12 @@ const handlers = {
         groups = groups.merge(groupMap);
 
         return state.set('groups', groups);
+    },
+
+    'ADD_ACTOR_OBJECTS': (state, action) => {
+        let actorObjects = state.get('actorObjects').merge(action.actorObjects);
+
+        return state.set('actorObjects', actorObjects);
     },
 
     'ADD_MESHES': (state, action) => {

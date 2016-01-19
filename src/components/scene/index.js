@@ -48,9 +48,9 @@ class Scene {
     stateDidChange(oldState) {
         if (this.state.get('actors').size && !this.state.get('meshes').size) {
             // 1+ actors are in the scene, but no mesh data has been generated yet. Get to it!
-            this.generateMeshes();
+            this._generateMeshes();
         } else if (this.state.get('groups').size && !this.state.get('meshes').size) {
-            this.generateMeshes();
+            this._generateMeshes();
         } else if (oldState && this.state.get('actors') !== oldState.get('actors')) {
             // actors changed, update scene
             console.log('Updating scene')
@@ -70,16 +70,70 @@ class Scene {
 
     addGroup(group) {
         group.scene = this;
-        group.actors.forEach((actor) => { actor.scene = this; });
+        group.actors.forEach((actor) => {
+            actor.group = group;
+            actor.scene = this;
+        });
         this.dispatch(sceneActions.addGroup(group));
     }
 
     addGroups(groups) {
-        groups.forEach((group) => { group.scene = this; });
+        groups.forEach((group) => {
+            group.scene = this;
+            group.actors.forEach((actor) => {
+                actor.group = group;
+                actor.scene = this;
+            });
+        });
         this.dispatch(sceneActions.addGroups(groups));
     }
 
-    update(userCallback) {
+    objectsAtPath(path) {
+        let segments = path.replace(/(^\/)|(\/$)/g, '').split('/');
+        let actorObjects = this.state.get('actorObjects');
+        let objects = {};
+
+        // Search in groups
+        let groups = this.state.get('groups');
+        let group = groups.get(segments[0]);
+        if (group) {
+            // Get actor
+            objects['group'] = group;
+
+            if (!segments[1]) {
+                return objects;
+            }
+
+            let actorPath = `/${ segments[0] }/${ segments[1] }`;
+            let actor = actorObjects.get(actorPath);
+            if (!actor) {
+                throw new Error(`Actor '${ actorPath }' not found`);
+            } else if (segments[2]) {
+                // Find shape
+                let child = actor.children[segments[2]];
+                objects['shape'] = child;
+            }
+
+            objects['actor'] = actor;
+            return objects;
+        }
+
+        // Search in actors
+        let actor = actorObjects.get(`/${ segments[0] }`);
+        if (actor) {
+            // Get actor
+            if (segments[1]) {
+                // Find shape
+                let child = actor.children[segments[1]];
+                objects['shape'] = child;
+            }
+
+            objects['actor'] = actor;
+            return objects;
+        }
+    }
+
+    _update(userCallback) {
         if (typeof userCallback === 'function') {
             userCallback(this);
         }
@@ -92,7 +146,7 @@ class Scene {
     }
 
     render(renderer, userCallback) {
-        this.update(userCallback);
+        this._update(userCallback);
 
         renderer.render(
             this.threeScene,
@@ -100,8 +154,8 @@ class Scene {
         );
     }
 
-    generateMeshes() {
-        let actorObjects = [];
+    _generateMeshes() {
+        let actorObjects = {};
         let types = {};
 
         this.rtree.reset();
@@ -111,7 +165,7 @@ class Scene {
 
             group.actors.forEach((actor) => {
                 let actorObject = new Actor(actor);
-                actorObjects.push(actorObject);
+                actorObjects[`/${ name }/${ actor.name }`] = actorObject;
 
                 _.forEach(actorObject.types, (shapeList, type) => {
                     if (!types[type]) {
@@ -142,10 +196,10 @@ class Scene {
                 this.typedTrees[type].insertShapes(shapeList);
             });
 
-            actorObjects.push(actorObject);
+            actorObjects[`/${ name }`] = actorObject;
         });
 
-        this.rtree.insertActors(actorObjects);
+        this.rtree.insertActors(_.values(actorObjects));
 
         // XXX Implement rtree based mesh grouping optimization in the future
         console.log('Building meshes');
@@ -182,6 +236,7 @@ class Scene {
         if (meshes.length) {
             this.threeScene.add(...meshes);
             this.dispatch(sceneActions.addMeshes(meshes));
+            this.dispatch(sceneActions.addActorObjects(actorObjects));
         }
     }
 
@@ -222,7 +277,7 @@ class Scene {
             let actor = intersection[4].actor;
 
             if (!actor.hasHitMask || actor.checkHitMask(position)) {
-                return actor;
+                return actor.path;
             }
         });
 
@@ -232,6 +287,10 @@ class Scene {
     actorsAtScreenPosition(position) {
         let worldPosition = this.screenToWorldPosition(position);
         return this.actorsAtWorldPosition(worldPosition);
+    }
+
+    actorAtPath(path) {
+        return this.state.get('actorObjects').get(path);
     }
 };
 
