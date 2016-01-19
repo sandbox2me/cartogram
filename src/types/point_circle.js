@@ -7,13 +7,16 @@ class PointCircle extends BaseType {
         }
 
         super(shape, actor);
+
+        // Pre-calculate square for point intersection checks
+        this.shape.radiusSq = this.shape.radius * this.shape.radius;
     }
 
     get size() {
         if (!this._size || this.type.radius !== this._size.width) {
             this._size = {
-                width: this.shape.radius,
-                height: this.shape.radius,
+                width: this.shape.radius * 2,
+                height: this.shape.radius * 2,
             };
         }
 
@@ -26,13 +29,21 @@ class PointCircle extends BaseType {
             let position = this.position;
 
             this.bbox = {
-                width: radius,
-                height: radius,
-                x: position.x - (radius / 2),
-                y: position.y - (radius / 2)
+                width: radius * 2,
+                height: radius * 2,
+                x: position.x - radius,
+                y: position.y - radius
             };
         }
         return this.bbox;
+    }
+
+    checkIntersection(position) {
+        let shapePosition = this.position;
+        let x = (shapePosition.x - position.x);
+        let y = (shapePosition.y - position.y);
+
+        return (x * x) + (y * y) < this.shape.radiusSq;
     }
 };
 

@@ -4,6 +4,7 @@ import * as Types from '../types';
 
 class Actor {
     constructor(definition) {
+        this.hasHitMask = false;
         this.definition = definition;
         this.scene = this.definition.scene;
         this.position = this.definition.position;
@@ -15,6 +16,10 @@ class Actor {
 
     getPosition() {
         return this.position;
+    }
+
+    checkHitMask(position) {
+        return this.hitMaskType.checkIntersection(position);
     }
 
     _iterateChildren() {
@@ -64,6 +69,11 @@ class Actor {
                 bbox,
                 type
             });
+
+            if (shape.hitMask) {
+                this.hasHitMask = true;
+                this.hitMaskType = type;
+            }
         });
 
         this.bbox = {

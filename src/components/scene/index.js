@@ -219,10 +219,14 @@ class Scene {
     actorsAtWorldPosition(position) {
         let intersections = this.rtree.searchPoint(position);
         let actors = intersections.map((intersection) => {
-            return intersection[4].actor;
+            let actor = intersection[4].actor;
+
+            if (!actor.hasHitMask || actor.checkHitMask(position)) {
+                return actor;
+            }
         });
 
-        return actors;
+        return _.compact(actors);
     }
 
     actorsAtScreenPosition(position) {

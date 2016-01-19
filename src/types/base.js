@@ -16,6 +16,10 @@ class BaseType {
     getBBox() {
         throw new Error('getBBox not implemented');
     }
+
+    checkIntersection(position) {
+        throw new Error('checkIntersection not implemented');
+    }
 };
 
 export default BaseType;
