@@ -56,6 +56,48 @@ class RTree {
     reset() {
         this.tree.clear();
     }
+
+    search(bbox) {
+        return this.tree.search([
+            bbox.x,
+            bbox.y,
+            bbox.x2,
+            bbox.y2
+        ]);
+    }
+
+    searchPoint(point) {
+        return this.search({
+            x: point.x,
+            y: point.y,
+            x2: point.x + 1,
+            y2: point.y + 1
+        });
+    }
+
+    toJSON() {
+        return this.tree.toJSON();
+    }
+
+    getSize() {
+        let width = this.tree.data.bbox[2] - this.tree.data.bbox[0];
+        let height = this.tree.data.bbox[3] - this.tree.data.bbox[1];
+
+        return {
+            width,
+            height
+        };
+    }
+
+    getCenter() {
+        let size = this.getSize();
+        let bbox = this.tree.toJSON().bbox;
+
+        return {
+            x: bbox[0] + (size.width / 2),
+            y: -(bbox[1] + (size.height / 2))
+        };
+    }
 };
 
 export default RTree;

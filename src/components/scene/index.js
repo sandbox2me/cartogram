@@ -28,7 +28,7 @@ class Scene {
 
     // XXX Consider extracting this into a helper...
     _select(state) {
-        return state.scene.set('fonts', state.fonts);
+        return state.scene.set('fonts', state.fonts).set('core', state.core);
     }
 
     _initializeStoreObserver() {
@@ -186,25 +186,26 @@ class Scene {
     }
 
     worldToScreenPositionVector(position) {
+        let { width, height } = this.state.get('core').get('size');
         let vector = new three.Vector3(position.x, position.y, -1);
         vector.project(this.camera);
 
         let percX = (vector.x + 1) / 2;
         let percY = (-vector.y + 1) / 2;
-        let left = percX * this.state.core.get('size').width;
-        let top = percY * this.state.core.get('size').height;
+        let left = percX * width;
+        let top = percY * height;
 
         return new three.Vector2(left, top);
     }
 
     screenToWorldPosition(position) {
+        let { width, height } = this.state.get('core').get('size');
         let camera = this.camera.getCamera();
-
         let vector = new three.Vector3();
 
         vector.set(
-            (position.x / this.state.core.get('size').width) * 2 - 1,
-            -(position.y / this.state.core.get('size').height) * 2 + 1,
+            (position.x / width) * 2 - 1,
+            -(position.y / height) * 2 + 1,
             0.5
         );
         vector.unproject(camera);
@@ -213,6 +214,10 @@ class Scene {
         let distance = -camera.position.z / direction.z;
 
         return camera.position.clone().add(direction.multiplyScalar(distance));
+    }
+
+    intersectionsAtWorldPosition(position) {
+        return this.rtree.searchPoint(position);
     }
 };
 

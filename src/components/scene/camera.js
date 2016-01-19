@@ -50,10 +50,11 @@ class Camera {
             1,
             maxZoom + 100
         );
-        this.camera.cameraObject = this;
+        // this.camera.cameraObject = this;
         // this.camera._target = new Vector3(0, 0, 0);
         // this.camera.lookAt(this.camera._target);
         this.camera.position.z = currentZoom;
+        this.camera.zoom = Math.abs(this.state.get('position').z - 2050) / 400;
 
         this.camera.updateProjectionMatrix();
     }

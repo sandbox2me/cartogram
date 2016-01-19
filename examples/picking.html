@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Cartogram 2 - Circles Test</title>
+        <style type="text/css">
+            body {
+                margin: 0;
+                padding: 0;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="container"></div>
+
+        <script type="text/javascript" src="http://raw.githack.com/mrdoob/stats.js/master/build/stats.min.js"></script>
+        <script type="text/javascript" src="../node_modules/three/three.js"></script>
+        <script type="text/javascript" src="../node_modules/lodash/index.js"></script>
+        <script type="text/javascript" src="../dist/cartogram-dev.js"></script>
+        <script type="text/javascript">
+            var cartogram = new Cartogram(document.getElementById('container'), {
+                backgroundColor: '#000000'
+            });
+            var scene = cartogram.getDefaultScene();
+            var circles = [];
+            var range = 2000;
+
+            // Register a new SDF font
+            cartogram.registerFont('benton', {
+                texture: 'benton.jpg'
+            });
+
+            cartogram.registerType('HoverCircle', {
+                parent: 'PointCircle',
+                onMouseover: function(state) {
+                    this.set('oldFill', state.fill);
+                    this.set('fill', { r: 0, g: 0, b: 1.0 });
+                },
+                onMouseout: function(state) {
+                    this.set('fill', state.oldFill);
+                    this.set('oldFill', undefined);
+                }
+            });
+
+            console.time('add group')
+            var shapes = [
+                {
+                    type: 'PointCircle',
+                    id: 1,
+                    radius: 40,
+                    position: { x: 0, y: 0, z: 0 },
+                    fill: { r: Math.random(), g: Math.random(), b: Math.random() }
+                },
+                {
+                    type: 'Rectangle',
+                    id: 2,
+                    position: { x: -6, y: 0, z: 0 },
+                    size: {
+                        width: 12,
+                        height: 17
+                    },
+                    fill: { r: 1, g: 1, b: 1 }
+                },
+                {
+                    type: 'Rectangle',
+                    id: 2,
+                    position: { x: 6, y: -3, z: 0 },
+                    size: {
+                        width: 12,
+                        height: 10
+                    },
+                    fill: { r: 1, g: 1, b: 1 }
+                }
+            ];
+
+            var group = scene.addGroup({
+                position: { x: 0, y: 0, z: 0 },
+                name: 'group1',
+                actors:
+                [
+                    {
+                        name: 'actor1',
+                        position: { x: -50, y: 50, z: 0 },
+                        shapes: shapes
+                    },
+                    {
+                        name: 'actor2',
+                        position: { x: 0, y: 50, z: 0 },
+                        shapes: shapes
+                    },
+                    {
+                        name: 'actor3',
+                        position: { x: 50, y: 50, z: 0 },
+                        shapes: shapes
+                    },
+                    {
+                        name: 'actor4',
+                        position: { x: -50, y: 0, z: 0 },
+                        shapes: shapes
+                    },
+                    {
+                        name: 'actor5',
+                        position: { x: 0, y: 0, z: 0 },
+                        shapes: shapes
+                    },
+                    {
+                        name: 'actor6',
+                        position: { x: 50, y: 0, z: 0 },
+                        shapes: shapes
+                    },
+                    {
+                        name: 'actor7',
+                        position: { x: -50, y: -50, z: 0 },
+                        shapes: shapes
+                    },
+                    {
+                        name: 'actor8',
+                        position: { x: 0, y: -50, z: 0 },
+                        shapes: shapes
+                    },
+                    {
+                        name: 'actor9',
+                        position: { x: 50, y: -50, z: 0 },
+                        shapes: shapes
+                    },
+                ]
+            })
+
+            console.timeEnd('add group')
+
+            var cameraController = new Cartogram.PanAndZoomCameraController({
+                buttons: {
+                    0: 'pan',
+                    3: 'zoom'
+                },
+                panSpeed: 3
+            });
+            scene.addCameraController(cameraController);
+
+            cartogram.state.core.get('canvas').addEventListener('mousemove', function(e) {
+                var position = scene.screenToWorldPosition({ x: e.clientX, y: e.clientY });
+                var intersections = scene.intersectionsAtWorldPosition(position);
+
+                if (intersections.length) {
+                    console.log(position, intersections[0][4].actor.definition.name);
+                }
+            });
+
+            var stats = new Stats();
+            stats.setMode( 0 ); // 0: fps, 1: ms, 2: mb
+
+            // align top-left
+            stats.domElement.style.position = 'absolute';
+            stats.domElement.style.left = '0px';
+            stats.domElement.style.top = '0px';
+
+            document.body.appendChild( stats.domElement );
+
+            cartogram.render(function() {
+                stats.begin();
+                stats.end();
+            });
+        </script>
+    </body>
+</html>

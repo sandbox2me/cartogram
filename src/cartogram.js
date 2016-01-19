@@ -100,6 +100,10 @@ class Cartogram {
     }
 
     // Public API
+    get state() {
+        return this.store.getState();
+    }
+
     registerFont(name, definition) {
         let action = actions.fonts.registerAsync;
         if (definition.dataURI) {
