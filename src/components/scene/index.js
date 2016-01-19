@@ -216,8 +216,18 @@ class Scene {
         return camera.position.clone().add(direction.multiplyScalar(distance));
     }
 
-    intersectionsAtWorldPosition(position) {
-        return this.rtree.searchPoint(position);
+    actorsAtWorldPosition(position) {
+        let intersections = this.rtree.searchPoint(position);
+        let actors = intersections.map((intersection) => {
+            return intersection[4].actor;
+        });
+
+        return actors;
+    }
+
+    actorsAtScreenPosition(position) {
+        let worldPosition = this.screenToWorldPosition(position);
+        return this.actorsAtWorldPosition(worldPosition);
     }
 };
 

@@ -139,10 +139,10 @@
 
             cartogram.state.core.get('canvas').addEventListener('mousemove', function(e) {
                 var position = scene.screenToWorldPosition({ x: e.clientX, y: e.clientY });
-                var intersections = scene.intersectionsAtWorldPosition(position);
+                var actors = scene.actorsAtScreenPosition({ x: e.clientX, y: e.clientY });
 
-                if (intersections.length) {
-                    console.log(position, intersections[0][4].actor.definition.name);
+                if (actors.length) {
+                    console.log(position, actors[0].definition.name);
                 }
             });
 

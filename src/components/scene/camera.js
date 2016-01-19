@@ -32,13 +32,17 @@ class Camera {
 
     stateDidChange(oldState) {
         if (!oldState) {
-            this._initializeCamera();
+            if (this.state.get('mode') === 'perspective') {
+                this._initializePerspectiveCamera();
+            } else {
+                this._initializeOrthographicCamera();
+            }
         } else {
             this._updateCameraState(oldState);
         }
     }
 
-    _initializeCamera() {
+    _initializeOrthographicCamera() {
         let { width, height } = this.state.get('screenSize');
         let { currentZoom, maxZoom } = this.state.toObject();
 
@@ -50,9 +54,7 @@ class Camera {
             1,
             maxZoom + 100
         );
-        // this.camera.cameraObject = this;
-        // this.camera._target = new Vector3(0, 0, 0);
-        // this.camera.lookAt(this.camera._target);
+
         this.camera.position.z = currentZoom;
         this.camera.zoom = Math.abs(this.state.get('position').z - 2050) / 400;
 
@@ -64,26 +66,33 @@ class Camera {
         let { currentZoom, maxZoom } = this.state.toObject();
 
         this.camera = new PerspectiveCamera(
-            70,
+            50,
             width / height,
             1,
-            1000
+            maxZoom + 100
         );
-        this.camera.position.z = 400;
+        this.camera.position.z = currentZoom;
     }
 
     _updateCameraState(oldState) {
-        if (oldState.get('position').z !== this.state.get('position').z) {
-            this.camera.zoom = Math.abs(this.state.get('position').z - 2050) / 400;
-        }
+        if (this.state.get('mode') === 'orthographic') {
+            if (oldState.get('position').z !== this.state.get('position').z) {
+                this.camera.zoom = Math.abs(this.state.get('position').z - 2050) / 400;
+            }
 
-        if (oldState.get('screenSize').width !== this.state.get('screenSize').width || oldState.get('screenSize').height !== this.state.get('screenSize').height) {
-            let screenSize = this.state.get('screenSize');
+            if (oldState.get('screenSize').width !== this.state.get('screenSize').width || oldState.get('screenSize').height !== this.state.get('screenSize').height) {
+                let screenSize = this.state.get('screenSize');
 
-            this.camera.left = screenSize.width / -2;
-            this.camera.right = screenSize.width / 2;
-            this.camera.top = screenSize.height / 2;
-            this.camera.bottom = screenSize.height / -2;
+                this.camera.left = screenSize.width / -2;
+                this.camera.right = screenSize.width / 2;
+                this.camera.top = screenSize.height / 2;
+                this.camera.bottom = screenSize.height / -2;
+            }
+        } else {
+            if (oldState.get('screenSize').width !== this.state.get('screenSize').width || oldState.get('screenSize').height !== this.state.get('screenSize').height) {
+                let screenSize = this.state.get('screenSize');
+                this.camera.aspect = screenSize.width / screenSize.height;
+            }
         }
         this.camera.updateProjectionMatrix();
 

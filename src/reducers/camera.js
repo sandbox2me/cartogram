@@ -2,6 +2,7 @@ import { Map } from 'immutable';
 import createReducer from 'utils/create_reducer';
 
 const initialState = Map({
+    mode: 'perspective',
     maxZoom: 2000,
     minZoom: 50,
     currentZoom: 500,
