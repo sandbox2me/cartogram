@@ -74,6 +74,13 @@ class Rectangle {
         this.geometry.addAttribute('color', this.colors);
     }
 
+
+    updateAttributesForShape(shape) {
+        let type = shape.actor.types[shape.shape.type][shape.actorIndex];
+        this.shapes[shape.index] = type;
+        this.updateAttributesAtIndex(shape.index);
+    }
+
     updateAttributesAtIndex(index) {
         let shape = this.shapes[index];
 

@@ -35,12 +35,6 @@ class PointCircle extends Rectangle {
         });
     }
 
-    updateAttributesForShape(shape) {
-        let type = shape.actor.types["PointCircle"][shape.actorIndex];
-        this.shapes[shape.index] = type;
-        this.updateAttributesAtIndex(shape.index);
-    }
-
     updateAttributesAtIndex(index) {
         let shape = this.shapes[index];
 
