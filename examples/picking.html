@@ -154,9 +154,10 @@
 
                 if (actors.length) {
                     console.log(position, actors[0]);
-                    scene.actorAtPath(actors[0]).set('circle', {
-                        fill: { r: Math.random(), g: Math.random(), b: Math.random() }
-                    });
+                    // scene.actorAtPath(actors[0]).set('circle', {
+                    //     fill: { r: Math.random(), g: Math.random(), b: Math.random() }
+                    // });
+                    scene.actorAtPath(actors[0]).translate({ x: 30, y: 0 });
                 }
             });
 

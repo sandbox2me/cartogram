@@ -24,7 +24,7 @@ class PointCircle extends BaseType {
     }
 
     get bbox() {
-        if (!this._bbox) {
+        if (!this._bbox || !this.actor._bbox) {
             let { radius } = this.shape;
             let position = this.position;
 

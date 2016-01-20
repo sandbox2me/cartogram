@@ -109,12 +109,47 @@ class Actor {
 
     set(shapeName, properties) {
         let shape = this.children[shapeName];
+        let definitionIndex = this.definition.shapes.indexOf(shape.shape);
 
         // TODO: Look for variables in the property list and fill them in as necessary
 
         let updatedProperties = Object.assign({}, shape.shape, properties);
 
-        this.scene.updateShape(shape, updatedProperties);
+        // this.scene.updateShape(shape, updatedProperties);
+
+        this.scene.pushChange({
+            type: 'shape',
+            actor: this,
+            index: shape.index,
+            definitionIndex,
+            properties: updatedProperties
+        });
+    }
+
+    // Relative movement
+    translate(position) {
+        position.x += this.position.x;
+        position.y += this.position.y;
+        position.z = this.position.z;
+        this._bbox = undefined;
+
+        this.scene.pushChange({
+            type: 'actor',
+            actor: this,
+            position
+        });
+    }
+
+    // Absolute movement
+    moveTo(position) {
+        position.z = this.position.z;
+        this._bbox = undefined;
+
+        this.scene.pushChange({
+            type: 'actor',
+            actor: this,
+            position
+        });
     }
 };
 

@@ -17,9 +17,9 @@ class BaseType {
 
     get position() {
         return {
-            x: this.shape.position.x + this.actor.getPosition().x,
-            y: this.shape.position.y + this.actor.getPosition().y,
-            z: this.shape.position.z + this.actor.getPosition().z,
+            x: this.shape.position.x + this.actor.position.x,
+            y: this.shape.position.y + this.actor.position.y,
+            z: this.shape.position.z + this.actor.position.z,
         };
     }
 

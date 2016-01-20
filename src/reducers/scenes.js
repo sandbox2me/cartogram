@@ -80,8 +80,13 @@ const handlers = {
                 shapes[definitionIndex] = properties;
 
                 actor.definition.shapes = shapes;
-                updateList.push(change);
             }
+
+            if (change.type === 'actor') {
+                let { actor, position } = change;
+                actor.definition.position = actor.position = position;
+            }
+            updateList.push(change);
         });
 
         pendingUpdates = pendingUpdates.push(...updateList);

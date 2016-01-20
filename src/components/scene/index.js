@@ -108,6 +108,10 @@ class Scene {
         });
     }
 
+    pushChange(change) {
+        this._pendingChanges.push(change);
+    }
+
     objectsAtPath(path) {
         let segments = path.replace(/(^\/)|(\/$)/g, '').split('/');
         let actorObjects = this.state.get('actorObjects');
@@ -269,20 +273,34 @@ class Scene {
 
     _updateMeshes() {
         let pendingChanges = this.state.get('pendingUpdates');
+        let hasActorChanges = false;
 
         pendingChanges.forEach((change) => {
-            let { type, actor, index, definitionIndex, properties } = change;
+            let { type } = change;
 
             if (type === 'shape') {
+                let { actor, index, definitionIndex, properties } = change;
                 let shape = actor.children[properties.name];
                 actor.updateChild(properties);
 
                 this.builders[properties.type].updateAttributesAtIndex(shape.index)
             }
+
+            if (type === 'actor') {
+                let { actor } = change;
+                _.values(actor.children).forEach((shapeTypeInstance) => {
+                    this.builders[shapeTypeInstance.shape.type].updateAttributesAtIndex(shapeTypeInstance.index);
+                });
+                hasActorChanges = true;
+            }
         });
 
         if (pendingChanges.size) {
             this.dispatch(sceneActions.resetUpdates());
+        }
+        if (hasActorChanges) {
+            this.rtree.reset();
+            this.rtree.insertActors(this.state.get('actorObjects').toArray());
         }
     }
 
