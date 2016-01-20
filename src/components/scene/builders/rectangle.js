@@ -74,6 +74,21 @@ class Rectangle {
         this.geometry.addAttribute('color', this.colors);
     }
 
+    updateAttributesAtIndex(index) {
+        let shape = this.shapes[index];
+
+        let { position, bbox } = shape.type;
+        let { fill, size } = shape.shape;
+
+        this.scales.setXY(index, size.width, size.height);
+        this.offsets.setXYZ(index, position.x, position.y, position.z);
+        this.colors.setXYZW(index, fill.r, fill.g, fill.b, 1.0);
+
+        this.geometry.attributes.scale.needsUpdate = true;
+        this.geometry.attributes.offset.needsUpdate = true;
+        this.geometry.attributes.color.needsUpdate = true;
+    }
+
     get vertexShader() {
         return vertexShader;
     }

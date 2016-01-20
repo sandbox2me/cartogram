@@ -49,7 +49,7 @@
                     name: 'circle',
                     radius: 20,
                     position: { x: 0, y: 0, z: 0 },
-                    fill: { r: Math.random(), g: Math.random(), b: Math.random() },
+                    fill: { r: 1.0, g: 0, b: 0 },
                     hitMask: true
                 },
                 {
@@ -139,12 +139,24 @@
             scene.addCameraController(cameraController);
 
             cartogram.state.core.get('canvas').addEventListener('mousemove', function(e) {
+                var actors = scene.actorsAtScreenPosition({ x: e.clientX, y: e.clientY });
+
+                if (actors.length) {
+                    cartogram.state.core.get('canvas').style.cursor = 'pointer';
+                } else {
+                    cartogram.state.core.get('canvas').style.cursor = 'auto';
+                }
+            });
+
+            cartogram.state.core.get('canvas').addEventListener('click', function(e) {
                 var position = scene.screenToWorldPosition({ x: e.clientX, y: e.clientY });
                 var actors = scene.actorsAtScreenPosition({ x: e.clientX, y: e.clientY });
 
                 if (actors.length) {
                     console.log(position, actors[0]);
-                    debugger
+                    scene.actorAtPath(actors[0]).set('circle', {
+                        fill: { r: Math.random(), g: Math.random(), b: Math.random() }
+                    });
                 }
             });
 

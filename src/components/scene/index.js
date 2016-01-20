@@ -22,6 +22,9 @@ class Scene {
         this.camera = new Camera(store);
         this.rtree = new RTree();
         this.typedTrees = {};
+        this.builders = {};
+
+        this._pendingChanges = [];
 
         this._initializeStoreObserver();
     }
@@ -54,6 +57,9 @@ class Scene {
         } else if (oldState && this.state.get('actors') !== oldState.get('actors')) {
             // actors changed, update scene
             console.log('Updating scene')
+        } else if (oldState && this.state.get('pendingUpdates') !== oldState.get('pendingUpdates') && this.state.get('pendingUpdates').size) {
+            console.log('updates pending')
+            this._updateMeshes();
         }
     }
 
@@ -86,6 +92,19 @@ class Scene {
             });
         });
         this.dispatch(sceneActions.addGroups(groups));
+    }
+
+    updateShape(shape, properties) {
+        let { actor, index } = shape;
+        let definitionIndex = actor.definition.shapes.indexOf(shape.shape);
+
+        this._pendingChanges.push({
+            type: 'shape',
+            actor,
+            index,
+            definitionIndex,
+            properties
+        });
     }
 
     objectsAtPath(path) {
@@ -143,6 +162,11 @@ class Scene {
             cameraController.update();
         }
 
+        if (this._pendingChanges.length) {
+            console.log(`${ this._pendingChanges.length } Pending changes to scene items exist`);
+            this.dispatch(sceneActions.commitChanges(this._pendingChanges));
+            this._pendingChanges = [];
+        }
     }
 
     render(renderer, userCallback) {
@@ -174,6 +198,7 @@ class Scene {
                     }
 
                     for(let i = 0; i < shapeList.length; i++) {
+                        shapeList[i].type.setIndex(types[type].length);
                         types[type].push(shapeList[i]);
                     }
                 });
@@ -213,6 +238,7 @@ class Scene {
             } else {
                 // Use type class to create the appropriate shapes
                 let builder = new Builders[type](shapes, this.typedTrees[type], this.state);
+                this.builders[type] = builder;
                 meshes.push(builder.mesh);
             }
         });
@@ -238,6 +264,25 @@ class Scene {
             this.dispatch(sceneActions.addMeshes(meshes));
             this.dispatch(sceneActions.addActorObjects(actorObjects));
         }
+    }
+
+    _updateMeshes() {
+        let pendingUpdates = this.state.get('pendingUpdates');
+
+        pendingUpdates.forEach((update) => {
+            update = update.toObject();
+            if (update.type === 'shape') {
+                let builder = this.builders[update.properties.get('type')];
+
+                update.actor._iterateChildren();
+                let shape = update.actor.children[update.properties.get('name')];
+                console.log('new', update.properties.get('fill').toObject());
+                builder.updateAttributesForShape(shape);
+                console.log('updating')
+            }
+        });
+
+        this.dispatch(sceneActions.resetUpdates());
     }
 
     worldToScreenPositionVector(position) {

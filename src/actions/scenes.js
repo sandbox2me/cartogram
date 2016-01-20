@@ -40,6 +40,19 @@ function addMeshes(meshes) {
     };
 }
 
+function commitChanges(changes) {
+    return {
+        type: 'COMMIT_CHANGES',
+        changes
+    };
+}
+
+function resetUpdates() {
+    return {
+        type: 'RESET_UPDATES'
+    };
+}
+
 export default {
     addCameraController,
     addActor,
@@ -47,4 +60,6 @@ export default {
     addGroups,
     addActorObjects,
     addMeshes,
+    commitChanges,
+    resetUpdates,
 };

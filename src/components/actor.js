@@ -10,6 +10,7 @@ class Actor {
         this.position = this.definition.position;
         this.types = Map({});
         this.bbox = {};
+        this.children = {};
 
         this._iterateChildren();
     }
@@ -44,12 +45,17 @@ class Actor {
         this.definition.shapes.forEach((shape) => {
             let bbox;
             let type;
+            let index = -1;
 
             if (!Types[shape.type]) {
                 throw new Error(`Shape type "${ shape.type }" not found!`);
             }
 
+            if (shape.name in this.children) {
+                index = this.children[shape.name].index;
+            }
             type = new Types[shape.type](shape, this);
+            type._index = index;
             children[shape.name] = type;
 
             bbox = type.getBBox();
@@ -77,6 +83,7 @@ class Actor {
             // I originally destructured shape here, and inserted bbox and type
             // to create a new object. Turns out it's roughly twice as slow to
             // do that, compared to not manipulating the object at all.
+            type.actorIndex = actorTypes[shape.type].length;
             actorTypes[shape.type].push({
                 shape,
                 bbox,
@@ -98,6 +105,16 @@ class Actor {
 
         this.types = actorTypes;
         this.children = children;
+    }
+
+    set(shapeName, properties) {
+        let shape = this.children[shapeName];
+
+        // TODO: Look for variables in the property list and fill them in as necessary
+
+        let updatedProperties = Object.assign({}, shape.shape, properties);
+
+        this.scene.updateShape(shape, updatedProperties);
     }
 };
 

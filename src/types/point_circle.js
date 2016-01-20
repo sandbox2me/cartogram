@@ -13,7 +13,7 @@ class PointCircle extends BaseType {
     }
 
     get size() {
-        if (!this._size || this.type.radius !== this._size.width) {
+        if (!this._size || this.shape.type.radius !== this._size.width) {
             this._size = {
                 width: this.shape.radius * 2,
                 height: this.shape.radius * 2,

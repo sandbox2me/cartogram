@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import { List, Map } from 'immutable';
 import createReducer from 'utils/create_reducer';
 
@@ -5,6 +6,8 @@ const initialState = Map({
     cameraController: undefined,
 
     targetDrawCallLimit: 400,
+
+    pendingUpdates: List([]),
 
     actors: Map({}),
     actorObjects: Map({}),
@@ -62,6 +65,34 @@ const handlers = {
         meshes = meshes.merge(action.meshes);
 
         return state.set('meshes', meshes);
+    },
+
+    'COMMIT_CHANGES': (state, action) => {
+        let { changes } = action;
+        let updateList = [];
+        let pendingUpdates = state.get('pendingUpdates');
+        let groups = state.get('groups');
+
+        changes.forEach((change) => {
+            if (change.type === 'shape') {
+                let { type, actor, index, definitionIndex, properties } = change;
+
+                actor.definition.shapes[definitionIndex] = properties;
+                updateList.push({
+                    type: 'shape',
+                    actor,
+                    properties,
+                    index
+                });
+            }
+        });
+
+        pendingUpdates = pendingUpdates.merge(updateList);
+        return state.set('pendingUpdates', pendingUpdates);
+    },
+
+    'RESET_UPDATES': (state, action) => {
+        return state.set('pendingUpdates', List([]));
     }
 };
 

@@ -35,6 +35,27 @@ class PointCircle extends Rectangle {
         });
     }
 
+    updateAttributesForShape(shape) {
+        let type = shape.actor.types["PointCircle"][shape.actorIndex];
+        this.shapes[shape.index] = type;
+        this.updateAttributesAtIndex(shape.index);
+    }
+
+    updateAttributesAtIndex(index) {
+        let shape = this.shapes[index];
+
+        let { position, bbox, size } = shape.type;
+        let { fill } = shape.shape;
+
+        this.scales.setXY(index, size.width, size.height);
+        this.offsets.setXYZ(index, position.x, position.y, position.z);
+        this.colors.setXYZW(index, fill.r, fill.g, fill.b, 1.0);
+
+        this.geometry.attributes.scale.needsUpdate = true;
+        this.geometry.attributes.offset.needsUpdate = true;
+        this.geometry.attributes.color.needsUpdate = true;
+    }
+
     get vertexShader() {
         return vertexShader;
     }
