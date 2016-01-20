@@ -57,6 +57,10 @@ class Scene {
         } else if (oldState && this.state.get('actors') !== oldState.get('actors')) {
             // actors changed, update scene
             console.log('Updating scene')
+        } else if (oldState && this.state.get('groups') !== oldState.get('groups')) {
+            // actors changed, update scene
+            console.log('Updating scene')
+            this._addOrRemoveObjects();
         } else if (oldState && this.state.get('pendingUpdates') !== oldState.get('pendingUpdates') && this.state.get('pendingUpdates').size) {
             console.log('updates pending')
             this._updateMeshes();
@@ -130,9 +134,7 @@ class Scene {
 
             let actorPath = `/${ segments[0] }/${ segments[1] }`;
             let actor = actorObjects.get(actorPath);
-            if (!actor) {
-                throw new Error(`Actor '${ actorPath }' not found`);
-            } else if (segments[2]) {
+            if (segments[2]) {
                 // Find shape
                 let child = actor.children[segments[2]];
                 objects['shape'] = child;
@@ -269,6 +271,66 @@ class Scene {
             this.dispatch(sceneActions.addMeshes(meshes));
             this.dispatch(sceneActions.addActorObjects(actorObjects));
         }
+    }
+
+    _addOrRemoveObjects() {
+        let actorObjects = {};
+        let types = {};
+
+        this.state.get('groups').forEach((group, name) => {
+            let objects = this.objectsAtPath(`/${ name }/${ group.actors[0].name }`);
+            if (objects.actor) {
+                console.log(`Group "${ name }" exists. Continuing.`);
+                return;
+            }
+            console.log(`Generating for group "${ name }"`);
+
+            group.actors.forEach((actor) => {
+                let path = `/${ name }/${ actor.name }`
+                let actorObject = new Actor(actor);
+                actorObjects[`/${ name }/${ actor.name }`] = actorObject;
+
+                _.forEach(actorObject.types, (shapeList, type) => {
+                    if (!types[type]) {
+                        types[type] = [];
+                        this.typedTrees[type] = new RTree();
+                    }
+
+                    for(let i = 0; i < shapeList.length; i++) {
+                        // shapeList[i].setIndex(types[type].length);
+                        types[type].push(shapeList[i]);
+                    }
+                });
+            });
+        });
+
+        if (!Object.keys(actorObjects).length) {
+            console.log('No actors added');
+            return;
+        }
+
+        this.rtree.insertActors(_.values(actorObjects));
+
+        console.log('Building meshes');
+        let meshes = [];
+        _.forEach(types, (shapes, type) => {
+            // Use type class to create the appropriate shapes
+            let builder = this.builders[type];
+
+            if (!builder) {
+                builder = new Builders[type](shapes, this.typedTrees[type], this.state);
+                this.builders[type] = builder;
+                meshes.push(builder.mesh);
+            } else {
+                builder.addShapes(shapes, this.state);
+            }
+        });
+
+        if (meshes.length) {
+            this.threeScene.add(...meshes);
+            this.dispatch(sceneActions.addMeshes(meshes));
+        }
+        this.dispatch(sceneActions.addActorObjects(actorObjects));
     }
 
     _updateMeshes() {

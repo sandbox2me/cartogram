@@ -74,6 +74,36 @@ class Rectangle {
         this.geometry.addAttribute('color', this.colors);
     }
 
+    _expandAttributes(startIndex) {
+        let offsetsArray = new Float32Array(this.shapes.length * 3);
+        let scalesArray = new Float32Array(this.shapes.length * 2);
+        let colorsArray = new Float32Array(this.shapes.length * 4);
+
+        offsetsArray.set(this.offsets.array);
+        scalesArray.set(this.scales.array);
+        colorsArray.set(this.colors.array);
+
+        this.offsets.array = offsetsArray;
+        this.scales.array = scalesArray;
+        this.colors.array = colorsArray;
+
+        for(let i = startIndex; i < this.shapes.length; i++) {
+            let shapeTypeInstance = this.shapes[i];
+            let position = shapeTypeInstance.position;
+            let { size, fill } = shapeTypeInstance.shape;
+
+            shapeTypeInstance.setIndex(i);
+
+            this.offsets.setXYZ(i, position.x, position.y, position.z);
+            this.scales.setXY(i, size.width, size.height);
+            this.colors.setXYZW(i, fill.r, fill.g, fill.b, 1.0);
+        }
+
+        this.offsets.needsUpdate = true;
+        this.scales.needsUpdate = true;
+        this.colors.needsUpdate = true;
+    }
+
     updateAttributesAtIndex(index) {
         let shapeTypeInstance = this.shapes[index];
 
@@ -87,6 +117,15 @@ class Rectangle {
         this.geometry.attributes.scale.needsUpdate = true;
         this.geometry.attributes.offset.needsUpdate = true;
         this.geometry.attributes.color.needsUpdate = true;
+    }
+
+    addShapes(shapes, sceneState) {
+        this.sceneState = sceneState;
+
+        let oldShapesCount = this.shapes.length;
+        this.shapes = this.shapes.concat(shapes);
+
+        this._expandAttributes(oldShapesCount);
     }
 
     get vertexShader() {

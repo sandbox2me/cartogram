@@ -129,6 +129,19 @@
 
             console.timeEnd('add group')
 
+            var group = scene.addGroup({
+                position: { x: 0, y: 0, z: 0 },
+                name: 'group2',
+                actors:
+                [
+                    {
+                        name: 'actor1',
+                        position: { x: -50, y: -150, z: 0 },
+                        shapes: shapes
+                    },
+                ]
+            });
+
             var cameraController = new Cartogram.PanAndZoomCameraController({
                 buttons: {
                     0: 'pan',
