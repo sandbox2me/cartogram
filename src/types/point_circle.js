@@ -23,19 +23,19 @@ class PointCircle extends BaseType {
         return this._size;
     }
 
-    getBBox() {
-        if (!this.bbox) {
+    get bbox() {
+        if (!this._bbox) {
             let { radius } = this.shape;
             let position = this.position;
 
-            this.bbox = {
+            this._bbox = {
                 width: radius * 2,
                 height: radius * 2,
                 x: position.x - radius,
                 y: position.y - radius
             };
         }
-        return this.bbox;
+        return this._bbox;
     }
 
     checkIntersection(position) {

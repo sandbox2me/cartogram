@@ -3,6 +3,12 @@ class BaseType {
     constructor(shape, actor) {
         this.actor = actor;
         this.shape = shape;
+        this._index = -1;
+    }
+
+    update(properties) {
+        this.shape = properties;
+        this._bbox = undefined;
     }
 
     get path() {
@@ -26,7 +32,7 @@ class BaseType {
         return this._index;
     }
 
-    getBBox() {
+    get bbox() {
         throw new Error('getBBox not implemented');
     }
 

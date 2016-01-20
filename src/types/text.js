@@ -97,19 +97,19 @@ class Text extends BaseType {
         };
     }
 
-    getBBox() {
-        if (!this.bbox) {
+    get bbox() {
+        if (!this._bbox) {
             let size = this.size;
             let position = this.position;
 
-            this.bbox = {
+            this._bbox = {
                 x: position.x - (size.width / 2),
                 y: position.y - (size.height / 2),
                 width: size.width,
                 height: size.height,
             };
         }
-        return this.bbox;
+        return this._bbox;
     }
 };
 

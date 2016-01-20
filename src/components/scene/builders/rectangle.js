@@ -57,15 +57,15 @@ class Rectangle {
         this.scales = new InstancedBufferAttribute(new Float32Array(this.shapes.length * 2), 2);
         this.colors = new InstancedBufferAttribute(new Float32Array(this.shapes.length * 4), 4);
 
-        this.shapes.forEach((shape, i) => {
-            let position = shape.type.position;
+        this.shapes.forEach((shapeTypeInstance, i) => {
+            let position = shapeTypeInstance.position;
             this.offsets.setXYZ(i, position.x, position.y, position.z);
 
-            let size = shape.shape.size;
+            let size = shapeTypeInstance.shape.size;
             this.scales.setXY(i, size.width, size.height);
 
             // Assuming r,g,b object. Handle other things plz.
-            let color = shape.shape.fill;
+            let color = shapeTypeInstance.shape.fill;
             this.colors.setXYZW(i, color.r, color.g, color.b, 1.0);
         });
 
@@ -74,17 +74,11 @@ class Rectangle {
         this.geometry.addAttribute('color', this.colors);
     }
 
-
-    updateAttributesForShape(shape) {
-        this.shapes[shape.type.index] = shape;
-        this.updateAttributesAtIndex(shape.type.index);
-    }
-
     updateAttributesAtIndex(index) {
-        let shape = this.shapes[index];
+        let shapeTypeInstance = this.shapes[index];
 
-        let { position, bbox } = shape.type;
-        let { fill, size } = shape.shape;
+        let { position, bbox } = shapeTypeInstance;
+        let { fill, size } = shapeTypeInstance.shape;
 
         this.scales.setXY(index, size.width, size.height);
         this.offsets.setXYZ(index, position.x, position.y, position.z);

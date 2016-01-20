@@ -95,9 +95,9 @@ class Scene {
         this.dispatch(sceneActions.addGroups(groups));
     }
 
-    updateShape(shape, properties) {
-        let { actor, index } = shape.type;
-        let definitionIndex = actor.definition.shapes.indexOf(shape.shape);
+    updateShape(shapeTypeInstance, properties) {
+        let { actor, index } = shapeTypeInstance;
+        let definitionIndex = actor.definition.shapes.indexOf(shapeTypeInstance.shape);
 
         this._pendingChanges.push({
             type: 'shape',
@@ -199,7 +199,7 @@ class Scene {
                     }
 
                     for(let i = 0; i < shapeList.length; i++) {
-                        shapeList[i].type.setIndex(types[type].length);
+                        shapeList[i].setIndex(types[type].length);
                         types[type].push(shapeList[i]);
                     }
                 });
@@ -274,13 +274,10 @@ class Scene {
             let { type, actor, index, definitionIndex, properties } = change;
 
             if (type === 'shape') {
-                let builder = this.builders[properties.type];
-
-                actor.iterateChildren();
                 let shape = actor.children[properties.name];
+                actor.updateChild(properties);
 
-                console.log('new', properties.fill);
-                builder.updateAttributesForShape(shape);
+                this.builders[properties.type].updateAttributesAtIndex(shape.index)
             }
         });
 

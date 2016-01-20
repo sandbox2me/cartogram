@@ -9,23 +9,19 @@ class Rectangle extends BaseType {
         super(shape, actor);
     }
 
-    getBBox() {
-        if (!this.bbox) {
+    get bbox() {
+        if (!this._bbox) {
             let { size } = this.shape;
             let position = this.position;
 
-            this.bbox = {
+            this._bbox = {
                 x: position.x - (size.width / 2),
                 y: position.y - (size.height / 2),
                 width: size.width,
                 height: size.height,
             };
         }
-        return this.bbox;
-    }
-
-    getGeometry() {
-        return sharedGeometry;
+        return this._bbox;
     }
 };
 

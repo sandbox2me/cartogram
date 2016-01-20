@@ -1,5 +1,4 @@
-import { Map } from 'immutable';
-
+import _ from 'lodash';
 import * as Types from '../types';
 
 class Actor {
@@ -8,8 +7,7 @@ class Actor {
         this.definition = definition;
         this.scene = this.definition.scene;
         this.position = this.definition.position;
-        this.types = Map({});
-        this.bbox = {};
+        this.types = {};
         this.children = {};
 
         this.iterateChildren();
@@ -37,76 +35,76 @@ class Actor {
     iterateChildren() {
         let actorTypes = {};
         let children = {};
-        let minX = Infinity,
-            maxX = -Infinity,
-            minY = Infinity,
-            maxY = -Infinity;
 
         this.definition.shapes.forEach((shape) => {
-            let bbox;
-            let type;
-            let index = -1;
-
             if (!Types[shape.type]) {
                 throw new Error(`Shape type "${ shape.type }" not found!`);
             }
 
-            if (shape.name in this.children) {
-                index = this.children[shape.name].type.index;
-            }
-            type = new Types[shape.type](shape, this);
-            type._index = index;
-
-            bbox = type.getBBox();
-
-            if (bbox.x < minX) {
-                minX = bbox.x;
-            }
-
-            if (bbox.x + bbox.width > maxX) {
-                maxX = bbox.x + bbox.width;
-            }
-
-            if (bbox.y < minY) {
-                minY = bbox.y;
-            }
-
-            if (bbox.y + bbox.height > maxY) {
-                maxY = bbox.y + bbox.height;
-            }
+            let typeInstance = new Types[shape.type](shape, this);
 
             if (!actorTypes[shape.type]) {
                 actorTypes[shape.type] = [];
             }
 
-            // I originally destructured shape here, and inserted bbox and type
-            // to create a new object. Turns out it's roughly twice as slow to
-            // do that, compared to not manipulating the object at all.
-            type.actorIndex = actorTypes[shape.type].length;
+            typeInstance.actorIndex = actorTypes[shape.type].length;
 
-            let childBundle = {
-                shape,
-                bbox,
-                type
-            };
-            actorTypes[shape.type].push(childBundle);
-            children[shape.name] = childBundle;
+            actorTypes[shape.type].push(typeInstance);
+            children[shape.name] = typeInstance;
 
             if (shape.hitMask) {
                 this.hasHitMask = true;
-                this.hitMaskType = type;
+                this.hitMaskType = typeInstance;
             }
         });
 
-        this.bbox = {
-            x: minX,
-            y: minY,
-            width: maxX - minX,
-            height: maxY - minY
-        };
-
         this.types = actorTypes;
         this.children = children;
+    }
+
+    updateChild(properties) {
+        let typeInstance = this.children[properties.name];
+        typeInstance.update(properties);
+
+        this._bbox = undefined;
+    }
+
+    get bbox() {
+        if (!this._bbox) {
+            let minX = Infinity,
+                maxX = -Infinity,
+                minY = Infinity,
+                maxY = -Infinity;
+
+            _.values(this.children).forEach((typeInstance) => {
+                let bbox = typeInstance.bbox;
+
+                if (bbox.x < minX) {
+                    minX = bbox.x;
+                }
+
+                if (bbox.x + bbox.width > maxX) {
+                    maxX = bbox.x + bbox.width;
+                }
+
+                if (bbox.y < minY) {
+                    minY = bbox.y;
+                }
+
+                if (bbox.y + bbox.height > maxY) {
+                    maxY = bbox.y + bbox.height;
+                }
+            });
+
+            this._bbox = {
+                x: minX,
+                y: minY,
+                width: maxX - minX,
+                height: maxY - minY
+            };
+        }
+
+        return this._bbox;
     }
 
     set(shapeName, properties) {

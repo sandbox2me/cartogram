@@ -21,9 +21,9 @@ class PointCircle extends Rectangle {
         this.offsets = new InstancedBufferAttribute(new Float32Array(this.shapes.length * 3), 3);
         this.colors = new InstancedBufferAttribute(new Float32Array(this.shapes.length * 4), 4);
 
-        this.shapes.forEach((shape, i) => {
-            let { position, bbox, size } = shape.type;
-            let { fill } = shape.shape;
+        this.shapes.forEach((shapeTypeInstance, i) => {
+            let { position, bbox, size } = shapeTypeInstance;
+            let { fill } = shapeTypeInstance.shape;
 
             this.scales.setXY(i, size.width, size.height);
             this.offsets.setXYZ(i, position.x, position.y, position.z);
@@ -36,10 +36,10 @@ class PointCircle extends Rectangle {
     }
 
     updateAttributesAtIndex(index) {
-        let shape = this.shapes[index];
+        let shapeTypeInstance = this.shapes[index];
 
-        let { position, bbox, size } = shape.type;
-        let { fill } = shape.shape;
+        let { position, bbox, size } = shapeTypeInstance;
+        let { fill } = shapeTypeInstance.shape;
 
         this.scales.setXY(index, size.width, size.height);
         this.offsets.setXYZ(index, position.x, position.y, position.z);
