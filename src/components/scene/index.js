@@ -299,6 +299,7 @@ class Scene {
             this.dispatch(sceneActions.resetUpdates());
         }
         if (hasActorChanges) {
+            // XXX Fix this brute-force approach
             this.rtree.reset();
             this.rtree.insertActors(this.state.get('actorObjects').toArray());
         }
