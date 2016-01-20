@@ -76,9 +76,8 @@ class Rectangle {
 
 
     updateAttributesForShape(shape) {
-        let type = shape.actor.types[shape.shape.type][shape.actorIndex];
-        this.shapes[shape.index] = type;
-        this.updateAttributesAtIndex(shape.index);
+        this.shapes[shape.type.index] = shape;
+        this.updateAttributesAtIndex(shape.type.index);
     }
 
     updateAttributesAtIndex(index) {

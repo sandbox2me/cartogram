@@ -12,7 +12,7 @@ class Actor {
         this.bbox = {};
         this.children = {};
 
-        this._iterateChildren();
+        this.iterateChildren();
     }
 
     get path() {
@@ -34,7 +34,7 @@ class Actor {
         return this.hitMaskType.checkIntersection(position);
     }
 
-    _iterateChildren() {
+    iterateChildren() {
         let actorTypes = {};
         let children = {};
         let minX = Infinity,
@@ -52,11 +52,10 @@ class Actor {
             }
 
             if (shape.name in this.children) {
-                index = this.children[shape.name].index;
+                index = this.children[shape.name].type.index;
             }
             type = new Types[shape.type](shape, this);
             type._index = index;
-            children[shape.name] = type;
 
             bbox = type.getBBox();
 
@@ -84,11 +83,14 @@ class Actor {
             // to create a new object. Turns out it's roughly twice as slow to
             // do that, compared to not manipulating the object at all.
             type.actorIndex = actorTypes[shape.type].length;
-            actorTypes[shape.type].push({
+
+            let childBundle = {
                 shape,
                 bbox,
                 type
-            });
+            };
+            actorTypes[shape.type].push(childBundle);
+            children[shape.name] = childBundle;
 
             if (shape.hitMask) {
                 this.hasHitMask = true;

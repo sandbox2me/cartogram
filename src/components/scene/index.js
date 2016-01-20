@@ -80,6 +80,7 @@ class Scene {
             actor.group = group;
             actor.scene = this;
         });
+        window.group = group;
         this.dispatch(sceneActions.addGroup(group));
     }
 
@@ -95,7 +96,7 @@ class Scene {
     }
 
     updateShape(shape, properties) {
-        let { actor, index } = shape;
+        let { actor, index } = shape.type;
         let definitionIndex = actor.definition.shapes.indexOf(shape.shape);
 
         this._pendingChanges.push({
@@ -267,22 +268,25 @@ class Scene {
     }
 
     _updateMeshes() {
-        let pendingUpdates = this.state.get('pendingUpdates');
+        let pendingChanges = this.state.get('pendingUpdates');
 
-        pendingUpdates.forEach((update) => {
-            update = update.toObject();
-            if (update.type === 'shape') {
-                let builder = this.builders[update.properties.get('type')];
+        pendingChanges.forEach((change) => {
+            let { type, actor, index, definitionIndex, properties } = change;
 
-                update.actor._iterateChildren();
-                let shape = update.actor.children[update.properties.get('name')];
-                console.log('new', update.properties.get('fill').toObject());
+            if (type === 'shape') {
+                let builder = this.builders[properties.type];
+
+                actor.iterateChildren();
+                let shape = actor.children[properties.name];
+
+                console.log('new', properties.fill);
                 builder.updateAttributesForShape(shape);
-                console.log('updating')
             }
         });
 
-        this.dispatch(sceneActions.resetUpdates());
+        if (pendingChanges.size) {
+            this.dispatch(sceneActions.resetUpdates());
+        }
     }
 
     worldToScreenPositionVector(position) {

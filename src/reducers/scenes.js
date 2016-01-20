@@ -76,18 +76,15 @@ const handlers = {
         changes.forEach((change) => {
             if (change.type === 'shape') {
                 let { type, actor, index, definitionIndex, properties } = change;
+                let shapes = [...actor.definition.shapes];
+                shapes[definitionIndex] = properties;
 
-                actor.definition.shapes[definitionIndex] = properties;
-                updateList.push({
-                    type: 'shape',
-                    actor,
-                    properties,
-                    index
-                });
+                actor.definition.shapes = shapes;
+                updateList.push(change);
             }
         });
 
-        pendingUpdates = pendingUpdates.merge(updateList);
+        pendingUpdates = pendingUpdates.push(...updateList);
         return state.set('pendingUpdates', pendingUpdates);
     },
 
