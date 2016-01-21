@@ -7,7 +7,7 @@ class Actor {
         this.definition = definition;
         this.group = this.definition.group;
         this.scene = this.definition.scene;
-        this.position = this.definition.position;
+        this._position = this.definition.position;
         this.types = {};
         this.children = {};
 
@@ -29,16 +29,20 @@ class Actor {
         return `/${ segments.join('/') }`;
     }
 
-    getPosition() {
+    get position() {
         if (!this.group) {
-            return this.position;
+            return this._position;
         }
 
         return {
-            x: this.position.x + this.group.position.x,
-            y: this.position.y + this.group.position.y,
-            z: this.position.z + this.group.position.z
+            x: this._position.x + this.group.position.x,
+            y: this._position.y + this.group.position.y,
+            z: this._position.z + this.group.position.z
         };
+    }
+
+    set position(value) {
+        this._position = value;
     }
 
     checkHitMask(position) {
