@@ -60,15 +60,12 @@ export default class PanAndZoomCameraController {
     }
 
     _registerInputHandlers() {
-        this.canvas.addEventListener('mousedown', this._handleMouseDown, false);
-        this.canvas.addEventListener('mousewheel', this._handleMouseWheel, false);
+        this.scene.on('mousedown', this._handleMouseDown);
+        this.scene.on('mousewheel', this._handleMouseWheel);
     }
 
     @autobind
     _handleMouseDown(e) {
-        e.preventDefault();
-        e.stopPropagation();
-
         if (this.button === -1) {
             this.button = e.button;
         }
@@ -82,8 +79,8 @@ export default class PanAndZoomCameraController {
             this.panEnd.copy(this.panStart);
         }
 
-        this.canvas.addEventListener('mousemove', this._handleMouseMove, false);
-        this.canvas.addEventListener('mouseup', this._handleMouseUp, false);
+        this.scene.on('mousemove', this._handleMouseMove);
+        this.scene.on('mouseup', this._handleMouseUp);
     }
 
     @autobind
@@ -100,8 +97,8 @@ export default class PanAndZoomCameraController {
             this.panEnd.copy(this.getMousePosition(e.pageX, e.pageY));
         }
 
-        this.canvas.removeEventListener('mousemove', this._handleMouseMove);
-        this.canvas.removeEventListener('mouseup', this._handleMouseUp);
+        this.scene.off('mousemove', this._handleMouseMove);
+        this.scene.off('mouseup', this._handleMouseUp);
     }
 
     @autobind

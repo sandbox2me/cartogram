@@ -22,7 +22,6 @@ class Scene {
         this.dispatch = this.store.dispatch;
 
         this.eventBus = new EventBus();
-        this.eventDispatch = new EventBinder(this);
 
         this.threeScene = new three.Scene();
         this.camera = new Camera(store);
@@ -52,6 +51,17 @@ class Scene {
         }
         this.store.subscribe(handleChange);
         handleChange();
+        this.eventDispatch = new EventBinder(this);
+    }
+
+    on() {
+        this.eventBus.on(...arguments);
+    }
+    off() {
+        this.eventBus.off(...arguments);
+    }
+    trigger() {
+        this.eventBus.trigger(...arguments);
     }
 
     stateDidChange(oldState) {

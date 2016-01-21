@@ -2,6 +2,7 @@ const DEFAULT_EVENTS = [
     'mouseup',
     'mousedown',
     'mousemove',
+    'mousewheel',
 
     'click',
     'dblclick',
@@ -24,8 +25,8 @@ class EventBinder {
             this.canvas.addEventListener(eventName, (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                this.scene.eventBus.trigger(eventName, e);
-            });
+                this.scene.eventBus.trigger(eventName, e, this.scene);
+            }, false);
         });
     }
 }
