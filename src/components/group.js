@@ -29,15 +29,16 @@ class Group {
     }
 
     translate(position) {
-        position.x += this.position.x;
-        position.y += this.position.y;
-        position.z = this.position.z;
         this._bbox = undefined;
 
         this.scene.pushChange({
             type: 'group',
             group: this,
-            position
+            position: {
+                x: position.x + this.position.x,
+                y: position.y + this.position.y,
+                z: (position.z || 0) + this.position.z,
+            }
         });
     }
 
@@ -48,7 +49,11 @@ class Group {
         this.scene.pushChange({
             type: 'group',
             group: this,
-            position
+            position: {
+                x: position.x,
+                y: position.y,
+                z: (position.z || 0) + this.position.z,
+            }
         });
     }
 

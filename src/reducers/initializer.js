@@ -7,6 +7,6 @@ import thunk from 'redux-thunk';
 import createLogger from 'redux-logger';
 
 const logger = createLogger();
-const createStoreWithMiddleware = applyMiddleware(thunk, logger)(createStore);
+const createStoreWithMiddleware = applyMiddleware(thunk)(createStore);
 
 export default createStoreWithMiddleware;

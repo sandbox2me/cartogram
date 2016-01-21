@@ -91,12 +91,15 @@ const handlers = {
 
             if (change.type === 'actor') {
                 let { actor, position } = change;
-                actor.definition.position = actor.position = position;
+                actor.definition.position = position;
+                actor.position = position;
             }
 
             if (change.type === 'group') {
                 let { group, position } = change;
-                group.definition.position = group.position = position;
+                console.log('previous position:', group.position, ' new position: ', position);
+                group.definition.position = position;
+                group.position = position;
             }
             updateList.push(change);
         });

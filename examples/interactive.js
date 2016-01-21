@@ -173,9 +173,10 @@ InteractiveApp.prototype = {
                     this.selectedItems.push(intersections[0]);
 
                     this._dragStart = scene.screenToWorldPosition({ x: e.clientX, y: e.clientY });
+                    this._dragEnd = scene.screenToWorldPosition({ x: e.clientX, y: e.clientY });
                     scene.on('mousemove', this.handleDrag);
                 }
-                this._selectedItemsUpdated = false;
+                // this._selectedItemsUpdated = false;
 
             } else {
                 this.previousItems = [].concat(this.selectedItems);
@@ -185,14 +186,18 @@ InteractiveApp.prototype = {
 
         this.scene.on('mouseup', function(e, scene) {
             cameraController.unlock();
-            this._dragEnd = this._dragStart = undefined;
 
-            scene.off('mousemove', this.handleDrag);
+            if (this.selectedItems.length) {
+                this._dragEnd = this._dragStart = undefined;
+
+                scene.off('mousemove', this.handleDrag);
+            }
         }.bind(this));
     },
 
     handleDrag(e, scene) {
         this._dragEnd = scene.screenToWorldPosition({ x: e.clientX, y: e.clientY });
+        // this._selectedItemsUpdated = true;
         console.log('dragging')
     },
 
@@ -257,7 +262,21 @@ InteractiveApp.prototype = {
                     fill: { r: 0, g: 1, b: 0 }
                 });
             }.bind(this));
-            this._selectedItemsUpdated = true;
+            // this._selectedItemsUpdated = true;
+
+            if (this._dragEnd && this._dragStart && !_.isEqual(this._dragEnd,this._dragStart)) {
+                var vector = {
+                    x: this._dragEnd.x - this._dragStart.x,
+                    y: this._dragEnd.y - this._dragStart.y,
+                    z: 0
+                };
+                this._dragStart = _.clone(this._dragEnd);
+
+                this.selectedItems.forEach(function(actorPath) {
+                    console.log('Moving ', actorPath, vector)
+                    this.scene.groupAtPath(actorPath).translate(vector);
+                }.bind(this));
+            }
         }
         if (this.previousItems.length) {
             this.previousItems.forEach(function(actorPath) {
