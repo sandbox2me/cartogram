@@ -32,7 +32,7 @@ class EventBus {
         if (callback === undefined) {
             delete this.events[ev];
         } else {
-            index = this.events[ev].indexOf([callback, context]);
+            index = _.findIndex(this.events[ev], [callback, context]);
             if (index > -1) {
                 this.events[ev].splice(index, 1);
                 this.events[ev] = _.compact(this.events[ev]);

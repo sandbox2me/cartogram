@@ -9,6 +9,11 @@ function InteractiveApp(cartogram) {
 
     this.bindCartogramEvents();
 
+    _.bindAll(
+        this,
+        'handleDrag'
+    );
+
     $('.js-big-group').on('click', this.addBigGroup.bind(this));
     $('.js-small-group').on('click', this.addSmallGroup.bind(this));
     $('.js-circle').on('click', this.addCircle.bind(this));
@@ -161,17 +166,34 @@ InteractiveApp.prototype = {
 
             if (intersections.length) {
                 cameraController.lock();
-                this.selectedItems.push(intersections[0]);
+                if (this.selectedItems.indexOf(intersections[0]) > -1 ) {
+                    this.selectedItems = _.without(this.selectedItems, intersections[0]);
+                    this.previousItems.push(intersections[0]);
+                } else {
+                    this.selectedItems.push(intersections[0]);
+
+                    this._dragStart = scene.screenToWorldPosition({ x: e.clientX, y: e.clientY });
+                    scene.on('mousemove', this.handleDrag);
+                }
                 this._selectedItemsUpdated = false;
+
             } else {
                 this.previousItems = [].concat(this.selectedItems);
                 this.selectedItems = [];
             }
         }.bind(this));
 
-        this.scene.on('mouseup', function(e) {
+        this.scene.on('mouseup', function(e, scene) {
             cameraController.unlock();
+            this._dragEnd = this._dragStart = undefined;
+
+            scene.off('mousemove', this.handleDrag);
         }.bind(this));
+    },
+
+    handleDrag(e, scene) {
+        this._dragEnd = scene.screenToWorldPosition({ x: e.clientX, y: e.clientY });
+        console.log('dragging')
     },
 
     getCoordinates: function() {
