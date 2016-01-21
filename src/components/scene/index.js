@@ -258,9 +258,11 @@ class Scene {
                 meshes.push(cloud.getMesh());
             } else {
                 // Use type class to create the appropriate shapes
+                console.time('Builder create');
                 let builder = new Builders[type](shapes, this.typedTrees[type], this.state);
                 this.builders[type] = builder;
                 meshes.push(builder.mesh);
+                console.timeEnd('Builder create');
             }
         });
 
@@ -340,14 +342,24 @@ class Scene {
             if (!builder) {
                 builder = new Builders[type](shapes, this.typedTrees[type], this.state);
                 this.builders[type] = builder;
-                meshes.push(builder.mesh);
             } else {
                 builder.addShapes(shapes, this.state);
             }
+            meshes.push(builder.mesh);
         });
 
         if (meshes.length) {
-            this.threeScene.add(...meshes);
+            meshes.forEach((mesh) => {
+                let index = _.findIndex(this.threeScene.children, { builderType: mesh.builderType });
+
+                if (index > -1) {
+                    this.threeScene.children[index] = mesh;
+                } else {
+                    this.threeScene.add(mesh);
+                }
+            })
+
+            // this.threeScene.add(...meshes);
             this.dispatch(sceneActions.addMeshes(meshes));
         }
         this.dispatch(sceneActions.addActorObjects(actorObjects));

@@ -17,9 +17,9 @@ import fragmentShader from 'shaders/instanced_circle_fragment.glsl';
 
 class PointCircle extends Rectangle {
     _attributes() {
-        this.scales = new InstancedBufferAttribute(new Float32Array(this.shapes.length * 2), 2);
-        this.offsets = new InstancedBufferAttribute(new Float32Array(this.shapes.length * 3), 3);
-        this.colors = new InstancedBufferAttribute(new Float32Array(this.shapes.length * 4), 4);
+        this.scales = new InstancedBufferAttribute(new Float32Array(this.shapes.length * 2), 2).setDynamic(true);
+        this.offsets = new InstancedBufferAttribute(new Float32Array(this.shapes.length * 3), 3).setDynamic(true);
+        this.colors = new InstancedBufferAttribute(new Float32Array(this.shapes.length * 4), 4).setDynamic(true);
 
         this.shapes.forEach((shapeTypeInstance, i) => {
             let { position, bbox, size } = shapeTypeInstance;
@@ -33,37 +33,6 @@ class PointCircle extends Rectangle {
         this.geometry.addAttribute('offset', this.offsets);
         this.geometry.addAttribute('color', this.colors);
     }
-
-    _expandAttributes(startIndex) {
-        let offsetsArray = new Float32Array(this.shapes.length * 3);
-        let scalesArray = new Float32Array(this.shapes.length * 2);
-        let colorsArray = new Float32Array(this.shapes.length * 4);
-
-        offsetsArray.set(this.offsets.array);
-        scalesArray.set(this.scales.array);
-        colorsArray.set(this.colors.array);
-
-        this.offsets.array = offsetsArray;
-        this.scales.array = scalesArray;
-        this.colors.array = colorsArray;
-
-        for(let i = startIndex; i < this.shapes.length; i++) {
-            let shapeTypeInstance = this.shapes[i];
-            let { position, bbox, size } = shapeTypeInstance;
-            let { fill } = shapeTypeInstance.shape;
-
-            shapeTypeInstance.setIndex(i);
-
-            this.offsets.setXYZ(i, position.x, position.y, position.z);
-            this.scales.setXY(i, size.width, size.height);
-            this.colors.setXYZW(i, fill.r, fill.g, fill.b, 1.0);
-        }
-
-        this.offsets.needsUpdate = true;
-        this.scales.needsUpdate = true;
-        this.colors.needsUpdate = true;
-    }
-
 
     updateAttributesAtIndex(index) {
         let shapeTypeInstance = this.shapes[index];
@@ -86,6 +55,16 @@ class PointCircle extends Rectangle {
 
     get fragmentShader() {
         return fragmentShader;
+    }
+
+    get mesh() {
+        if (!this._mesh) {
+            this._mesh = new Mesh(this.geometry, this.material);
+            this._mesh.frustumCulled = false;
+            this._mesh.builderType = 'PointCircle';
+        }
+
+        return this._mesh;
     }
 }
 

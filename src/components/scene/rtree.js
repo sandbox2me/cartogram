@@ -6,7 +6,7 @@ class RTree {
     }
 
     _dataForShape(shape) {
-        let bbox = shape.type.getBBox();
+        let bbox = shape.type.bbox;
 
         return [
             bbox.x,

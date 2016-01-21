@@ -17,12 +17,12 @@ class Rectangle {
         this.sceneState = sceneState;
         this.shapes = shapes;
 
-        this.geometry = new InstancedBufferGeometry();
 
-        this.initialize();
+        this.initializeGeometry();
     }
 
-    initialize() {
+    initializeGeometry() {
+        this.geometry = new InstancedBufferGeometry();
         this._constructVertices();
         this._attributes();
     }
@@ -53,9 +53,9 @@ class Rectangle {
     }
 
     _attributes() {
-        this.offsets = new InstancedBufferAttribute(new Float32Array(this.shapes.length * 3), 3);
-        this.scales = new InstancedBufferAttribute(new Float32Array(this.shapes.length * 2), 2);
-        this.colors = new InstancedBufferAttribute(new Float32Array(this.shapes.length * 4), 4);
+        this.offsets = new InstancedBufferAttribute(new Float32Array(this.shapes.length * 3), 3).setDynamic(true);
+        this.scales = new InstancedBufferAttribute(new Float32Array(this.shapes.length * 2), 2).setDynamic(true);
+        this.colors = new InstancedBufferAttribute(new Float32Array(this.shapes.length * 4), 4).setDynamic(true);
 
         this.shapes.forEach((shapeTypeInstance, i) => {
             let position = shapeTypeInstance.position;
@@ -72,36 +72,6 @@ class Rectangle {
         this.geometry.addAttribute('offset', this.offsets);
         this.geometry.addAttribute('scale', this.scales);
         this.geometry.addAttribute('color', this.colors);
-    }
-
-    _expandAttributes(startIndex) {
-        let offsetsArray = new Float32Array(this.shapes.length * 3);
-        let scalesArray = new Float32Array(this.shapes.length * 2);
-        let colorsArray = new Float32Array(this.shapes.length * 4);
-
-        offsetsArray.set(this.offsets.array);
-        scalesArray.set(this.scales.array);
-        colorsArray.set(this.colors.array);
-
-        this.offsets.array = offsetsArray;
-        this.scales.array = scalesArray;
-        this.colors.array = colorsArray;
-
-        for(let i = startIndex; i < this.shapes.length; i++) {
-            let shapeTypeInstance = this.shapes[i];
-            let position = shapeTypeInstance.position;
-            let { size, fill } = shapeTypeInstance.shape;
-
-            shapeTypeInstance.setIndex(i);
-
-            this.offsets.setXYZ(i, position.x, position.y, position.z);
-            this.scales.setXY(i, size.width, size.height);
-            this.colors.setXYZW(i, fill.r, fill.g, fill.b, 1.0);
-        }
-
-        this.offsets.needsUpdate = true;
-        this.scales.needsUpdate = true;
-        this.colors.needsUpdate = true;
     }
 
     updateAttributesAtIndex(index) {
@@ -125,7 +95,8 @@ class Rectangle {
         let oldShapesCount = this.shapes.length;
         this.shapes = this.shapes.concat(shapes);
 
-        this._expandAttributes(oldShapesCount);
+        this.initializeGeometry();
+        this._mesh = undefined;
     }
 
     get vertexShader() {
@@ -152,6 +123,7 @@ class Rectangle {
         if (!this._mesh) {
             this._mesh = new Mesh(this.geometry, this.material);
             this._mesh.frustumCulled = false;
+            this._mesh.builderType = 'Rectangle';
         }
 
         return this._mesh;
