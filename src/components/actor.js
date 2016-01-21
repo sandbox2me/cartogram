@@ -132,7 +132,10 @@ class Actor {
 
         let updatedProperties = Object.assign({}, shape.shape, properties);
 
-        // this.scene.updateShape(shape, updatedProperties);
+        if (_.isEqual(updatedProperties, shape.shape)) {
+            // No-op
+            return;
+        }
 
         this.scene.pushChange({
             type: 'shape',

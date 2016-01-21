@@ -247,12 +247,15 @@
 
             document.body.appendChild( stats.domElement );
 
+
+            var app = new InteractiveApp(cartogram);
+
             cartogram.render(function() {
+                app.update();
+
                 stats.begin();
                 stats.end();
             });
-
-            var app = new InteractiveApp(cartogram);
         </script>
     </body>
 </html>

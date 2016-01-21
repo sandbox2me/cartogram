@@ -2,6 +2,9 @@ function InteractiveApp(cartogram) {
     this.cartogram = cartogram;
     this.scene = cartogram.getDefaultScene();
 
+    this.selectedItems = [];
+    this.previousItems = [];
+
     this.groupCount = 0;
 
     this.bindCartogramEvents();
@@ -16,7 +19,7 @@ InteractiveApp.prototype = {
     GroupShapes: [
         {
             type: 'PointCircle',
-            name: 'circle',
+            name: 'primary',
             radius: 20,
             position: { x: 0, y: 0, z: 0 },
             fill: { r: 1.0, g: 0, b: 0 },
@@ -46,12 +49,12 @@ InteractiveApp.prototype = {
 
     CircleActors: [
         {
-            name: 'actor1',
+            name: 'circleActor',
             position: { x: 0, y: 0, z: 0 },
             shapes: [
                 {
                     type: 'PointCircle',
-                    name: 'circle',
+                    name: 'primary',
                     radius: 50,
                     position: { x: 0, y: 0, z: 0 },
                     fill: { r: 1.0, g: 0, b: 0 },
@@ -63,12 +66,12 @@ InteractiveApp.prototype = {
 
     SquareActors: [
         {
-            name: 'actor1',
+            name: 'squareActor',
             position: { x: 0, y: 0, z: 0 },
             shapes: [
                 {
                     type: 'Rectangle',
-                    name: 'square',
+                    name: 'primary',
                     size: {
                         width: 75,
                         height: 75
@@ -151,6 +154,24 @@ InteractiveApp.prototype = {
     },
 
     bindCartogramEvents: function() {
+        var cameraController = this.scene.state.get('cameraController');
+
+        this.scene.on('mousedown', function(e, scene) {
+            var intersections = scene.actorsAtScreenPosition({ x: e.clientX, y: e.clientY });
+
+            if (intersections.length) {
+                cameraController.lock();
+                this.selectedItems.push(intersections[0]);
+                this._selectedItemsUpdated = false;
+            } else {
+                this.previousItems = [].concat(this.selectedItems);
+                this.selectedItems = [];
+            }
+        }.bind(this));
+
+        this.scene.on('mouseup', function(e) {
+            cameraController.unlock();
+        }.bind(this));
     },
 
     getCoordinates: function() {
@@ -205,5 +226,24 @@ InteractiveApp.prototype = {
             position: { x: coordinates.x, y: coordinates.y, z: 0 },
             actors: this.SquareActors
         });
+    },
+
+    update() {
+        if (this.selectedItems.length && !this._selectedItemsUpdated) {
+            this.selectedItems.forEach(function(actorPath) {
+                this.scene.actorAtPath(actorPath).set('primary', {
+                    fill: { r: 0, g: 1, b: 0 }
+                });
+            }.bind(this));
+            this._selectedItemsUpdated = true;
+        }
+        if (this.previousItems.length) {
+            this.previousItems.forEach(function(actorPath) {
+                this.scene.actorAtPath(actorPath).set('primary', {
+                    fill: { r: 1, g: 0, b: 0 }
+                });
+            }.bind(this));
+            this.previousItems = [];
+        }
     }
 };
