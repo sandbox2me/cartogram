@@ -57,6 +57,27 @@ module.exports = function(grunt) {
                 options: {
                     logConcurrentOutput: true
                 }
+        },
+        'jasmine_webpack': {
+            main: {
+                options: {
+                    specRunnerDest: 'SpecRunner.html',
+                    webpack: {
+                        module: {
+                            loaders: [
+                                { test: /\.js$/, loader: 'babel-loader?stage=0' },
+                                { test: /\.glsl$/, loader: 'raw-loader' }
+                            ]
+                        },
+                        resolve: {
+                            root: './src'
+                        }
+                    },
+                    keepRunner: true,
+                    vendor: [],
+                    styles: []
+                },
+                src: './src/**/*.spec.js'
             }
         }
     });
@@ -72,6 +93,10 @@ module.exports = function(grunt) {
 
     grunt.registerTask('default', [
         'webpack:production'
+    ]);
+
+    grunt.registerTask('test', [
+        'jasmine_webpack'
     ]);
 
 };
