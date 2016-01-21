@@ -30,6 +30,8 @@ export default class PanAndZoomCameraController {
 
         this._target = new Vector3();
         this._mouseVector = new Vector3();
+
+        this._isLocked = false;
     }
 
     getMousePosition(x, y) {
@@ -86,7 +88,7 @@ export default class PanAndZoomCameraController {
 
     @autobind
     _handleMouseMove(e) {
-        if (this.buttonDefs[this.button] === 'pan') {
+        if (this.buttonDefs[this.button] === 'pan' && !this._isLocked) {
             this.panEnd.copy(this.getMousePosition(e.pageX, e.pageY));
         }
     }
@@ -157,9 +159,21 @@ export default class PanAndZoomCameraController {
     }
 
     update() {
+        if (this._isLocked) {
+            return;
+        }
+
         this._eye.subVectors(this.threeCamera.position, this._target);
 
         this.doZoom();
         this.doPan();
+    }
+
+    lock() {
+        this._isLocked = true;
+    }
+
+    unlock() {
+        this._isLocked = false;
     }
 };
