@@ -418,7 +418,7 @@ class Scene {
     worldToScreenPositionVector(position) {
         let { width, height } = this.state.get('core').get('size');
         let vector = new three.Vector3(position.x, position.y, -1);
-        vector.project(this.camera);
+        vector.project(this.camera.camera);
 
         let percX = (vector.x + 1) / 2;
         let percY = (-vector.y + 1) / 2;

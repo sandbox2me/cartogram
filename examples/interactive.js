@@ -153,12 +153,20 @@ InteractiveApp.prototype = {
     bindCartogramEvents: function() {
     },
 
+    getCoordinates: function() {
+        var screenSize = this.scene.state.get('core').get('size');
+
+        return this.scene.screenToWorldPosition({ x: screenSize.width / 2, y: screenSize.height / 2 });
+    },
+
     addBigGroup: function(e) {
         e.preventDefault();
 
+        var coordinates = this.getCoordinates();
+
         this.scene.addGroup({
             name: 'group' + this.groupCount++,
-            position: { x: 0, y: 0, z: 0 },
+            position: { x: coordinates.x, y: coordinates.y, z: 0 },
             actors: this.BigGroupActors()
         });
     },
@@ -166,9 +174,11 @@ InteractiveApp.prototype = {
     addSmallGroup: function(e) {
         e.preventDefault();
 
+        var coordinates = this.getCoordinates();
+
         this.scene.addGroup({
             name: 'group' + this.groupCount++,
-            position: { x: 0, y: 0, z: 0 },
+            position: { x: coordinates.x, y: coordinates.y, z: 0 },
             actors: this.SmallGroupActors()
         });
     },
@@ -176,9 +186,11 @@ InteractiveApp.prototype = {
     addCircle: function(e) {
         e.preventDefault();
 
+        var coordinates = this.getCoordinates();
+
         this.scene.addGroup({
             name: 'group' + this.groupCount++,
-            position: { x: 0, y: 0, z: 0 },
+            position: { x: coordinates.x, y: coordinates.y, z: 0 },
             actors: this.CircleActors
         });
     },
@@ -186,9 +198,11 @@ InteractiveApp.prototype = {
     addSquare: function(e) {
         e.preventDefault();
 
+        var coordinates = this.getCoordinates();
+
         this.scene.addGroup({
             name: 'group' + this.groupCount++,
-            position: { x: 0, y: 0, z: 0 },
+            position: { x: coordinates.x, y: coordinates.y, z: 0 },
             actors: this.SquareActors
         });
     }
