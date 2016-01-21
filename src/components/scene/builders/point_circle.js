@@ -28,6 +28,8 @@ class PointCircle extends Rectangle {
             this.scales.setXY(i, size.width, size.height);
             this.offsets.setXYZ(i, position.x, position.y, position.z);
             this.colors.setXYZW(i, fill.r, fill.g, fill.b, 1.0);
+
+            shapeTypeInstance.setIndex(i);
         });
         this.geometry.addAttribute('scale', this.scales);
         this.geometry.addAttribute('offset', this.offsets);

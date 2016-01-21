@@ -67,6 +67,8 @@ class Rectangle {
             // Assuming r,g,b object. Handle other things plz.
             let color = shapeTypeInstance.shape.fill;
             this.colors.setXYZW(i, color.r, color.g, color.b, 1.0);
+
+            shapeTypeInstance.setIndex(i);
         });
 
         this.geometry.addAttribute('offset', this.offsets);

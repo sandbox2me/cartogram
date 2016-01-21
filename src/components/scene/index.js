@@ -230,10 +230,7 @@ class Scene {
                         this.typedTrees[type] = new RTree();
                     }
 
-                    for(let i = 0; i < shapeList.length; i++) {
-                        shapeList[i].setIndex(types[type].length);
-                        types[type].push(shapeList[i]);
-                    }
+                    types[type] = types[type].concat(shapeList);
                 });
             });
         });
@@ -331,10 +328,7 @@ class Scene {
                         this.typedTrees[type] = new RTree();
                     }
 
-                    for(let i = 0; i < shapeList.length; i++) {
-                        // shapeList[i].setIndex(types[type].length);
-                        types[type].push(shapeList[i]);
-                    }
+                    types[type] = types[type].concat(shapeList);
                 });
             });
         });
