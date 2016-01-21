@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Cartogram 2 - Circles Test</title>
+        <style type="text/css">
+            body {
+                background-color: #000;
+                margin: 0;
+                padding: 0;
+            }
+
+            #menu {
+                position: absolute;
+                top: 66px;
+                left: 25px;
+                width: 110px;
+                padding: 5px;
+                background: #333;
+                border-radius: 5px;
+            }
+            #menu ul {
+                list-style: none;
+                padding: 5px 0 0;
+                margin: 0;
+            }
+
+            #menu ul li {
+                padding: 0;
+            }
+
+            .button {
+                display: block;
+                background: #ddf;
+                color: #333;
+                font-family: sans-serif;
+                text-align: center;
+                text-decoration: none;
+                padding: 5px;
+                border-radius: 5px;
+                margin-bottom: 5px;
+            }
+
+            .button:hover {
+                background-color: #aae;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="container"></div>
+        <div id="menu">
+            <ul>
+                <li><a href="#" class="button js-big-group">Big Group</a></li>
+                <li><a href="#" class="button js-small-group">Small Group</a></li>
+                <li><a href="#" class="button js-circle">Circle</a></li>
+                <li><a href="#" class="button js-square">Square</a></li>
+            </ul>
+        </div>
+
+        <script type="text/javascript" src="http://raw.githack.com/mrdoob/stats.js/master/build/stats.min.js"></script>
+        <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+        <script type="text/javascript" src="../node_modules/three/three.js"></script>
+        <script type="text/javascript" src="../node_modules/lodash/index.js"></script>
+        <script type="text/javascript" src="../dist/cartogram-dev.js"></script>
+        <script type="text/javascript" src="interactive.js"></script>
+        <script type="text/javascript">
+            var cartogram = new Cartogram(document.getElementById('container'), {
+                backgroundColor: '#000000'
+            });
+            var scene = cartogram.getDefaultScene();
+            var circles = [];
+            var range = 2000;
+
+            // Register a new SDF font
+            // cartogram.registerFont('benton', {
+            //     texture: 'benton.jpg'
+            // });
+
+
+            console.time('add group')
+            var shapes = [
+                {
+                    type: 'PointCircle',
+                    name: 'circle',
+                    radius: 20,
+                    position: { x: 0, y: 0, z: 0 },
+                    fill: { r: 1.0, g: 0, b: 0 },
+                    hitMask: true
+                },
+                {
+                    type: 'Rectangle',
+                    name: 'rectLeft',
+                    position: { x: -6, y: 0, z: 0 },
+                    size: {
+                        width: 12,
+                        height: 17
+                    },
+                    fill: { r: 1, g: 1, b: 1 }
+                },
+                {
+                    type: 'Rectangle',
+                    name: 'rectRight',
+                    position: { x: 6, y: -3, z: 0 },
+                    size: {
+                        width: 12,
+                        height: 10
+                    },
+                    fill: { r: 1, g: 1, b: 1 }
+                }
+            ];
+
+            // var group = scene.addGroup({
+            //     position: { x: 0, y: 0, z: 0 },
+            //     name: 'group1',
+            //     actors:
+            //     [
+            //         {
+            //             name: 'actor1',
+            //             position: { x: -50, y: 50, z: 0 },
+            //             shapes: shapes
+            //         },
+            //         {
+            //             name: 'actor2',
+            //             position: { x: 0, y: 50, z: 0 },
+            //             shapes: shapes
+            //         },
+            //         {
+            //             name: 'actor3',
+            //             position: { x: 50, y: 50, z: 0 },
+            //             shapes: shapes
+            //         },
+            //         {
+            //             name: 'actor4',
+            //             position: { x: -50, y: 0, z: 0 },
+            //             shapes: shapes
+            //         },
+            //         {
+            //             name: 'actor5',
+            //             position: { x: 0, y: 0, z: 0 },
+            //             shapes: shapes
+            //         },
+            //         {
+            //             name: 'actor6',
+            //             position: { x: 50, y: 0, z: 0 },
+            //             shapes: shapes
+            //         },
+            //         {
+            //             name: 'actor7',
+            //             position: { x: -50, y: -50, z: 0 },
+            //             shapes: shapes
+            //         },
+            //         {
+            //             name: 'actor8',
+            //             position: { x: 0, y: -50, z: 0 },
+            //             shapes: shapes
+            //         },
+            //         {
+            //             name: 'actor9',
+            //             position: { x: 50, y: -50, z: 0 },
+            //             shapes: shapes
+            //         },
+            //     ]
+            // })
+            //
+            // console.timeEnd('add group')
+            //
+            // var group = scene.addGroup({
+            //     position: { x: 0, y: -150, z: 0 },
+            //     name: 'group2',
+            //     actors:
+            //     [
+            //         {
+            //             name: 'actor1',
+            //             position: { x: -50, y: 0, z: 0 },
+            //             shapes: shapes
+            //         },
+            //         {
+            //             name: 'actor2',
+            //             position: { x: 0, y: 0, z: 0 },
+            //             shapes: shapes
+            //         },
+            //         {
+            //             name: 'actor3',
+            //             position: { x: 50, y: 0, z: 0 },
+            //             shapes: shapes
+            //         },
+            //     ]
+            // });
+
+            var cameraController = new Cartogram.PanAndZoomCameraController({
+                buttons: {
+                    0: 'pan',
+                    3: 'zoom'
+                },
+                panSpeed: 3
+            });
+            scene.addCameraController(cameraController);
+
+            cartogram.state.core.get('canvas').addEventListener('mousemove', function(e) {
+                var actors = scene.actorsAtScreenPosition({ x: e.clientX, y: e.clientY });
+
+                if (actors.length) {
+                    cartogram.state.core.get('canvas').style.cursor = 'pointer';
+                } else {
+                    cartogram.state.core.get('canvas').style.cursor = 'auto';
+                }
+            });
+
+            // cartogram.state.core.get('canvas').addEventListener('click', function(e) {
+            //     var position = scene.screenToWorldPosition({ x: e.clientX, y: e.clientY });
+            //     var actors = scene.actorsAtScreenPosition({ x: e.clientX, y: e.clientY });
+            //
+            //     if (actors.length) {
+            //         if (actors[0].indexOf('group2') > -1) {
+            //             scene.groupAtPath(actors[0]).updateShapes('circle', {
+            //                 fill: { r: Math.random(), g: Math.random(), b: Math.random() }
+            //             });
+            //         } else {
+            //             scene.actorAtPath(actors[0]).set('circle', {
+            //                 fill: { r: Math.random(), g: Math.random(), b: Math.random() }
+            //             });
+            //             // scene.actorAtPath(actors[0]).translate({ x: 30, y: 0 });
+            //             scene.groupAtPath(actors[0]).translate({ x: 30, y: 0 });
+            //         }
+            //     }
+            // });
+            //
+            // function mousemove(e) {
+            //
+            // }
+            //
+            // function mouseup(e) {
+            //
+            // }
+
+            // cartogram.state.core.get('canvas').addEventListener('mousedown', function(e) {
+
+
+
+            var stats = new Stats();
+            stats.setMode( 0 ); // 0: fps, 1: ms, 2: mb
+
+            // align top-left
+            stats.domElement.style.position = 'absolute';
+            stats.domElement.style.left = '0px';
+            stats.domElement.style.top = '0px';
+
+            document.body.appendChild( stats.domElement );
+
+            cartogram.render(function() {
+                stats.begin();
+                stats.end();
+            });
+
+            var app = new InteractiveApp(cartogram);
+        </script>
+    </body>
+</html>
