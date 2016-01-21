@@ -374,6 +374,17 @@ class Scene {
                 });
                 hasActorChanges = true;
             }
+
+            if (type === 'group') {
+                let { group } = change;
+                group.actorList.forEach((actor) => {
+                    actor._bbox = undefined;
+                    _.values(actor.children).forEach((shapeTypeInstance) => {
+                        this.builders[shapeTypeInstance.shape.type].updateAttributesAtIndex(shapeTypeInstance.index);
+                    });
+                    hasActorChanges = true;
+                });
+            }
         });
 
         if (pendingChanges.size) {

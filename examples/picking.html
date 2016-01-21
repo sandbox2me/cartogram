@@ -130,13 +130,23 @@
             console.timeEnd('add group')
 
             var group = scene.addGroup({
-                position: { x: 0, y: 0, z: 0 },
+                position: { x: 0, y: -150, z: 0 },
                 name: 'group2',
                 actors:
                 [
                     {
                         name: 'actor1',
-                        position: { x: -50, y: -150, z: 0 },
+                        position: { x: -50, y: 0, z: 0 },
+                        shapes: shapes
+                    },
+                    {
+                        name: 'actor2',
+                        position: { x: 0, y: 0, z: 0 },
+                        shapes: shapes
+                    },
+                    {
+                        name: 'actor3',
+                        position: { x: 50, y: 0, z: 0 },
                         shapes: shapes
                     },
                 ]
@@ -169,7 +179,8 @@
                     scene.actorAtPath(actors[0]).set('circle', {
                         fill: { r: Math.random(), g: Math.random(), b: Math.random() }
                     });
-                    scene.actorAtPath(actors[0]).translate({ x: 30, y: 0 });
+                    // scene.actorAtPath(actors[0]).translate({ x: 30, y: 0 });
+                    scene.groupAtPath(actors[0]).translate({ x: 30, y: 0 });
                 }
             });
 

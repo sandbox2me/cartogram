@@ -93,6 +93,11 @@ const handlers = {
                 let { actor, position } = change;
                 actor.definition.position = actor.position = position;
             }
+
+            if (change.type === 'group') {
+                let { group, position } = change;
+                group.definition.position = group.position = position;
+            }
             updateList.push(change);
         });
 

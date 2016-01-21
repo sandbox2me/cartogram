@@ -22,9 +22,29 @@ class Group {
 
     removeActor(actor) {}
 
-    translate(position) {}
+    translate(position) {
+        position.x += this.position.x;
+        position.y += this.position.y;
+        position.z = this.position.z;
+        this._bbox = undefined;
 
-    moveTo(position) {}
+        this.scene.pushChange({
+            type: 'group',
+            group: this,
+            position
+        });
+    }
+
+    moveTo(position) {
+        position.z = this.position.z;
+        this._bbox = undefined;
+
+        this.scene.pushChange({
+            type: 'group',
+            group: this,
+            position
+        });
+    }
 
     rotate(angle) {}
 }
