@@ -33,6 +33,13 @@ function addActorObjects(actorObjects) {
     };
 }
 
+function addGroupObjects(groupObjects) {
+    return {
+        type: 'ADD_GROUP_OBJECTS',
+        groupObjects
+    };
+}
+
 function addMeshes(meshes) {
     return {
         type: 'ADD_MESHES',
@@ -59,6 +66,7 @@ export default {
     addGroup,
     addGroups,
     addActorObjects,
+    addGroupObjects,
     addMeshes,
     commitChanges,
     resetUpdates,

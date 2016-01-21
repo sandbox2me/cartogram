@@ -6,8 +6,9 @@ import { scene as sceneActions } from '../../actions';
 import Camera from './camera';
 import RTree from './rtree';
 
-import Actor from '../actor';
-import * as Types from '../../types';
+import { Actor, Group } from 'components';
+
+import * as Types from 'types';
 
 import * as Builders from './builders';
 
@@ -116,14 +117,19 @@ class Scene {
         this._pendingChanges.push(change);
     }
 
+    pushChanges(changes) {
+        this._pendingChanges = this._pendingChanges.concat(changes);
+    }
+
     objectsAtPath(path) {
         let segments = path.replace(/(^\/)|(\/$)/g, '').split('/');
         let actorObjects = this.state.get('actorObjects');
+        let groupObjects = this.state.get('groupObjects');
         let objects = {};
 
         // Search in groups
-        let groups = this.state.get('groups');
-        let group = groups.get(segments[0]);
+        let groupPath = `/${ segments[0] }`
+        let group = groupObjects.get(groupPath);
         if (group) {
             // Get actor
             objects['group'] = group;
@@ -132,8 +138,7 @@ class Scene {
                 return objects;
             }
 
-            let actorPath = `/${ segments[0] }/${ segments[1] }`;
-            let actor = actorObjects.get(actorPath);
+            let actor = group.actors[segments[1]];
             if (segments[2]) {
                 // Find shape
                 let child = actor.children[segments[2]];
@@ -186,7 +191,9 @@ class Scene {
     }
 
     _generateMeshes() {
+        let actorObjectList = [];
         let actorObjects = {};
+        let groupObjects = {};
         let types = {};
 
         this.rtree.reset();
@@ -194,9 +201,13 @@ class Scene {
         this.state.get('groups').forEach((group, name) => {
             console.log(`Generating for group "${ name }"`);
 
+            let groupObject = new Group(group);
+            groupObjects[groupObject.path] = groupObject;
+
             group.actors.forEach((actor) => {
                 let actorObject = new Actor(actor);
-                actorObjects[`/${ name }/${ actor.name }`] = actorObject;
+                actorObjectList.push(actorObject);
+                groupObject.addActor(actorObject);
 
                 _.forEach(actorObject.types, (shapeList, type) => {
                     if (!types[type]) {
@@ -229,9 +240,10 @@ class Scene {
             });
 
             actorObjects[`/${ name }`] = actorObject;
+            actorObjectList.push(actorObject);
         });
 
-        this.rtree.insertActors(_.values(actorObjects));
+        this.rtree.insertActors(actorObjectList);
 
         // XXX Implement rtree based mesh grouping optimization in the future
         console.log('Building meshes');
@@ -270,25 +282,31 @@ class Scene {
             this.threeScene.add(...meshes);
             this.dispatch(sceneActions.addMeshes(meshes));
             this.dispatch(sceneActions.addActorObjects(actorObjects));
+            this.dispatch(sceneActions.addGroupObjects(groupObjects));
         }
     }
 
     _addOrRemoveObjects() {
+        let actorObjectList = [];
         let actorObjects = {};
+        let groupObjects = {};
         let types = {};
 
         this.state.get('groups').forEach((group, name) => {
-            let objects = this.objectsAtPath(`/${ name }/${ group.actors[0].name }`);
-            if (objects.actor) {
+            if (this.objectsAtPath(`/${ name }`)) {
                 console.log(`Group "${ name }" exists. Continuing.`);
                 return;
             }
             console.log(`Generating for group "${ name }"`);
 
+            let groupObject = new Group(group);
+            groupObjects[groupObject.path] = groupObject;
+
             group.actors.forEach((actor) => {
                 let path = `/${ name }/${ actor.name }`
                 let actorObject = new Actor(actor);
-                actorObjects[`/${ name }/${ actor.name }`] = actorObject;
+                actorObjectList.push(actorObject);
+                groupObject.addActor(actorObject);
 
                 _.forEach(actorObject.types, (shapeList, type) => {
                     if (!types[type]) {
@@ -304,12 +322,12 @@ class Scene {
             });
         });
 
-        if (!Object.keys(actorObjects).length) {
+        if (!actorObjectList.length) {
             console.log('No actors added');
             return;
         }
 
-        this.rtree.insertActors(_.values(actorObjects));
+        this.rtree.insertActors(actorObjectList);
 
         console.log('Building meshes');
         let meshes = [];
@@ -331,6 +349,7 @@ class Scene {
             this.dispatch(sceneActions.addMeshes(meshes));
         }
         this.dispatch(sceneActions.addActorObjects(actorObjects));
+        this.dispatch(sceneActions.addGroupObjects(groupObjects));
     }
 
     _updateMeshes() {
@@ -363,7 +382,11 @@ class Scene {
         if (hasActorChanges) {
             // XXX Fix this brute-force approach
             this.rtree.reset();
+
             this.rtree.insertActors(this.state.get('actorObjects').toArray());
+            this.state.get('groupObjects').forEach((group) => {
+                this.rtree.insertActors(group.actorList);
+            });
         }
     }
 
@@ -400,7 +423,7 @@ class Scene {
 
     actorsAtWorldPosition(position) {
         let intersections = this.rtree.searchPoint(position);
-        let actors = intersections.map((intersection) => {
+        let actorPaths = intersections.map((intersection) => {
             let actor = intersection[4].actor;
 
             if (!actor.hasHitMask || actor.checkHitMask(position)) {
@@ -408,7 +431,7 @@ class Scene {
             }
         });
 
-        return _.compact(actors);
+        return _.compact(actorPaths);
     }
 
     actorsAtScreenPosition(position) {
@@ -417,7 +440,11 @@ class Scene {
     }
 
     actorAtPath(path) {
-        return this.state.get('actorObjects').get(path);
+        return this.objectsAtPath(path).actor;
+    }
+
+    groupAtPath(path) {
+        return this.objectsAtPath(path).group;
     }
 };
 

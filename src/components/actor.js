@@ -5,6 +5,7 @@ class Actor {
     constructor(definition) {
         this.hasHitMask = false;
         this.definition = definition;
+        this.group = this.definition.group;
         this.scene = this.definition.scene;
         this.position = this.definition.position;
         this.types = {};
@@ -13,11 +14,15 @@ class Actor {
         this.iterateChildren();
     }
 
+    get name() {
+        return this.definition.name;
+    }
+
     get path() {
         let segments = [];
 
-        if (this.definition.group) {
-            segments.push(this.definition.group.name);
+        if (this.group) {
+            segments.push(this.group.name);
         }
         segments.push(this.definition.name);
 
@@ -25,7 +30,15 @@ class Actor {
     }
 
     getPosition() {
-        return this.position;
+        if (!this.group) {
+            return this.position;
+        }
+
+        return {
+            x: this.position.x + this.group.position.x,
+            y: this.position.y + this.group.position.y,
+            z: this.position.z + this.group.position.z
+        };
     }
 
     checkHitMask(position) {
