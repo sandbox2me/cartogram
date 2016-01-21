@@ -22,6 +22,12 @@ class Group {
 
     removeActor(actor) {}
 
+    updateShapes(shapeName, properties) {
+        this.actorList.forEach((actor) => {
+            actor.set(shapeName, properties);
+        });
+    }
+
     translate(position) {
         position.x += this.position.x;
         position.y += this.position.y;

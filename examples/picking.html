@@ -176,13 +176,30 @@
                 var actors = scene.actorsAtScreenPosition({ x: e.clientX, y: e.clientY });
 
                 if (actors.length) {
-                    scene.actorAtPath(actors[0]).set('circle', {
-                        fill: { r: Math.random(), g: Math.random(), b: Math.random() }
-                    });
-                    // scene.actorAtPath(actors[0]).translate({ x: 30, y: 0 });
-                    scene.groupAtPath(actors[0]).translate({ x: 30, y: 0 });
+                    if (actors[0].indexOf('group2') > -1) {
+                        scene.groupAtPath(actors[0]).updateShapes('circle', {
+                            fill: { r: Math.random(), g: Math.random(), b: Math.random() }
+                        });
+                    } else {
+                        scene.actorAtPath(actors[0]).set('circle', {
+                            fill: { r: Math.random(), g: Math.random(), b: Math.random() }
+                        });
+                        // scene.actorAtPath(actors[0]).translate({ x: 30, y: 0 });
+                        scene.groupAtPath(actors[0]).translate({ x: 30, y: 0 });
+                    }
                 }
             });
+
+            function mousemove(e) {
+
+            }
+
+            function mouseup(e) {
+
+            }
+
+            // cartogram.state.core.get('canvas').addEventListener('mousedown', function(e) {
+
 
 
             var stats = new Stats();
