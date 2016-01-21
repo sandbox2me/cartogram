@@ -4,6 +4,7 @@ import three from 'three';
 
 import { scene as sceneActions } from '../../actions';
 import Camera from './camera';
+import EventBus from './event_bus';
 import RTree from './rtree';
 
 import { Actor, Group } from 'components';
@@ -20,6 +21,7 @@ class Scene {
         this.dispatch = this.store.dispatch;
 
         this.threeScene = new three.Scene();
+        this.events = new EventBus();
         this.camera = new Camera(store);
         this.rtree = new RTree();
         this.typedTrees = {};
