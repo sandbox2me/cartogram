@@ -101,6 +101,17 @@ class Rectangle {
         this._mesh = undefined;
     }
 
+    removeShapes(shapes, sceneState) {
+        this.sceneState = sceneState;
+
+        this.shapes = _.difference(this.shapes, shapes);
+
+        if (this.shapes.length) {
+            this.initializeGeometry();
+        }
+        this._mesh = undefined;
+    }
+
     get vertexShader() {
         return vertexShader;
     }
@@ -122,7 +133,7 @@ class Rectangle {
     }
 
     get mesh() {
-        if (!this._mesh) {
+        if (!this._mesh && this.shapes.length) {
             this._mesh = new Mesh(this.geometry, this.material);
             this._mesh.frustumCulled = false;
             this._mesh.builderType = 'Rectangle';

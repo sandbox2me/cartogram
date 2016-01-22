@@ -73,10 +73,10 @@ class Scene {
         } else if (oldState && this.state.get('actors') !== oldState.get('actors')) {
             // actors changed, update scene
             console.log('Updating scene')
-        } else if (oldState && this.state.get('groups') !== oldState.get('groups')) {
+        } else if (oldState && this.state.get('groups').size > oldState.get('groups').size) {
             // actors changed, update scene
             console.log('Updating scene')
-            this._addOrRemoveObjects();
+            this._addObjects();
         } else if (oldState && this.state.get('pendingUpdates') !== oldState.get('pendingUpdates') && this.state.get('pendingUpdates').size) {
             console.log('updates pending')
             this._updateMeshes();
@@ -300,7 +300,7 @@ class Scene {
         }
     }
 
-    _addOrRemoveObjects() {
+    _addObjects() {
         let actorObjectList = [];
         let actorObjects = {};
         let groupObjects = {};
@@ -317,7 +317,7 @@ class Scene {
             groupObjects[groupObject.path] = groupObject;
 
             group.actors.forEach((actor) => {
-                let path = `/${ name }/${ actor.name }`
+                let path = `/${ name }/${ actor.name }`;
                 let actorObject = new Actor(actor);
                 actorObjectList.push(actorObject);
                 groupObject.addActor(actorObject);
@@ -325,7 +325,6 @@ class Scene {
                 _.forEach(actorObject.types, (shapeList, type) => {
                     if (!types[type]) {
                         types[type] = [];
-                        this.typedTrees[type] = new RTree();
                     }
 
                     types[type] = types[type].concat(shapeList);
@@ -333,8 +332,8 @@ class Scene {
             });
         });
 
-        if (!actorObjectList.length) {
-            console.log('No actors added');
+        if (!Object.keys(types).length) {
+            console.log('No changes to scene');
             return;
         }
 
@@ -364,21 +363,27 @@ class Scene {
                 } else {
                     this.threeScene.add(mesh);
                 }
-            })
+            });
 
-            // this.threeScene.add(...meshes);
             this.dispatch(sceneActions.addMeshes(meshes));
         }
-        this.dispatch(sceneActions.addActorObjects(actorObjects));
-        this.dispatch(sceneActions.addGroupObjects(groupObjects));
+
+        // Finalize state
+        if (Object.keys(actorObjects).length) {
+            this.dispatch(sceneActions.addActorObjects(actorObjects));
+        }
+        if (Object.keys(groupObjects).length) {
+            this.dispatch(sceneActions.addGroupObjects(groupObjects));
+        }
     }
 
     _updateMeshes() {
         let pendingChanges = this.state.get('pendingUpdates');
         let hasActorChanges = false;
+        let destroyedGroups = [];
 
         pendingChanges.forEach((change) => {
-            let { type } = change;
+            let { type, action } = change;
 
             if (type === 'shape') {
                 let { actor, index, definitionIndex, properties } = change;
@@ -398,15 +403,23 @@ class Scene {
 
             if (type === 'group') {
                 let { group } = change;
-                group.actorList.forEach((actor) => {
-                    actor._bbox = undefined;
-                    _.values(actor.children).forEach((shapeTypeInstance) => {
-                        this.builders[shapeTypeInstance.shape.type].updateAttributesAtIndex(shapeTypeInstance.index);
+                if (action === 'destroy') {
+                    destroyedGroups.push(group);
+                } else {
+                    group.actorList.forEach((actor) => {
+                        actor._bbox = undefined;
+                        _.values(actor.children).forEach((shapeTypeInstance) => {
+                            this.builders[shapeTypeInstance.shape.type].updateAttributesAtIndex(shapeTypeInstance.index);
+                        });
+                        hasActorChanges = true;
                     });
-                    hasActorChanges = true;
-                });
+                }
             }
         });
+
+        if (destroyedGroups.length) {
+            this._removeGroups(destroyedGroups);
+        }
 
         if (pendingChanges.size) {
             this.dispatch(sceneActions.resetUpdates());
@@ -419,6 +432,78 @@ class Scene {
             this.state.get('groupObjects').forEach((group) => {
                 this.rtree.insertActors(group.actorList);
             });
+        }
+    }
+
+    _removeGroups(groups) {
+        let removedActorObjectList = [];
+        let removedGroupObjects = [];
+        let removedTypes = {};
+
+        groups.forEach((groupObject) => {
+            let { name, definition } = groupObject;
+
+            console.log(`Destroying group "${ name }"`);
+
+            removedGroupObjects.push(groupObject.path);
+            definition.actors.forEach((actor) => {
+                let actorObject = groupObject.actors[actor.name];
+                removedActorObjectList.push(actorObject);
+
+                _.forEach(actorObject.types, (shapeList, type) => {
+                    if (!removedTypes[type]) {
+                        removedTypes[type] = [];
+                    }
+
+                    removedTypes[type] = removedTypes[type].concat(shapeList);
+                });
+            });
+        });
+
+        let meshes = [];
+        let removedMeshes = [];
+
+        _.forEach(removedTypes, (shapes, type) => {
+            let builder = this.builders[type];
+
+            builder.removeShapes(shapes, this.state);
+
+            let mesh = builder.mesh;
+            if (mesh) {
+                meshes.push(mesh);
+            } else {
+                delete this.builders[type];
+                removedMeshes.push(type);
+            }
+        });
+
+        if (removedMeshes.length) {
+            removedMeshes.forEach((builderType) => {
+                let index = _.findIndex(this.threeScene.children, { builderType });
+
+                this.threeScene.remove(this.threeScene.children[index]);
+            });
+
+            // this.dispatch(sceneActions.removeMeshes(removedMeshes));
+        }
+
+        if (meshes.length) {
+            meshes.forEach((mesh) => {
+                let index = _.findIndex(this.threeScene.children, { builderType: mesh.builderType });
+
+                if (index > -1) {
+                    this.threeScene.children[index] = mesh;
+                } else {
+                    this.threeScene.add(mesh);
+                }
+            });
+
+            this.dispatch(sceneActions.addMeshes(meshes));
+        }
+
+        if (removedGroupObjects.length) {
+            // this.dispatch(sceneActions.removeGroupObjects(removedGroupObjects));
+            // this.dispatch(sceneActions.cleanupDestroyedGroups());
         }
     }
 

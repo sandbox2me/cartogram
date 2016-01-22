@@ -96,10 +96,14 @@ const handlers = {
             }
 
             if (change.type === 'group') {
-                let { group, position } = change;
-                console.log('previous position:', group.position, ' new position: ', position);
-                group.definition.position = position;
-                group.position = position;
+                if (change.action === 'destroy') {
+                    group.destroyed = true;
+                } else {
+                    let { group, position } = change;
+                    console.log('previous position:', group.position, ' new position: ', position);
+                    group.definition.position = position;
+                    group.position = position;
+                }
             }
             updateList.push(change);
         });

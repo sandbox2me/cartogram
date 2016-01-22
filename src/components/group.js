@@ -1,8 +1,9 @@
 class Group {
     constructor(definition) {
         this.definition = definition;
-        this.scene = this.definition.scene;
-        this.position = this.definition.position;
+        this.name = definition.name;
+        this.scene = definition.scene;
+        this.position = definition.position;
         this.actors = {};
         this.actorList = [];
     }
@@ -49,6 +50,7 @@ class Group {
         this.scene.pushChange({
             type: 'group',
             group: this,
+            action: 'update',
             position: {
                 x: position.x,
                 y: position.y,
@@ -58,6 +60,14 @@ class Group {
     }
 
     rotate(angle) {}
+
+    destroy() {
+        this.scene.pushChange({
+            type: 'group',
+            group: this,
+            action: 'destroy'
+        });
+    }
 }
 
 export default Group;

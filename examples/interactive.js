@@ -182,6 +182,8 @@ InteractiveApp.prototype = {
                 this.previousItems = [].concat(this.selectedItems);
                 this.selectedItems = [];
             }
+
+            this.refreshPropertiesList();
         }.bind(this));
 
         this.scene.on('mouseup', function(e, scene) {
@@ -255,7 +257,7 @@ InteractiveApp.prototype = {
         });
     },
 
-    update() {
+    update: function() {
         if (this.selectedItems.length && !this._selectedItemsUpdated) {
             this.selectedItems.forEach(function(actorPath) {
                 this.scene.actorAtPath(actorPath).set('primary', {
@@ -286,5 +288,53 @@ InteractiveApp.prototype = {
             }.bind(this));
             this.previousItems = [];
         }
+    },
+
+    refreshPropertiesList: function() {
+        var $list = $('#properties .selection');
+
+        $list.html('');
+
+        if (!this.selectedItems.length) {
+            return;
+        }
+
+        $list.append('<p><a href="#" class="js-delete-all">Delete Selection</a></p>');
+        $list.find('.js-delete-all').on('click', this.deleteAll.bind(this));
+
+        this.selectedItems.forEach(function(item) {
+            var listItem = $('<li>' + item + '</li>');
+
+            listItem.data('actor', item);
+            listItem.append($('<p><a href="#" class="js-rotate-group">Rotate Group</a></p>'));
+            listItem.append($('<p><a href="#" class="js-delete-item">Delete</a></p>'));
+            listItem.append($('<p><a href="#" class="js-delete-group">Delete Group</a></p>'));
+
+            listItem.find('.js-delete-group').on('click', this.deleteGroup.bind(this));
+
+            $list.append(listItem);
+        }.bind(this));
+    },
+
+    deleteGroup: function(e) {
+        e.preventDefault();
+
+        var actor = $(e.target).parents('li').data('actor');
+        var group = this.scene.groupAtPath(actor);
+
+        group.destroy();
+        this.selectedItems = _.without(this.selectedItems, actor);
+        this.refreshPropertiesList();
+    },
+
+    deleteAll: function(e) {
+        e.preventDefault();
+
+        this.selectedItems.forEach(function(actor) {
+            var group = this.scene.groupAtPath(actor);
+            group.destroy();
+        });
+        this.selectedItems = [];
+        this.refreshPropertiesList();
     }
 };
