@@ -92,7 +92,7 @@ const handlers = {
 
                 if (change.action === 'destroy') {
                     let group = actor.group;
-                    group.actors = _.without(group.actors, actor);
+                    group.actors = _.without(group.actors, actor.definition);
 
                     if (!group.actors.length) {
                         // Last actor destroys its parent
