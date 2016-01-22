@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 class Group {
     constructor(definition) {
         this.definition = definition;
@@ -21,7 +23,10 @@ class Group {
         this.actorList.push(actor);
     }
 
-    removeActor(actor) {}
+    removeActor(actor) {
+        delete this.actors[actor.name];
+        this.actorList = _.without(this.actorList, actor);
+    }
 
     updateShapes(shapeName, properties) {
         this.actorList.forEach((actor) => {

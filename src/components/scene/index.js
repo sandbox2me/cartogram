@@ -443,6 +443,7 @@ class Scene {
         let removedTypes = {};
 
         actors.forEach((actorObject) => {
+            this.groupAtPath(actorObject.path).removeActor(actorObject);
             _.forEach(actorObject.types, (shapeList, type) => {
                 if (!removedTypes[type]) {
                     removedTypes[type] = [];
