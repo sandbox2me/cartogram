@@ -89,8 +89,27 @@ const handlers = {
 
             if (change.type === 'actor') {
                 let { actor, position } = change;
-                actor.definition.position = position;
-                actor.position = position;
+
+                if (change.action === 'destroy') {
+                    let group = actor.group;
+                    group.actors = _.without(group.actors, actor);
+
+                    if (!group.actors.length) {
+                        // Last actor destroys its parent
+                        groups = groups.delete(group.name);
+                        change = {
+                            type: 'group',
+                            action: 'destroy',
+                            group
+                        };
+                    } else {
+                        groups = groups.set(group.name, group);
+                    }
+                    state = state.set('groups', groups);
+                } else {
+                    actor.definition.position = position;
+                    actor.position = position;
+                }
             }
 
             if (change.type === 'group') {

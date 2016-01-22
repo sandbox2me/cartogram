@@ -171,6 +171,14 @@ class Actor {
             position
         });
     }
+
+    destroy() {
+        this.scene.pushChange({
+            type: 'actor',
+            actor: this,
+            action: 'destroy'
+        });
+    }
 };
 
 export default Actor;

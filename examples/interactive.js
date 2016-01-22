@@ -199,8 +199,6 @@ InteractiveApp.prototype = {
 
     handleDrag(e, scene) {
         this._dragEnd = scene.screenToWorldPosition({ x: e.clientX, y: e.clientY });
-        // this._selectedItemsUpdated = true;
-        console.log('dragging')
     },
 
     getCoordinates: function() {
@@ -275,7 +273,6 @@ InteractiveApp.prototype = {
                 this._dragStart = _.clone(this._dragEnd);
 
                 this.selectedItems.forEach(function(actorPath) {
-                    console.log('Moving ', actorPath, vector)
                     this.scene.groupAtPath(actorPath).translate(vector);
                 }.bind(this));
             }
@@ -310,10 +307,22 @@ InteractiveApp.prototype = {
             listItem.append($('<p><a href="#" class="js-delete-item">Delete</a></p>'));
             listItem.append($('<p><a href="#" class="js-delete-group">Delete Group</a></p>'));
 
+            listItem.find('.js-delete-item').on('click', this.deleteItem.bind(this));
             listItem.find('.js-delete-group').on('click', this.deleteGroup.bind(this));
 
             $list.append(listItem);
         }.bind(this));
+    },
+
+    deleteItem: function(e) {
+        e.preventDefault();
+
+        var actorPath = $(e.target).parents('li').data('actor');
+        var actor = this.scene.actorAtPath(actorPath);
+
+        actor.destroy();
+        this.selectedItems = _.without(this.selectedItems, actorPath);
+        this.refreshPropertiesList();
     },
 
     deleteGroup: function(e) {

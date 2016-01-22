@@ -378,6 +378,7 @@ class Scene {
         let pendingChanges = this.state.get('pendingUpdates');
         let hasActorChanges = false;
         let destroyedGroups = [];
+        let destroyedActors = [];
 
         pendingChanges.forEach((change) => {
             let { type, action } = change;
@@ -392,9 +393,13 @@ class Scene {
 
             if (type === 'actor') {
                 let { actor } = change;
-                _.values(actor.children).forEach((shapeTypeInstance) => {
-                    this.builders[shapeTypeInstance.shape.type].updateAttributesAtIndex(shapeTypeInstance.index);
-                });
+                if (action === 'destroy') {
+                    destroyedActors.push(actor);
+                } else {
+                    _.values(actor.children).forEach((shapeTypeInstance) => {
+                        this.builders[shapeTypeInstance.shape.type].updateAttributesAtIndex(shapeTypeInstance.index);
+                    });
+                }
                 hasActorChanges = true;
             }
 
@@ -414,8 +419,8 @@ class Scene {
             }
         });
 
-        if (destroyedGroups.length) {
-            this._removeGroups(destroyedGroups);
+        if (destroyedGroups.length || destroyedActors.length) {
+            this._removeObjects(destroyedGroups, destroyedActors);
             hasActorChanges = true;
         }
 
@@ -433,10 +438,19 @@ class Scene {
         }
     }
 
-    _removeGroups(groups) {
-        let removedActorObjectList = [];
+    _removeObjects(groups=[], actors=[]) {
         let removedGroupObjects = [];
         let removedTypes = {};
+
+        actors.forEach((actorObject) => {
+            _.forEach(actorObject.types, (shapeList, type) => {
+                if (!removedTypes[type]) {
+                    removedTypes[type] = [];
+                }
+
+                removedTypes[type] = removedTypes[type].concat(shapeList);
+            });
+        });
 
         groups.forEach((groupObject) => {
             let { name, definition } = groupObject;
@@ -446,7 +460,6 @@ class Scene {
             removedGroupObjects.push(groupObject.path);
             definition.actors.forEach((actor) => {
                 let actorObject = groupObject.actors[actor.name];
-                removedActorObjectList.push(actorObject);
 
                 _.forEach(actorObject.types, (shapeList, type) => {
                     if (!removedTypes[type]) {
