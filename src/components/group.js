@@ -3,9 +3,9 @@ import _ from 'lodash';
 class Group {
     constructor(definition) {
         this.definition = definition;
-        this.name = definition.name;
-        this.scene = definition.scene;
-        this.position = definition.position;
+        this.name = this.definition.name;
+        this.scene = this.definition.scene;
+        this._position = this.definition.position;
         this.actors = {};
         this.actorList = [];
     }
@@ -15,17 +15,56 @@ class Group {
     }
 
     get bbox() {
+        if (!this._bbox) {
+            let minX = Infinity,
+                maxX = -Infinity,
+                minY = Infinity,
+                maxY = -Infinity;
 
+            _.values(this.actorList).forEach((actorObject) => {
+                let bbox = actorObject.bbox;
+
+                if (bbox.x < minX) {
+                    minX = bbox.x;
+                }
+
+                if (bbox.x + bbox.width > maxX) {
+                    maxX = bbox.x + bbox.width;
+                }
+
+                if (bbox.y < minY) {
+                    minY = bbox.y;
+                }
+
+                if (bbox.y + bbox.height > maxY) {
+                    maxY = bbox.y + bbox.height;
+                }
+            });
+
+            this._bbox = {
+                x: minX,
+                y: minY,
+                width: maxX - minX,
+                height: maxY - minY
+            };
+        }
+        return this._bbox;
     }
 
-    addActor(actor) {
+    get position() {
+        return this.definition.position;
+    }
+
+    addActorObject(actor) {
         this.actors[actor.name] = actor;
         this.actorList.push(actor);
+        this._bbox = undefined;
     }
 
-    removeActor(actor) {
+    removeActorObject(actor) {
         delete this.actors[actor.name];
         this.actorList = _.without(this.actorList, actor);
+        this._bbox = undefined;
     }
 
     updateShapes(shapeName, properties) {
@@ -40,10 +79,12 @@ class Group {
         this.scene.pushChange({
             type: 'group',
             group: this,
-            position: {
-                x: position.x + this.position.x,
-                y: position.y + this.position.y,
-                z: (position.z || 0) + this.position.z,
+            data: {
+                position: {
+                    x: position.x + this.position.x,
+                    y: position.y + this.position.y,
+                    z: (position.z || 0) + this.position.z,
+                }
             }
         });
     }
@@ -56,15 +97,28 @@ class Group {
             type: 'group',
             group: this,
             action: 'update',
-            position: {
-                x: position.x,
-                y: position.y,
-                z: (position.z || 0) + this.position.z,
+            data: {
+                position: {
+                    x: position.x,
+                    y: position.y,
+                    z: (position.z || 0) + this.position.z,
+                }
             }
         });
     }
 
-    rotate(angle) {}
+    rotate(angle) {
+        this._bbox = undefined;
+
+        this.scene.pushChange({
+            type: 'group',
+            group: this,
+            action: 'update',
+            data: {
+                angle
+            }
+        });
+    }
 
     destroy() {
         this.scene.pushChange({

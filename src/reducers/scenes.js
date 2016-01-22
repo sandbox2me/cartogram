@@ -15,6 +15,13 @@ const initialState = Map({
     groups: Map([])
 });
 
+const defaultGroupDefinition = {
+    name: 'group',
+    position: { x: 0, y: 0, z: 0 },
+    angle: 0,
+    rotateActors: true,
+    actors: []
+};
 
 const handlers = {
     'ADD_CAMERA_CONTROLLER': (state, action) => {
@@ -32,7 +39,7 @@ const handlers = {
     'ADD_GROUP': (state, action) => {
         let groups = state.get('groups');
 
-        groups = groups.set(action.group.name, action.group);
+        groups = groups.set(action.group.name, _.merge({}, defaultGroupDefinition, action.group));
 
         return state.set('groups', groups);
     },
@@ -42,7 +49,7 @@ const handlers = {
         let groupMap = {};
 
         action.groups.forEach((group) => {
-            groupMap[group.name] = group;
+            groupMap[group.name] = _.merge({}, defaultGroupDefinition, action.group);
         });
 
         groups = groups.merge(groupMap);
@@ -92,7 +99,8 @@ const handlers = {
 
                 if (change.action === 'destroy') {
                     let group = actor.group;
-                    group.actors = _.without(group.actors, actor.definition);
+                    let index = _.findIndex(group.actors, { name: actor.name });
+                    group.actors = _.compact(group.actors.splice(index, 1));
 
                     if (!group.actors.length) {
                         // Last actor destroys its parent
@@ -113,14 +121,13 @@ const handlers = {
             }
 
             if (change.type === 'group') {
-                let { group, position } = change;
+                let { group, data } = change;
 
                 if (change.action === 'destroy') {
                     groups = groups.delete(group.name);
                     state = state.set('groups', groups);
                 } else {
-                    group.definition.position = position;
-                    group.position = position;
+                    _.merge(group.definition, data);
                 }
             }
             updateList.push(change);

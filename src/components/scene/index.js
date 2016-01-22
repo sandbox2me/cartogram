@@ -222,7 +222,7 @@ class Scene {
             group.actors.forEach((actor) => {
                 let actorObject = new Actor(actor);
                 actorObjectList.push(actorObject);
-                groupObject.addActor(actorObject);
+                groupObject.addActorObject(actorObject);
 
                 _.forEach(actorObject.types, (shapeList, type) => {
                     if (!types[type]) {
@@ -319,7 +319,7 @@ class Scene {
                 let path = `/${ name }/${ actor.name }`;
                 let actorObject = new Actor(actor);
                 actorObjectList.push(actorObject);
-                groupObject.addActor(actorObject);
+                groupObject.addActorObject(actorObject);
 
                 _.forEach(actorObject.types, (shapeList, type) => {
                     if (!types[type]) {
@@ -443,7 +443,7 @@ class Scene {
         let removedTypes = {};
 
         actors.forEach((actorObject) => {
-            this.groupAtPath(actorObject.path).removeActor(actorObject);
+            this.groupAtPath(actorObject.path).removeActorObject(actorObject);
             _.forEach(actorObject.types, (shapeList, type) => {
                 if (!removedTypes[type]) {
                     removedTypes[type] = [];
@@ -461,7 +461,7 @@ class Scene {
             removedGroupObjects.push(groupObject.path);
             definition.actors.forEach((actor) => {
                 let actorObject = groupObject.actors[actor.name];
-
+                if (actorObject === undefined) debugger;
                 _.forEach(actorObject.types, (shapeList, type) => {
                     if (!removedTypes[type]) {
                         removedTypes[type] = [];
