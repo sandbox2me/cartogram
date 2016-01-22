@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import * as Types from '../types';
+import * as Types from 'types';
 
 class Actor {
     constructor(definition) {
@@ -34,11 +34,30 @@ class Actor {
             return this._position;
         }
 
-        return {
+        let position = {
             x: this._position.x + this.group.position.x,
             y: this._position.y + this.group.position.y,
             z: this._position.z + this.group.position.z
         };
+
+        if (this.group.angle) {
+            // Return a value that's been rotated in relation to the group origin
+            // XXX Maybe this math can run in vertex shader instead...
+            //     Tradeoff would be having more attributes to send
+            //     to each instance.
+            let x = this._position.x;
+            let y = this._position.y
+            let { angleCos, angleSin } = this.group;
+
+            // Rotate clockwise
+            let newX = (x * angleSin) - (y * angleCos);
+            let newY = (x * angleCos) + (y * angleSin);
+
+            position.x = newX + this.group.position.x;
+            position.y = newY + this.group.position.y;
+        }
+
+        return position;
     }
 
     set position(value) {

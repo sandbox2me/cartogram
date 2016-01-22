@@ -307,11 +307,20 @@ InteractiveApp.prototype = {
             listItem.append($('<p><a href="#" class="js-delete-item">Delete</a></p>'));
             listItem.append($('<p><a href="#" class="js-delete-group">Delete Group</a></p>'));
 
+            listItem.find('.js-rotate-group').on('click', this.rotateGroup.bind(this));
             listItem.find('.js-delete-item').on('click', this.deleteItem.bind(this));
             listItem.find('.js-delete-group').on('click', this.deleteGroup.bind(this));
 
             $list.append(listItem);
         }.bind(this));
+    },
+
+    rotateGroup: function(e) {
+        e.preventDefault();
+
+        var angle = window.prompt('New angle');
+        var actorPath = $(e.target).parents('li').data('actor');
+        this.scene.groupAtPath(actorPath).rotate(window.parseInt(angle, 10));
     },
 
     deleteItem: function(e) {

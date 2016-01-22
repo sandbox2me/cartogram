@@ -23,6 +23,24 @@ const defaultGroupDefinition = {
     actors: []
 };
 
+function basicMerge(left, right) {
+    _.forEach(right, (v, k) => {
+        left[k] = v;
+    });
+
+    return left;
+}
+
+function mergeMissing(obj, defaults) {
+    Object.keys(defaults).forEach((k) => {
+        if (!(k in obj)) {
+            obj[k] = defaults[k];
+        }
+    });
+
+    return obj;
+}
+
 const handlers = {
     'ADD_CAMERA_CONTROLLER': (state, action) => {
         return state.set('cameraController', action.controller);
@@ -39,7 +57,7 @@ const handlers = {
     'ADD_GROUP': (state, action) => {
         let groups = state.get('groups');
 
-        groups = groups.set(action.group.name, _.merge({}, defaultGroupDefinition, action.group));
+        groups = groups.set(action.group.name, mergeMissing(action.group, defaultGroupDefinition));
 
         return state.set('groups', groups);
     },
@@ -49,7 +67,7 @@ const handlers = {
         let groupMap = {};
 
         action.groups.forEach((group) => {
-            groupMap[group.name] = _.merge({}, defaultGroupDefinition, action.group);
+            groupMap[group.name] = _.merge({}, mergeMissing(group, defaultGroupDefinition));
         });
 
         groups = groups.merge(groupMap);
@@ -127,7 +145,7 @@ const handlers = {
                     groups = groups.delete(group.name);
                     state = state.set('groups', groups);
                 } else {
-                    _.merge(group.definition, data);
+                    basicMerge(group.definition, data);
                 }
             }
             updateList.push(change);

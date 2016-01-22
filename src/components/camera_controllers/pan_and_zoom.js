@@ -150,7 +150,6 @@ export default class PanAndZoomCameraController {
 
             this.threeCamera.position.addVectors(this._target, this._eye);
             this.threeCamera.lookAt(this._target);
-            console.log(`dozoom: ${ this.threeCamera.position.z }`)
             this.camera.updatePosition();
         }
     }

@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { degToRad } from 'utils/math';
 
 class Group {
     constructor(definition) {
@@ -108,6 +109,8 @@ class Group {
     }
 
     rotate(angle) {
+        let angleRad = degToRad(angle);
+
         this._bbox = undefined;
 
         this.scene.pushChange({
@@ -115,7 +118,10 @@ class Group {
             group: this,
             action: 'update',
             data: {
-                angle
+                angle,
+                angleRad,
+                angleCos: Math.cos(angleRad),
+                angleSin: Math.sin(angleRad)
             }
         });
     }
