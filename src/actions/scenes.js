@@ -47,13 +47,6 @@ function removeGroupObjects(groupObjectPaths) {
     };
 }
 
-function addMeshes(meshes) {
-    return {
-        type: 'ADD_MESHES',
-        meshes
-    };
-}
-
 function commitChanges(changes) {
     return {
         type: 'COMMIT_CHANGES',
@@ -75,7 +68,6 @@ export default {
     addActorObjects,
     addGroupObjects,
     removeGroupObjects,
-    addMeshes,
     commitChanges,
     resetUpdates,
 };

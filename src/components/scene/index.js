@@ -296,7 +296,6 @@ class Scene {
             this.threeScene.add(...meshes);
             this.dispatch(sceneActions.addGroupObjects(groupObjects));
             this.dispatch(sceneActions.addActorObjects(actorObjects));
-            this.dispatch(sceneActions.addMeshes(meshes));
         }
     }
 
@@ -364,8 +363,6 @@ class Scene {
                     this.threeScene.add(mesh);
                 }
             });
-
-            // this.dispatch(sceneActions.addMeshes(meshes));
         }
 
         // Finalize state

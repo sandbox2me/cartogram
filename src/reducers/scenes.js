@@ -12,10 +12,7 @@ const initialState = Map({
     actors: Map({}),
     actorObjects: Map({}),
     groupObjects: Map({}),
-    groups: Map([]),
-
-    meshes: List([]),
-    materials: List([]),
+    groups: Map([])
 });
 
 
@@ -73,15 +70,6 @@ const handlers = {
         });
 
         return state.set('groupObjects', groupObjects);
-    },
-
-    'ADD_MESHES': (state, action) => {
-        let meshes = state.get('meshes');
-
-        // XXX Map actors to meshes
-        meshes = meshes.merge(action.meshes);
-
-        return state.set('meshes', meshes);
     },
 
     'COMMIT_CHANGES': (state, action) => {
