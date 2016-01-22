@@ -40,6 +40,13 @@ function addGroupObjects(groupObjects) {
     };
 }
 
+function removeGroupObjects(groupObjectPaths) {
+    return {
+        type: 'REMOVE_GROUP_OBJECTS',
+        groupObjectPaths
+    };
+}
+
 function addMeshes(meshes) {
     return {
         type: 'ADD_MESHES',
@@ -67,6 +74,7 @@ export default {
     addGroups,
     addActorObjects,
     addGroupObjects,
+    removeGroupObjects,
     addMeshes,
     commitChanges,
     resetUpdates,

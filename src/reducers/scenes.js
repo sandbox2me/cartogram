@@ -65,6 +65,16 @@ const handlers = {
         return state.set('groupObjects', groupObjects);
     },
 
+    'REMOVE_GROUP_OBJECTS': (state, action) => {
+        let groupObjects = state.get('groupObjects');
+
+        action.groupObjectPaths.forEach((path) => {
+            groupObjects = groupObjects.delete(path);
+        });
+
+        return state.set('groupObjects', groupObjects);
+    },
+
     'ADD_MESHES': (state, action) => {
         let meshes = state.get('meshes');
 
@@ -96,11 +106,12 @@ const handlers = {
             }
 
             if (change.type === 'group') {
+                let { group, position } = change;
+
                 if (change.action === 'destroy') {
-                    group.destroyed = true;
+                    groups = groups.delete(group.name);
+                    state = state.set('groups', groups);
                 } else {
-                    let { group, position } = change;
-                    console.log('previous position:', group.position, ' new position: ', position);
                     group.definition.position = position;
                     group.position = position;
                 }

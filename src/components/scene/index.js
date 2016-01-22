@@ -65,10 +65,10 @@ class Scene {
     }
 
     stateDidChange(oldState) {
-        if (this.state.get('actors').size && !this.state.get('meshes').size) {
+        if (this.state.get('actors').size && !this.state.get('actorObjects').size) {
             // 1+ actors are in the scene, but no mesh data has been generated yet. Get to it!
             this._generateMeshes();
-        } else if (this.state.get('groups').size && !this.state.get('meshes').size) {
+        } else if (this.state.get('groups').size && !this.state.get('groupObjects').size) {
             this._generateMeshes();
         } else if (oldState && this.state.get('actors') !== oldState.get('actors')) {
             // actors changed, update scene
@@ -294,9 +294,9 @@ class Scene {
 
         if (meshes.length) {
             this.threeScene.add(...meshes);
-            this.dispatch(sceneActions.addMeshes(meshes));
-            this.dispatch(sceneActions.addActorObjects(actorObjects));
             this.dispatch(sceneActions.addGroupObjects(groupObjects));
+            this.dispatch(sceneActions.addActorObjects(actorObjects));
+            this.dispatch(sceneActions.addMeshes(meshes));
         }
     }
 
@@ -365,7 +365,7 @@ class Scene {
                 }
             });
 
-            this.dispatch(sceneActions.addMeshes(meshes));
+            // this.dispatch(sceneActions.addMeshes(meshes));
         }
 
         // Finalize state
@@ -419,6 +419,7 @@ class Scene {
 
         if (destroyedGroups.length) {
             this._removeGroups(destroyedGroups);
+            hasActorChanges = true;
         }
 
         if (pendingChanges.size) {
@@ -483,8 +484,6 @@ class Scene {
 
                 this.threeScene.remove(this.threeScene.children[index]);
             });
-
-            // this.dispatch(sceneActions.removeMeshes(removedMeshes));
         }
 
         if (meshes.length) {
@@ -497,13 +496,10 @@ class Scene {
                     this.threeScene.add(mesh);
                 }
             });
-
-            this.dispatch(sceneActions.addMeshes(meshes));
         }
 
         if (removedGroupObjects.length) {
-            // this.dispatch(sceneActions.removeGroupObjects(removedGroupObjects));
-            // this.dispatch(sceneActions.cleanupDestroyedGroups());
+            this.dispatch(sceneActions.removeGroupObjects(removedGroupObjects));
         }
     }
 
