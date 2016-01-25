@@ -2,7 +2,7 @@ const DEFAULT_EVENTS = [
     'mouseup',
     'mousedown',
     'mousemove',
-    'mousewheel',
+    'wheel', // Replaces 'mousewheel'
 
     'click',
     'dblclick',

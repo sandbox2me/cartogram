@@ -61,7 +61,7 @@ export default class PanAndZoomCameraController {
 
     _registerInputHandlers() {
         this.scene.on('mousedown', this._handleMouseDown);
-        this.scene.on('mousewheel', this._handleMouseWheel);
+        this.scene.on('wheel', this._handleMouseWheel);
     }
 
     @autobind
@@ -108,14 +108,14 @@ export default class PanAndZoomCameraController {
 
         let delta = 0;
 
-        if (event.deltaY) {
+        if (e.deltaY) {
             // Most browsers support deltaY from the wheel event
-            delta = -event.deltaY;
-        } else if (event.detail) {
+            delta = -e.deltaY;
+        } else if (e.detail) {
             // Firefox versions
-            delta = -event.detail;
-        } else if (event.wheelDelta) {
-            delta = event.wheelDelta / 40;
+            delta = -e.detail;
+        } else if (e.wheelDelta) {
+            delta = e.wheelDelta / 40;
         }
 
         this._zoomStart.y += delta * 0.01;
