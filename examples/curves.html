@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Cartogram 2 - Circles Test</title>
+        <style type="text/css">
+            body {
+                margin: 0;
+                padding: 0;
+            }
+
+            #controls {
+                position: absolute;
+                top: 0;
+                left: 0;
+                z-index: 10;
+                background: white;
+                padding: 20px;
+                width: 200px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="container"></div>
+        <div id="controls">
+            Curve <input id="curve" type="range" min="-200" max="200" value="0" step="1" /> <br />
+            Skew <input id="skew" type="range" min="-100" max="100" value="0" step="1" />
+        </div>
+
+        <script type="text/javascript" src="../node_modules/three/three.js"></script>
+        <script type="text/javascript" src="../node_modules/lodash/index.js"></script>
+        <script type="text/javascript" src="../dist/cartogram-dev.js"></script>
+        <script type="text/javascript">
+            window.curve = 0;
+            window.skew = 0;
+
+            var curveEl = document.getElementById('curve');
+            var skewEl = document.getElementById('skew');
+
+            curveEl.addEventListener('change', function() {
+                window.curve = this.value;
+                redraw();
+            });
+
+            skewEl.addEventListener('change', function() {
+                window.skew = this.value;
+                redraw();
+            });
+
+            function redraw() {
+                try {
+                    document.getElementById('container').childNodes[0].remove();
+                } catch (e) {
+
+                }
+                var cartogram = new Cartogram(document.getElementById('container'), {
+                    backgroundColor: '#000000'
+                });
+                var scene = cartogram.getDefaultScene();
+                cartogram.registerType('HoverCircle', {
+                    parent: 'PointCircle',
+                    onMouseover: function(state) {
+                        this.set('oldFill', state.fill);
+                        this.set('fill', { r: 0, g: 0, b: 1.0 });
+                    },
+                    onMouseout: function(state) {
+                        this.set('fill', state.oldFill);
+                        this.set('oldFill', undefined);
+                    }
+                });
+                var circles = [];
+                var range = 2000;
+
+                var curvePoints = Cartogram.utils.curveGenerators.linearSpacedQuadraticBezierCurve(
+                    { x: 0, y: -1*window.skew, },
+                    { x: 225, y: window.curve, },
+                    { x: 450, y: window.skew, },
+                    5
+                );
+
+                var curveLinePoints = Cartogram.utils.curveGenerators.quadraticBezierCurve(
+                    { x: 0, y: -1*window.skew, },
+                    { x: 225, y: window.curve, },
+                    { x: 450, y: window.skew, },
+                    500
+                );
+
+                for (var i=0; i < curveLinePoints.length; i++) {
+                    circles.push({
+                        type: 'PointCircle',
+                        id: i,
+                        radius: 2,
+                        position: {
+                            x: curveLinePoints[i].x,
+                            y: curveLinePoints[i].y,
+                            z: 0
+                        },
+                        fill: { r: 1, g: 1, b: 1 }
+                    });
+                }
+                for (var i=0; i < curvePoints.length; i++) {
+                    circles.push({
+                        type: 'PointCircle',
+                        id: i,
+                        radius: 20,
+                        position: {
+                            x: curvePoints[i].x,
+                            y: curvePoints[i].y,
+                            z: 0
+                        },
+                        fill: { r: Math.random(), g: Math.random(), b: Math.random() }
+                    });
+                }
+
+                console.time('add actor')
+                var actor = scene.addActor({
+                    name: 'cloud',
+                    position: { x: 0, y: 0, z: 0 },
+                    shapes: circles
+                });
+
+                console.timeEnd('add actor')
+
+                var cameraController = new Cartogram.PanAndZoomCameraController({
+                    buttons: {
+                        0: 'pan',
+                        3: 'zoom'
+                    }
+                });
+                scene.addCameraController(cameraController);
+
+                cartogram.render();
+            }
+
+            redraw();
+        </script>
+    </body>
+</html>
