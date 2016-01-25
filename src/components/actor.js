@@ -50,8 +50,8 @@ class Actor {
             let { angleCos, angleSin } = this.group;
 
             // Rotate clockwise
-            let newX = (x * angleSin) - (y * angleCos);
-            let newY = (x * angleCos) + (y * angleSin);
+            let newX = (x * angleCos) - (y * angleSin);
+            let newY = -((x * angleSin) + (y * angleCos));
 
             position.x = newX + this.group.position.x;
             position.y = newY + this.group.position.y;

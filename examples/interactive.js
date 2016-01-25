@@ -16,6 +16,7 @@ function InteractiveApp(cartogram) {
 
     $('.js-big-group').on('click', this.addBigGroup.bind(this));
     $('.js-small-group').on('click', this.addSmallGroup.bind(this));
+    $('.js-22-group').on('click', this.add22Group.bind(this));
     $('.js-circle').on('click', this.addCircle.bind(this));
     $('.js-square').on('click', this.addSquare.bind(this));
 }
@@ -158,6 +159,31 @@ InteractiveApp.prototype = {
         ];
     },
 
+    TwoByTwoActors: function() {
+        return [
+            {
+                name: 'actor1',
+                position: { x: -25, y: 25, z: 0 },
+                shapes: this.GroupShapes
+            },
+            {
+                name: 'actor2',
+                position: { x: 25, y: 25, z: 0 },
+                shapes: this.GroupShapes
+            },
+            {
+                name: 'actor1',
+                position: { x: -25, y: -25, z: 0 },
+                shapes: this.GroupShapes
+            },
+            {
+                name: 'actor2',
+                position: { x: 25, y: -25, z: 0 },
+                shapes: this.GroupShapes
+            },
+        ]
+    },
+
     bindCartogramEvents: function() {
         var cameraController = this.scene.state.get('cameraController');
 
@@ -228,6 +254,18 @@ InteractiveApp.prototype = {
             name: 'group' + this.groupCount++,
             position: { x: coordinates.x, y: coordinates.y, z: 0 },
             actors: this.SmallGroupActors()
+        });
+    },
+
+    add22Group: function(e) {
+        e.preventDefault();
+
+        var coordinates = this.getCoordinates();
+
+        this.scene.addGroup({
+            name: 'group' + this.groupCount++,
+            position: { x: coordinates.x, y: coordinates.y, z: 0 },
+            actors: this.TwoByTwoActors()
         });
     },
 
