@@ -207,7 +207,8 @@ class Actor {
         });
     }
 
-    rotateCCW(angle) {
+    rotate(angle) {
+        angle *= -1;
         let angleRad = degToRad(angle);
 
         this._bbox = undefined;
@@ -223,10 +224,6 @@ class Actor {
                 angleSin: Math.sin(angleRad)
             }
         });
-    }
-
-    rotate(angle) {
-        this.rotateCCW(angle * -1);
     }
 };
 

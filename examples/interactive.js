@@ -39,7 +39,8 @@ InteractiveApp.prototype = {
                 width: 12,
                 height: 17
             },
-            fill: { r: 1, g: 1, b: 1 }
+            fill: { r: 1, g: 1, b: 1 },
+            angle: -32
         },
         {
             type: 'Rectangle',
@@ -241,7 +242,7 @@ InteractiveApp.prototype = {
         this.scene.addGroup({
             name: 'group' + this.groupCount++,
             position: { x: coordinates.x, y: coordinates.y, z: 0 },
-            rotateChildren: false,
+            rotateChildren: true,
             actors: this.BigGroupActors()
         });
     },

@@ -25,7 +25,7 @@ class BaseType {
     }
 
     get angle() {
-        return degToRad((this.shape.angle || 0) + this.actor.angle);
+        return degToRad((-1 * this.shape.angle || 0) + this.actor.angle);
     }
 
     // Global index for this object
