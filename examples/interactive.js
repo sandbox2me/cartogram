@@ -172,12 +172,12 @@ InteractiveApp.prototype = {
                 shapes: this.GroupShapes
             },
             {
-                name: 'actor1',
+                name: 'actor3',
                 position: { x: -25, y: -25, z: 0 },
                 shapes: this.GroupShapes
             },
             {
-                name: 'actor2',
+                name: 'actor4',
                 position: { x: 25, y: -25, z: 0 },
                 shapes: this.GroupShapes
             },
