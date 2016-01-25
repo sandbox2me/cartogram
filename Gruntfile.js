@@ -57,6 +57,7 @@ module.exports = function(grunt) {
                 options: {
                     logConcurrentOutput: true
                 }
+            }
         },
         'jasmine_webpack': {
             main: {
