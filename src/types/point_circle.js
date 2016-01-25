@@ -38,6 +38,18 @@ class PointCircle extends BaseType {
         return this._bbox;
     }
 
+    get fill() {
+        return this.shape.fill;
+    }
+
+    get stroke() {
+        return this.shape.stroke || this.shape.fill;
+    }
+
+    get strokeWidth() {
+        return this.shape.strokeWidth || 0.001;
+    }
+
     checkIntersection(position) {
         let shapePosition = this.position;
         let x = (shapePosition.x - position.x);

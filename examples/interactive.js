@@ -64,7 +64,9 @@ InteractiveApp.prototype = {
                     name: 'primary',
                     radius: 50,
                     position: { x: 0, y: 0, z: 0 },
-                    fill: { r: 1.0, g: 0, b: 0 },
+                    fill: { r: 1.0, g: 0, b: 0, a: 0.5},
+                    stroke: { r: 1.0, g: 0.3, b: 0.3 },
+                    strokeWidth: 0.1,
                     hitMask: true
                 }
             ]
