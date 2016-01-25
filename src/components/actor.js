@@ -8,6 +8,7 @@ class Actor {
         this.group = this.definition.group;
         this.scene = this.definition.scene;
         this._position = this.definition.position;
+        this._angle = this.definition.angle || 0;
         this.types = {};
         this.children = {};
 
@@ -62,6 +63,13 @@ class Actor {
 
     set position(value) {
         this._position = value;
+    }
+
+    get angle() {
+        if (this._angle || (this.group && this.group.angle && this.group.rotateChildren)) {
+            return this._angle + this.group.angle;
+        }
+        return 0;
     }
 
     checkHitMask(position) {
@@ -197,6 +205,28 @@ class Actor {
             actor: this,
             action: 'destroy'
         });
+    }
+
+    rotateCCW(angle) {
+        let angleRad = degToRad(angle);
+
+        this._bbox = undefined;
+
+        this.scene.pushChange({
+            type: 'actor',
+            actor: this,
+            action: 'update',
+            data: {
+                angle,
+                angleRad,
+                angleCos: Math.cos(angleRad),
+                angleSin: Math.sin(angleRad)
+            }
+        });
+    }
+
+    rotate(angle) {
+        this.rotateCCW(angle * -1);
     }
 };
 

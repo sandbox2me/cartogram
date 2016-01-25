@@ -83,7 +83,7 @@ InteractiveApp.prototype = {
                         height: 75
                     },
                     position: { x: 0, y: 0, z: 0 },
-                    fill: { r: 1.0, g: 0, b: 0 }
+                    fill: { r: 1.0, g: 0, b: 0 },
                 }
             ]
         }
@@ -241,6 +241,7 @@ InteractiveApp.prototype = {
         this.scene.addGroup({
             name: 'group' + this.groupCount++,
             position: { x: coordinates.x, y: coordinates.y, z: 0 },
+            rotateChildren: false,
             actors: this.BigGroupActors()
         });
     },
@@ -253,6 +254,7 @@ InteractiveApp.prototype = {
         this.scene.addGroup({
             name: 'group' + this.groupCount++,
             position: { x: coordinates.x, y: coordinates.y, z: 0 },
+            rotateChildren: false,
             actors: this.SmallGroupActors()
         });
     },
@@ -289,6 +291,7 @@ InteractiveApp.prototype = {
         this.scene.addGroup({
             name: 'group' + this.groupCount++,
             position: { x: coordinates.x, y: coordinates.y, z: 0 },
+            angle: 5,
             actors: this.SquareActors
         });
     },

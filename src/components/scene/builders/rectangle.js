@@ -56,6 +56,7 @@ class Rectangle {
         this.offsets = new InstancedBufferAttribute(new Float32Array(this.shapes.length * 3), 3).setDynamic(true);
         this.scales = new InstancedBufferAttribute(new Float32Array(this.shapes.length * 2), 2).setDynamic(true);
         this.colors = new InstancedBufferAttribute(new Float32Array(this.shapes.length * 4), 4).setDynamic(true);
+        this.angles = new InstancedBufferAttribute(new Float32Array(this.shapes.length), 1).setDynamic(true);
 
         this.shapes.forEach((shapeTypeInstance, i) => {
             let position = shapeTypeInstance.position;
@@ -68,27 +69,33 @@ class Rectangle {
             let color = shapeTypeInstance.shape.fill;
             this.colors.setXYZW(i, color.r, color.g, color.b, 1.0);
 
+            let angle = shapeTypeInstance.angle;
+            this.angles.setX(i, angle);
+
             shapeTypeInstance.setIndex(i);
         });
 
         this.geometry.addAttribute('offset', this.offsets);
         this.geometry.addAttribute('scale', this.scales);
         this.geometry.addAttribute('color', this.colors);
+        this.geometry.addAttribute('angle', this.angles);
     }
 
     updateAttributesAtIndex(index) {
         let shapeTypeInstance = this.shapes[index];
 
-        let { position, bbox } = shapeTypeInstance;
+        let { position, bbox, angle } = shapeTypeInstance;
         let { fill, size } = shapeTypeInstance.shape;
 
         this.scales.setXY(index, size.width, size.height);
         this.offsets.setXYZ(index, position.x, position.y, position.z);
         this.colors.setXYZW(index, fill.r, fill.g, fill.b, 1.0);
+        this.angles.setX(index, angle);
 
         this.geometry.attributes.scale.needsUpdate = true;
         this.geometry.attributes.offset.needsUpdate = true;
         this.geometry.attributes.color.needsUpdate = true;
+        this.geometry.attributes.angle.needsUpdate = true;
     }
 
     addShapes(shapes, sceneState) {

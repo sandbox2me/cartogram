@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import { List, Map } from 'immutable';
 import createReducer from 'utils/create_reducer';
+import { degToRad } from 'utils/math';
 
 const initialState = Map({
     cameraController: undefined,
@@ -19,7 +20,7 @@ const defaultGroupDefinition = {
     name: 'group',
     position: { x: 0, y: 0, z: 0 },
     angle: 0,
-    rotateActors: true,
+    rotateChildren: true,
     actors: []
 };
 
@@ -41,6 +42,17 @@ function mergeMissing(obj, defaults) {
     return obj;
 }
 
+function fixGroupAngleProperties(group) {
+    if (group.angle && !group.angleRad) {
+        group.angle = -1 * group.angle;
+        group.angleRad = degToRad(group.angle);
+        group.angleCos = Math.cos(group.angleRad);
+        group.angleSin = Math.sin(group.angleRad);
+    }
+
+    return group;
+}
+
 const handlers = {
     'ADD_CAMERA_CONTROLLER': (state, action) => {
         return state.set('cameraController', action.controller);
@@ -57,6 +69,8 @@ const handlers = {
     'ADD_GROUP': (state, action) => {
         let groups = state.get('groups');
 
+        action.group = fixGroupAngleProperties(action.group);
+
         groups = groups.set(action.group.name, mergeMissing(action.group, defaultGroupDefinition));
 
         return state.set('groups', groups);
@@ -67,6 +81,7 @@ const handlers = {
         let groupMap = {};
 
         action.groups.forEach((group) => {
+            group = fixGroupAngleProperties(group);
             groupMap[group.name] = _.merge({}, mergeMissing(group, defaultGroupDefinition));
         });
 

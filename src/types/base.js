@@ -1,3 +1,4 @@
+import { degToRad } from 'utils/math';
 
 class BaseType {
     constructor(shape, actor) {
@@ -21,6 +22,10 @@ class BaseType {
             y: this.shape.position.y + this.actor.position.y,
             z: this.shape.position.z + this.actor.position.z,
         };
+    }
+
+    get angle() {
+        return degToRad((this.shape.angle || 0) + this.actor.angle);
     }
 
     // Global index for this object
