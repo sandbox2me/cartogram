@@ -568,6 +568,27 @@ class Scene {
         return this.actorsAtWorldPosition(worldPosition);
     }
 
+    actorsInScreenRegion(bbox) {
+        let worldOrigin = this.screenToWorldPosition(bbox);
+        let worldDest = this.screenToWorldPosition({ x: bbox.x + bbox.width, y: bbox.y + bbox.height });
+        let intersections = this.rtree.search({
+            x: worldOrigin.x,
+            y: worldOrigin.y,
+            x2: worldDest.x,
+            y2: worldDest.y
+        });
+
+        let actorPaths = intersections.map((intersection) => {
+            let actor = intersection[4].actor;
+
+            if (!actor.hasHitMask || actor.checkHitMask(position)) {
+                return actor.path;
+            }
+        });
+
+        return _.compact(actorPaths);
+    }
+
     actorAtPath(path) {
         return this.objectsAtPath(path).actor;
     }
