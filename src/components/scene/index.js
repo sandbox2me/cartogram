@@ -90,28 +90,33 @@ class Scene {
     }
 
     addActor(actor) {
+        actor = _.cloneDeep(actor);
         actor.scene = this;
+
         this.dispatch(sceneActions.addActor(actor));
     }
 
     addGroup(group) {
         group.scene = this;
+        group.actors = _.cloneDeep(group.actors);
         group.actors.forEach((actor) => {
             actor.group = group;
             actor.scene = this;
         });
-        window.group = group;
+
         this.dispatch(sceneActions.addGroup(group));
     }
 
     addGroups(groups) {
         groups.forEach((group) => {
             group.scene = this;
+            group.actors = _.cloneDeep(group.actors);
             group.actors.forEach((actor) => {
                 actor.group = group;
                 actor.scene = this;
             });
         });
+
         this.dispatch(sceneActions.addGroups(groups));
     }
 
