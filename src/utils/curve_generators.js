@@ -50,10 +50,10 @@ export function estimateArcLength(curvePoints) {
     let approximateArcLength = 0;
     let previousPoint = curvePoints[0];
 
-    for (let point of curvePoints) {
+    curvePoints.forEach((point) => {
         approximateArcLength += computeDistance(previousPoint, point);
         previousPoint = point;
-    }
+    });
 
     return approximateArcLength;
 }
