@@ -46,13 +46,11 @@ class RTree {
     }
 
     insertActors(actors) {
-        console.time('insert actors')
         let bboxes = actors.map((actor) => {
             return this._dataForActor(actor);
         });
 
         this.tree.load(bboxes);
-        console.timeEnd('insert actors')
     }
 
     reset() {

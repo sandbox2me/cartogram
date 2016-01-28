@@ -70,13 +70,10 @@ class Scene {
             this._generateMeshes();
         } else if (oldState && this.state.get('actors') !== oldState.get('actors')) {
             // actors changed, update scene
-            console.log('Updating scene')
         } else if (oldState && this.state.get('groups').size > oldState.get('groups').size) {
             // actors changed, update scene
-            console.log('Updating scene')
             this._addObjects();
         } else if (oldState && this.state.get('pendingUpdates') !== oldState.get('pendingUpdates') && this.state.get('pendingUpdates').size) {
-            console.log('updates pending')
             this._updateMeshes();
         }
     }
@@ -193,7 +190,6 @@ class Scene {
         }
 
         if (this._pendingChanges.length) {
-            console.log(`${ this._pendingChanges.length } Pending changes to scene items exist`);
             this.dispatch(sceneActions.commitChanges(this._pendingChanges));
             this._pendingChanges = [];
         }
