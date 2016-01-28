@@ -1,4 +1,3 @@
-import { List, Map } from 'immutable';
 import _ from 'lodash';
 import three from 'three';
 
@@ -9,8 +8,6 @@ import EventBus from './event_bus';
 import RTree from './rtree';
 
 import { Actor, Group } from 'components';
-
-import * as Types from 'types';
 
 import * as Builders from './builders';
 
@@ -48,7 +45,8 @@ class Scene {
                 this.state = nextState;
                 this.stateDidChange(state);
             }
-        }
+        };
+
         this.store.subscribe(handleChange);
         handleChange();
         this.eventDispatch = new EventBinder(this);
@@ -148,7 +146,7 @@ class Scene {
         let objects = {};
 
         // Search in groups
-        let groupPath = `/${ segments[0] }`
+        let groupPath = `/${ segments[0] }`;
         let group = groupObjects.get(groupPath);
         if (group) {
             // Get actor
@@ -321,7 +319,6 @@ class Scene {
             groupObjects[groupObject.path] = groupObject;
 
             group.actors.forEach((actor) => {
-                let path = `/${ name }/${ actor.name }`;
                 let actorObject = new Actor(actor);
                 actorObjectList.push(actorObject);
                 groupObject.addActorObject(actorObject);
@@ -389,7 +386,7 @@ class Scene {
             let { type, action } = change;
 
             if (type === 'shape') {
-                let { actor, index, definitionIndex, properties } = change;
+                let { actor, properties } = change;
                 let shape = actor.children[properties.name];
                 actor.updateChild(properties);
 
@@ -558,6 +555,8 @@ class Scene {
             if (!actor.hasHitMask || actor.checkHitMask(position)) {
                 return actor.path;
             }
+
+            return undefined;
         });
 
         return _.compact(actorPaths);
@@ -584,6 +583,8 @@ class Scene {
             if (!actor.hasHitMask || actor.checkHitMask(position)) {
                 return actor.path;
             }
+
+            return undefined;
         });
 
         return _.compact(actorPaths);
