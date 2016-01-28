@@ -62,11 +62,11 @@ class Rectangle {
             let position = shapeTypeInstance.position;
             this.offsets.setXYZ(i, position.x, position.y, position.z);
 
-            let size = shapeTypeInstance.shape.size;
+            let size = shapeTypeInstance.size;
             this.scales.setXY(i, size.width, size.height);
 
             // Assuming r,g,b object. Handle other things plz.
-            let color = shapeTypeInstance.shape.fill;
+            let color = shapeTypeInstance.fill;
             this.colors.setXYZW(i, color.r, color.g, color.b, 1.0);
 
             let angle = shapeTypeInstance.angle;
@@ -84,8 +84,7 @@ class Rectangle {
     updateAttributesAtIndex(index) {
         let shapeTypeInstance = this.shapes[index];
 
-        let { position, bbox, angle } = shapeTypeInstance;
-        let { fill, size } = shapeTypeInstance.shape;
+        let { position, angle, size, fill } = shapeTypeInstance;
 
         this.scales.setXY(index, size.width, size.height);
         this.offsets.setXYZ(index, position.x, position.y, position.z);

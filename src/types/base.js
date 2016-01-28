@@ -12,20 +12,36 @@ class BaseType {
         this._bbox = undefined;
     }
 
+    get(property) {
+        let value = this.shape[property];
+
+        if (typeof value === 'string' && value.indexOf('$') === 0) {
+            // Variable property, ask the actor for it
+            let propKey = value.substr(1);
+            let shapeProp = this.actor.shapeProps[propKey];
+
+            if (shapeProp) {
+                value = shapeProp;
+            }
+        }
+
+        return value;
+    }
+
     get path() {
         return `${ this.actor.path }/${ this.shape.name }`;
     }
 
     get position() {
         return {
-            x: this.shape.position.x + this.actor.position.x,
-            y: this.shape.position.y + this.actor.position.y,
-            z: this.shape.position.z + this.actor.position.z,
+            x: this.get('position').x + this.actor.position.x,
+            y: this.get('position').y + this.actor.position.y,
+            z: this.get('position').z + this.actor.position.z,
         };
     }
 
     get angle() {
-        return degToRad((-1 * this.shape.angle || 0) + this.actor.angle);
+        return degToRad((-1 * this.get('angle') || 0) + this.actor.angle);
     }
 
     // Global index for this object

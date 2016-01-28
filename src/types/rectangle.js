@@ -9,10 +9,17 @@ class Rectangle extends BaseType {
         super(shape, actor);
     }
 
+    get size() {
+        return this.get('size');
+    }
+
+    get fill() {
+        return this.get('fill');
+    }
+
     get bbox() {
         if (!this._bbox || !this.actor._bbox) {
-            let { size } = this.shape;
-            let position = this.position;
+            let { position, size } = this;
 
             this._bbox = {
                 x: position.x - (size.width / 2),

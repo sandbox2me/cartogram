@@ -7,26 +7,31 @@ class PointCircle extends BaseType {
         }
 
         super(shape, actor);
-
-        // Pre-calculate square for point intersection checks
-        this.shape.radiusSq = this.shape.radius * this.shape.radius;
     }
 
     get size() {
-        if (!this._size || this.shape.type.radius !== this._size.width) {
+        if (!this._size || this.radius !== this._size.width) {
             this._size = {
-                width: this.shape.radius * 2,
-                height: this.shape.radius * 2,
+                width: this.radius * 2,
+                height: this.radius * 2,
             };
         }
 
         return this._size;
     }
 
+    get radius() {
+        return this.get('radius');
+    }
+
+    get radiusSq() {
+        let radius = this.radius;
+        return radius * radius;
+    }
+
     get bbox() {
         if (!this._bbox || !this.actor._bbox) {
-            let { radius } = this.shape;
-            let position = this.position;
+            let { radius, position } = this;
 
             this._bbox = {
                 width: radius * 2,
@@ -39,15 +44,15 @@ class PointCircle extends BaseType {
     }
 
     get fill() {
-        return this.shape.fill;
+        return this.get('fill');
     }
 
     get stroke() {
-        return this.shape.stroke || this.shape.fill;
+        return this.get('stroke') || this.fill;
     }
 
     get strokeWidth() {
-        return this.shape.strokeWidth || 0.001;
+        return this.get('strokeWidth') || 0.001;
     }
 
     checkIntersection(position) {
@@ -55,7 +60,7 @@ class PointCircle extends BaseType {
         let x = (shapePosition.x - position.x);
         let y = (shapePosition.y - position.y);
 
-        return (x * x) + (y * y) < this.shape.radiusSq;
+        return (x * x) + (y * y) < this.radiusSq;
     }
 };
 

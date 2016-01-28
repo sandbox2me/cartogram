@@ -7,6 +7,7 @@ class Actor {
         this.definition = definition;
         this.group = this.definition.group;
         this.scene = this.definition.scene;
+        this.shapeProps = this.definition.shapeProps;
         this._position = this.definition.position;
         this._angle = this.definition.angle || 0;
         this.types = {};
@@ -47,7 +48,7 @@ class Actor {
             //     Tradeoff would be having more attributes to send
             //     to each instance.
             let x = this._position.x;
-            let y = this._position.y
+            let y = this._position.y;
             let { angleCos, angleSin } = this.group;
 
             // Rotate clockwise
@@ -173,6 +174,23 @@ class Actor {
         });
     }
 
+    setShapeProps(props) {
+        let shapeProps = Object.assign({}, this.definition.shapeProps, props);
+
+        if (_.isEqual(shapeProps, this.shapeProps)) {
+            // No-op
+            return;
+        }
+
+        this.scene.pushChange({
+            type: 'actor',
+            actor: this,
+            data: {
+                shapeProps
+            }
+        });
+    }
+
     // Relative movement
     translate(position) {
         position.x += this.position.x;
@@ -183,7 +201,9 @@ class Actor {
         this.scene.pushChange({
             type: 'actor',
             actor: this,
-            position
+            data: {
+                position
+            }
         });
     }
 

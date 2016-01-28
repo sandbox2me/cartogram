@@ -10,19 +10,25 @@ class Circle extends BaseType {
     }
 
     get size() {
-        if (!this._size || this.type.radius !== this._size.width) {
+        let radius = this.radius;
+
+        if (!this._size || radius !== this._size.width) {
             this._size = {
-                width: this.type.radius,
-                height: this.type.radius,
+                width: radius,
+                height: radius,
             };
         }
 
         return this._size;
     }
 
+    get radius() {
+        return this.get('radius');
+    }
+
     get bbox() {
         if (!this._bbox) {
-            let { size } = this.shape;
+            let size = this.size;
             let position = this.position;
 
             this._bbox = {

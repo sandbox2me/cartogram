@@ -117,7 +117,7 @@ const handlers = {
 
         changes.forEach((change) => {
             if (change.type === 'shape') {
-                let { type, actor, index, definitionIndex, properties } = change;
+                let { actor, definitionIndex, properties } = change;
                 let shapes = [...actor.definition.shapes];
                 shapes[definitionIndex] = properties;
 
@@ -125,7 +125,7 @@ const handlers = {
             }
 
             if (change.type === 'actor') {
-                let { actor, position } = change;
+                let { actor, data } = change;
 
                 if (change.action === 'destroy') {
                     let group = actor.group;
@@ -145,8 +145,7 @@ const handlers = {
                     }
                     state = state.set('groups', groups);
                 } else {
-                    actor.definition.position = position;
-                    actor.position = position;
+                    basicMerge(actor.definition, data);
                 }
             }
 

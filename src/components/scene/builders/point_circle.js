@@ -1,11 +1,6 @@
 import {
-    BufferAttribute,
     InstancedBufferAttribute,
-    InstancedBufferGeometry,
-    Mesh,
-    MeshBasicMaterial,
-    RawShaderMaterial,
-    Vector4,
+    Mesh
 } from 'three';
 
 // What is text other than a whole bunch of little rectangles next to each other?
@@ -24,7 +19,7 @@ class PointCircle extends Rectangle {
         this.strokeWidths = new InstancedBufferAttribute(new Float32Array(this.shapes.length * 4), 4);
 
         this.shapes.forEach((shapeTypeInstance, i) => {
-            let { position, bbox, size, fill, stroke, strokeWidth } = shapeTypeInstance;
+            let { position, size, fill, stroke, strokeWidth } = shapeTypeInstance;
 
             this.scales.setXY(i, size.width, size.height);
             this.offsets.setXYZ(i, position.x, position.y, position.z);
@@ -43,8 +38,7 @@ class PointCircle extends Rectangle {
 
     updateAttributesAtIndex(index) {
         let shapeTypeInstance = this.shapes[index];
-
-        let { position, bbox, size, fill, stroke, strokeWidth } = shapeTypeInstance;
+        let { position, size, fill, stroke, strokeWidth } = shapeTypeInstance;
 
         this.scales.setXY(index, size.width, size.height);
         this.offsets.setXYZ(index, position.x, position.y, position.z);
