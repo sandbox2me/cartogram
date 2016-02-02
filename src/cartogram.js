@@ -60,11 +60,7 @@ class Cartogram {
         this.store = createStore(rootReducer);
         this.dispatch = this.store.dispatch;
 
-        // FIXME
-        this.dispatch(actions.core.updateScreenSize({
-            width: this.width,
-            height: this.height
-        }));
+        this._updateCanvasDimensions();
 
         this.dispatch(actions.core.setRenderer(this.renderer));
         this.dispatch(actions.core.setCanvas(this.renderer.domElement));
@@ -84,19 +80,24 @@ class Cartogram {
     }
 
     _updateCanvasDimensions() {
-        var width, height;
-
-        width = this.el.parentNode.clientWidth;
-        height = this.el.parentNode.clientHeight;
+        let width = this.el.parentNode.clientWidth;
+        let height = this.el.parentNode.clientHeight;
+        let bbox = this.el.parentNode.getBoundingClientRect();
 
         // this.postprocessing.setSize(width, height);
         this.renderer.setSize(width, height);
         this.renderer.setPixelRatio(window.devicePixelRatio);
 
         this.dispatch(actions.core.updateScreenSize({
-            width: width,
-            height: height
+            width,
+            height,
+            top: bbox.top,
+            left: bbox.left
         }));
+
+        if (this._defaultScene) {
+            this._defaultScene._needsRepaint = true;
+        }
     }
 
     // Public API

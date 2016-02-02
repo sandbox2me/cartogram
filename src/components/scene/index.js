@@ -27,6 +27,7 @@ class Scene {
         this.builders = {};
 
         this._pendingChanges = [];
+        this._needsRepaint = true;
 
         this._initializeStoreObserver();
     }
@@ -198,10 +199,13 @@ class Scene {
     render(renderer, userCallback) {
         this._update(userCallback);
 
-        renderer.render(
-            this.threeScene,
-            this.camera.camera
-        );
+        if (this._needsRepaint) {
+            renderer.render(
+                this.threeScene,
+                this.camera.camera
+            );
+            this._needsRepaint = false;
+        }
     }
 
     _generateMeshes() {
@@ -295,6 +299,7 @@ class Scene {
             this.threeScene.add(...meshes);
             this.dispatch(sceneActions.addGroupObjects(groupObjects));
             this.dispatch(sceneActions.addActorObjects(actorObjects));
+            this._needsRepaint = true;
         }
     }
 
@@ -366,9 +371,11 @@ class Scene {
         // Finalize state
         if (Object.keys(actorObjects).length) {
             this.dispatch(sceneActions.addActorObjects(actorObjects));
+            this._needsRepaint = true;
         }
         if (Object.keys(groupObjects).length) {
             this.dispatch(sceneActions.addGroupObjects(groupObjects));
+            this._needsRepaint = true;
         }
     }
 
@@ -386,7 +393,7 @@ class Scene {
                 let shape = actor.children[properties.name];
                 actor.updateChild(properties);
 
-                this.builders[properties.type].updateAttributesAtIndex(shape.index)
+                this.builders[properties.type].updateAttributesAtIndex(shape.index);
             }
 
             if (type === 'actor') {
@@ -424,6 +431,7 @@ class Scene {
 
         if (pendingChanges.size) {
             this.dispatch(sceneActions.resetUpdates());
+            this._needsRepaint = true;
         }
         if (hasActorChanges) {
             // XXX Fix this brute-force approach

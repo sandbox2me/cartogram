@@ -138,6 +138,7 @@ export default class PanAndZoomCameraController {
             this.camera.updatePosition();
 
             this.panStart.copy(this.panEnd);
+            this.scene._needsRepaint = true;
         }
     }
 
@@ -151,6 +152,7 @@ export default class PanAndZoomCameraController {
             this.threeCamera.position.addVectors(this._target, this._eye);
             this.threeCamera.lookAt(this._target);
             this.camera.updatePosition();
+            this.scene._needsRepaint = true;
         }
     }
 
