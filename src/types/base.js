@@ -18,7 +18,7 @@ class BaseType {
         if (typeof value === 'string' && value.indexOf('$') === 0) {
             // Variable property, ask the actor for it
             let propKey = value.substr(1);
-            let shapeProp = this.actor.shapeProps[propKey];
+            let shapeProp = this.actor.definition.shapeProps[propKey];
 
             if (shapeProp) {
                 value = shapeProp;

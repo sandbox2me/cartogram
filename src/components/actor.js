@@ -7,9 +7,9 @@ class Actor {
         this.definition = definition;
         this.group = this.definition.group;
         this.scene = this.definition.scene;
-        this.shapeProps = this.definition.shapeProps;
         this._position = this.definition.position;
         this._angle = this.definition.angle || 0;
+        this._events = this.definition.events || {};
         this.types = {};
         this.children = {};
 
@@ -244,6 +244,12 @@ class Actor {
                 angleSin: Math.sin(angleRad)
             }
         });
+    }
+
+    trigger(e, data) {
+        if (e in this._events) {
+            this._events[e](this, data);
+        }
     }
 };
 

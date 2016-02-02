@@ -7,6 +7,7 @@ class Group {
         this.name = this.definition.name;
         this.scene = this.definition.scene;
         this._position = this.definition.position;
+        this._events = this.definition.events || {};
         this.actors = {};
         this.actorList = [];
     }
@@ -133,6 +134,12 @@ class Group {
             group: this,
             action: 'destroy'
         });
+    }
+
+    trigger(e, data) {
+        if (e in this._events) {
+            this._events[e](this, data);
+        }
     }
 }
 
