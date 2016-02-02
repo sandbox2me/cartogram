@@ -75,6 +75,12 @@ class Group {
         });
     }
 
+    updateShapeProps(props) {
+        this.actorList.forEach((actor) => {
+            actor.setShapeProps(props);
+        });
+    }
+
     translate(position) {
         this._bbox = undefined;
 
