@@ -4,6 +4,10 @@ const DEFAULT_EVENTS = [
     'mousemove',
     'wheel', // Replaces 'mousewheel'
 
+    'keypress',
+    'keydown',
+    'keyup',
+
     'click',
     'dblclick',
 
@@ -26,7 +30,7 @@ class EventBinder {
                 e.preventDefault();
                 e.stopPropagation();
                 this.scene.eventBus.trigger(eventName, e, this.scene);
-            }, false);
+            }, true);
         });
     }
 }
