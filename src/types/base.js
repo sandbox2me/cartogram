@@ -20,7 +20,7 @@ class BaseType {
             let propKey = value.substr(1);
             let shapeProp = this.actor.definition.shapeProps[propKey];
 
-            if (shapeProp) {
+            if (shapeProp !== undefined) {
                 value = shapeProp;
             }
         }
