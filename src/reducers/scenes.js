@@ -168,6 +168,31 @@ const handlers = {
 
     'RESET_UPDATES': (state, action) => {
         return state.set('pendingUpdates', List([]));
+    },
+
+    'FORCE_REDRAW': (state, action) => {
+        let groups = state.get('groupObjects');
+        let actors = state.get('actorObjects');
+        let updateList = [];
+        let pendingUpdates = state.get('pendingUpdates');
+
+        groups.forEach((group) => {
+            updateList.push({
+                type: 'group',
+                action: 'update',
+                group
+            });
+        });
+        actors.forEach((actor) => {
+            updateList.push({
+                type: 'actor',
+                action: 'update',
+                actor
+            });
+        });
+
+        pendingUpdates = pendingUpdates.push(...updateList);
+        return state.set('pendingUpdates', pendingUpdates);
     }
 };
 

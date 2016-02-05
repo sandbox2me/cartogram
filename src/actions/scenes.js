@@ -60,6 +60,12 @@ function resetUpdates() {
     };
 }
 
+function forceRedraw() {
+    return {
+        type: 'FORCE_REDRAW'
+    };
+}
+
 export default {
     addCameraController,
     addActor,
@@ -70,4 +76,5 @@ export default {
     removeGroupObjects,
     commitChanges,
     resetUpdates,
+    forceRedraw,
 };

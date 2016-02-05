@@ -601,6 +601,10 @@ class Scene {
     groupAtPath(path) {
         return this.objectsAtPath(path).group;
     }
+
+    forceRedraw() {
+        this.dispatch(sceneActions.forceRedraw());
+    }
 };
 
 export default Scene;
