@@ -22,7 +22,7 @@ module.exports = {
     plugins: [],
     externals: {
         // Don't bundle in THREE
-        'three': 'THREE',
-        'lodash': '_'
+        //'three': 'THREE',
+        //'lodash': '_'
     }
 };

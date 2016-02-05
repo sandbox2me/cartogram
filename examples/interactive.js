@@ -184,7 +184,7 @@ InteractiveApp.prototype = {
                 position: { x: 25, y: -25, z: 0 },
                 shapes: this.GroupShapes
             },
-        ]
+        ];
     },
 
     bindCartogramEvents: function() {
