@@ -48,7 +48,12 @@ class PointCircle extends BaseType {
     }
 
     get stroke() {
-        return this.get('stroke') || this.fill;
+        let stroke = this.get('stroke');
+        if (stroke && this.get('strokeWidth') > 0.001) {
+            return stroke;
+        } else {
+            return this.fill;
+        }
     }
 
     get strokeWidth() {
