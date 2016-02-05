@@ -23,7 +23,7 @@ class Group {
                 minY = Infinity,
                 maxY = -Infinity;
 
-            _.values(this.actorList).forEach((actorObject) => {
+            this.actorList.forEach((actorObject) => {
                 let bbox = actorObject.bbox;
 
                 if (bbox.x < minX) {
@@ -109,7 +109,7 @@ class Group {
                 position: {
                     x: position.x,
                     y: position.y,
-                    z: (position.z || 0) + this.position.z,
+                    z: (position.z || 0),
                 }
             }
         });
@@ -142,9 +142,15 @@ class Group {
         });
     }
 
-    trigger(e, data) {
+    trigger(e, data, triggerActors=false) {
         if (e in this._events) {
             this._events[e](this, data);
+        }
+
+        if (triggerActors) {
+            this.actorList.forEach((actorObject) => {
+                actorObject.trigger(e, data);
+            });
         }
     }
 }
