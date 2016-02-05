@@ -51,6 +51,10 @@ class EventBus {
 
         if (ev in this.events) {
             for (i = 0, length = this.events[ev].length; i < length; i++) {
+                if (!this.events[ev][i]) {
+                    console.info(`event_bus: Caught overflow triggering event "${ ev }", at index: ${ i }`);
+                    break;
+                }
                 this.events[ev][i][0].apply(
                     this.events[ev][i][1] || this,
                     Array.prototype.slice.call(arguments, 1)
