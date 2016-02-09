@@ -13,7 +13,11 @@ void main() {
     uv.x = vTexOffset.x + (vUv.x * vTexOffset.z);
     uv.y = vTexOffset.y - (vUv.y * vTexOffset.w);
 
-    // vec4 color = mix(texture2D(uSampler, uv), vColor);
+    vec4 color = texture2D(uSampler, uv) + vec4(vColor.rgb, 0.0);
 
-    gl_FragColor = texture2D(uSampler, uv);
+    if (vColor.a > 0.0) {
+        color.a *= vColor.a;
+    }
+
+    gl_FragColor = color;
 }
