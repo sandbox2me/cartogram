@@ -274,7 +274,7 @@ class Scene {
                 console.time('Builder create');
                 let builder = new Builders[type](shapes, this.typedTrees[type], this.state);
                 this.builders[type] = builder;
-                meshes.push(builder.mesh);
+                meshes = [...meshes, ...builder.mesh];
                 console.timeEnd('Builder create');
             }
         });
@@ -317,10 +317,11 @@ class Scene {
             console.log(`Generating for group "${ name }"`);
 
             let groupObject = new Group(group);
-            groupObjects[groupObject.path] = groupObject;
 
+            groupObjects[groupObject.path] = groupObject;
             group.actors.forEach((actor) => {
                 let actorObject = new Actor(actor);
+
                 actorObjectList.push(actorObject);
                 groupObject.addActorObject(actorObject);
 
@@ -353,7 +354,7 @@ class Scene {
             } else {
                 builder.addShapes(shapes, this.state);
             }
-            meshes.push(builder.mesh);
+            meshes = [...meshes, ...builder.mesh];
         });
 
         if (meshes.length) {
@@ -488,7 +489,7 @@ class Scene {
 
             let mesh = builder.mesh;
             if (mesh) {
-                meshes.push(mesh);
+                meshes = [...meshes, ...mesh];
             } else {
                 delete this.builders[type];
                 removedMeshes.push(type);

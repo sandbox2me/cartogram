@@ -13,9 +13,28 @@ export default class TTFont extends Font {
         this.name = name;
         this.fontface = fontface;
         this.options = options;
+        this.isTTF = true;
 
         this._initializeTexture();
         this._initializeData();
+    }
+
+    _initializeData() {
+        this._fontMetrics = new FontMetrics(this.fontface, { testText: this.options.testText });
+        this.metrics = {
+            chars: {},
+            info: {
+                size: DEFAULT_SIZE,
+                metrics: this._fontMetrics.getMetricsForFontSize(DEFAULT_SIZE)
+            },
+            common: {
+                scaleW: TEXTURE_SIZE,
+                scaleH: TEXTURE_SIZE
+            }
+        };
+
+        this._cacheX = SPACER;
+        this._cacheY = SPACER;
     }
 
     _initializeTexture() {
@@ -44,24 +63,6 @@ export default class TTFont extends Font {
         texture.needsUpdate = true;
 
         return texture;
-    }
-
-    _initializeData() {
-        this._fontMetrics = new FontMetrics(this.fontface, { testText: this.options.testText });
-        this.metrics = {
-            chars: {},
-            info: {
-                size: DEFAULT_SIZE,
-                metrics: this._fontMetrics.getMetricsForFontSize(DEFAULT_SIZE)
-            },
-            common: {
-                scaleW: TEXTURE_SIZE,
-                scaleH: TEXTURE_SIZE
-            }
-        };
-
-        this._cacheX = SPACER;
-        this._cacheY = SPACER;
     }
 
     getDimensionsForSize(character, size) {

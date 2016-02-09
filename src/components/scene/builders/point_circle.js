@@ -68,7 +68,7 @@ class PointCircle extends Rectangle {
             this._mesh.builderType = 'PointCircle';
         }
 
-        return this._mesh;
+        return [this._mesh];
     }
 }
 

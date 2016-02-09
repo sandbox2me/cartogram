@@ -138,14 +138,18 @@ class Rectangle {
         return this._material;
     }
 
+    get builderType() {
+        return 'Rectangle';
+    }
+
     get mesh() {
         if (!this._mesh && this.shapes.length) {
             this._mesh = new Mesh(this.geometry, this.material);
             this._mesh.frustumCulled = false;
-            this._mesh.builderType = 'Rectangle';
+            this._mesh.builderType = this.builderType;
         }
 
-        return this._mesh;
+        return [this._mesh];
     }
 }
 
