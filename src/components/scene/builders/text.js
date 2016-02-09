@@ -36,11 +36,16 @@ class Text extends Rectangle {
         this.colors = new InstancedBufferAttribute(new Float32Array(this.objectCount * 4), 4);
         this.texOffsets = new InstancedBufferAttribute(new Float32Array(this.objectCount * 4), 4);
 
-        this.shapes.forEach((shapeTypeInstance, i) => {
+        let index = 0;
+        this.shapes.forEach((shapeTypeInstance, shapeIndex) => {
             let { position, bbox, fontSize, fill } = shapeTypeInstance;
 
-            shapeTypeInstance.chunks.forEach((chunk, j) => {
-                let index = i + j;
+            if (shapeTypeInstance.chunks.length) {
+                // debugger;
+            }
+
+            shapeTypeInstance.chunks.forEach((chunk) => {
+                chunk.renderIndex = index;
 
                 // Resize character
                 this.scales.setXY(index, chunk.width, chunk.height);
@@ -50,16 +55,19 @@ class Text extends Rectangle {
 
                 // Position character
                 // console.log(index, chunk.x * 1.2, chunk.y, this.objectCount);
-                this.offsets.setXYZ(index, chunk.x - bbox.width / 2 - position.x, chunk.y + bbox.height / 2 + position.y, position.z);
+                this.offsets.setXYZ(index, position.x - (bbox.width / 2) + chunk.x, chunk.y + (bbox.height / 2) + position.y, position.z);
+                // this.offsets.setXYZ(index, position.x, position.y, position.z);
 
                 // Color character
                 this.colors.setXYZW(index, fill.r, fill.g, fill.b, 1.0);
 
                 // Character texture UV offsets
                 this.texOffsets.setXYZW(index, chunk.uv.x, chunk.uv.y, chunk.uv.width, chunk.uv.height);
+
+                index++;
             });
 
-            shapeTypeInstance.setIndex(i);
+            shapeTypeInstance.setIndex(shapeIndex);
         });
 
         this.geometry.addAttribute('scale', this.scales);
@@ -73,8 +81,8 @@ class Text extends Rectangle {
         let shapeTypeInstance = this.shapes[index];
         let { position, bbox, fontSize, fill } = shapeTypeInstance;
 
-        shapeTypeInstance.chunks.forEach((chunk, j) => {
-            let chunkIndex = index + j;
+        shapeTypeInstance.chunks.forEach((chunk) => {
+            let chunkIndex = chunk.renderIndex;
 
             // Resize character
             this.scales.setXY(chunkIndex, chunk.width, chunk.height);
@@ -84,7 +92,9 @@ class Text extends Rectangle {
 
             // Position character
             // console.log(chunkIndex, chunk.x * 1.2, chunk.y, this.objectCount);
-            this.offsets.setXYZ(chunkIndex, chunk.x - bbox.width / 2 - position.x, chunk.y + bbox.height / 2 + position.y, position.z);
+            // this.offsets.setXYZ(chunkIndex, (bbox.width / 2) + position.x, chunk.y + (bbox.height / 2) + position.y, position.z);
+            this.offsets.setXYZ(chunkIndex, position.x - (bbox.width / 2) + chunk.x, position.y, position.z);
+
 
             // Color character
             this.colors.setXYZW(chunkIndex, fill.r, fill.g, fill.b, 1.0);
