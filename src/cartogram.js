@@ -105,10 +105,17 @@ class Cartogram {
         return this.store.getState();
     }
 
-    registerFont(name, definition) {
-        this.dispatch(actions.fonts.registerWithURI(
+    registerSDFFont(name, definition) {
+        this.dispatch(actions.fonts.registerSDFWithURI(
             name,
             definition
+        ));
+    }
+
+    registerFont(name, fontface) {
+        this.dispatch(actions.fonts.registerFont(
+            name,
+            fontface
         ));
     }
 
