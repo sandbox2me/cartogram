@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Cartogram 2 - Seatmap Test</title>
+        <style type="text/css">
+            body {
+                margin: 0;
+                padding: 0;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="container"></div>
+
+        <script type="text/javascript" src="http://raw.githack.com/mrdoob/stats.js/master/build/stats.min.js"></script>
+        <script type="text/javascript" src="../node_modules/three/three.js"></script>
+        <script type="text/javascript" src="../node_modules/lodash/index.js"></script>
+        <script type="text/javascript" src="../dist/cartogram-dev.js"></script>
+        <script type="text/javascript">
+            var cartogram = new Cartogram(document.getElementById('container'), {
+                backgroundColor: '#000000'
+            });
+            var scene = cartogram.getDefaultScene();
+            var shapes = [];
+
+            // System configuration
+            cartogram.registerFont('sans-serif', 'sans-serif');
+
+            scene.addCameraController(new Cartogram.PanAndZoomCameraController({
+                buttons: {
+                    0: 'pan',
+                    3: 'zoom'
+                }
+            }));
+
+            // scene.registerLayers({
+            //     'shapes': 0,
+            //     'chair': 50,
+            //     'text': 100
+            // });
+
+            var seatActorShapes = [
+                {
+                    type: 'PointCircle',
+                    position: { x: 0, y: 0, z: 0 },
+                    layer: 'chair',
+                    radius: 40,
+                    fill: { r: 0.5, g: 0.5, b: 0.75 },
+                },
+                {
+                    type: 'Text',
+                    position: { x: 0, y: 0, z: 0 },
+                    layer: 'text',
+                    font: 'sans-serif',
+                    size: 15,
+                    align: 'center',
+                    string: 'Hello World',
+                    fill: { r: 1, g: 0, b: 0 },
+                }
+            ];
+
+            console.time('add actor')
+            var actor = {
+                name: 'rect',
+                position: { x: 0, y: 0, z: 0 },
+                shapes: seatActorShapes
+            };
+            var group = scene.addGroup({
+                name: 'group',
+                position: { x: 0, y: 0, z: 0 },
+                actors: [actor]
+            })
+
+            console.timeEnd('add actor')
+
+            var stats = new Stats();
+            stats.setMode( 0 ); // 0: fps, 1: ms, 2: mb
+
+            // align top-left
+            stats.domElement.style.position = 'absolute';
+            stats.domElement.style.left = '0px';
+            stats.domElement.style.top = '0px';
+
+            document.body.appendChild( stats.domElement );
+
+            cartogram.render(function() {
+                stats.begin();
+                stats.end();
+            });
+        </script>
+    </body>
+</html>

@@ -53,6 +53,10 @@ export default class TTFont extends Font {
             info: {
                 size: DEFAULT_SIZE,
                 metrics: this._fontMetrics.getMetricsForFontSize(DEFAULT_SIZE)
+            },
+            common: {
+                scaleW: TEXTURE_SIZE,
+                scaleH: TEXTURE_SIZE
             }
         };
 

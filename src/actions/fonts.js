@@ -38,7 +38,7 @@ function registerSync(name, font) {
 
 function registerFont(name, fontface) {
     return {
-        type: 'REGISTER_TTF',
+        type: 'REGISTER_FONT',
         name,
         font: new TTFont(
             name,
