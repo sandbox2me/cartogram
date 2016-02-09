@@ -54,9 +54,7 @@ class Text extends Rectangle {
                 this.fontSizes.setX(index, fontSize);
 
                 // Position character
-                // console.log(index, chunk.x * 1.2, chunk.y, this.objectCount);
-                this.offsets.setXYZ(index, position.x - (bbox.width / 2) + chunk.x, chunk.y + (bbox.height / 2) + position.y, position.z);
-                // this.offsets.setXYZ(index, position.x, position.y, position.z);
+                this.offsets.setXYZ(index, position.x - (bbox.width / 2) + chunk.x, position.y + (bbox.height / 2) + chunk.y, position.z);
 
                 // Color character
                 this.colors.setXYZW(index, fill.r, fill.g, fill.b, 1.0);
@@ -91,9 +89,7 @@ class Text extends Rectangle {
             this.fontSizes.setX(chunkIndex, fontSize);
 
             // Position character
-            // console.log(chunkIndex, chunk.x * 1.2, chunk.y, this.objectCount);
-            // this.offsets.setXYZ(chunkIndex, (bbox.width / 2) + position.x, chunk.y + (bbox.height / 2) + position.y, position.z);
-            this.offsets.setXYZ(chunkIndex, position.x - (bbox.width / 2) + chunk.x, position.y, position.z);
+            this.offsets.setXYZ(chunkIndex, position.x - (bbox.width / 2) + chunk.x, position.y + (bbox.height / 2) + chunk.y, position.z);
 
 
             // Color character
