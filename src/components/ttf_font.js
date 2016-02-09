@@ -49,6 +49,9 @@ export default class TTFont extends Font {
         this.ctx.fillStyle = 'rgba(0, 0, 0, 0)';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         this.ctx.fillStyle = 'black';
+
+        this.ctx.textAlign = 'left';
+        this.ctx.textBaseline = 'top';
     }
 
     _textureFromCanvas() {
@@ -95,6 +98,8 @@ export default class TTFont extends Font {
         }
 
         this.ctx.fillText(character, this._cacheX, this._cacheY);
+
+        this._cacheX += width + SPACER;
 
         this.texture.needsUpdate = true;
 
