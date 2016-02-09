@@ -15,7 +15,7 @@ class Text extends BaseType {
     }
 
     calculateChunks() {
-        let font = this.actor.scene.state.get('fonts').get('fonts').get(this.shape.font);
+        let font = this.actor.scene.state.get('fonts').get('fonts').get(this.font);
         let chunks = [];
         let x = 0;
 
@@ -23,13 +23,11 @@ class Text extends BaseType {
         let textureHeight = font.metrics.common.scaleH;
 
         if (!font) {
-            throw new Error(`Font '${ this.shape.font }' not found`);
+            throw new Error(`Font '${ this.font }' not found`);
         }
 
-        _.each(this.shape.string, (character, index) => {
-            console.log(`chunking '${ character }'`)
-
-            let { width, height, xOffset, yOffset, xAdvance } = font.getDimensionsForSize(character, this.shape.size);
+        _.each(this.string, (character, index) => {
+            let { width, height, xOffset, yOffset, xAdvance } = font.getDimensionsForSize(character, this.fontSize);
             let minX = -(width / 2);
             let minY = height / 2;
 
@@ -88,7 +86,7 @@ class Text extends BaseType {
 
         if (maxX === -Infinity) {
             debugger
-            throw new Error(`Error finding size for string '${ this.shape.string }'`);
+            throw new Error(`Error finding size for string '${ this.string }'`);
         }
 
         this.size = {
@@ -97,10 +95,25 @@ class Text extends BaseType {
         };
     }
 
+    get fill() {
+        return this.get('fill');
+    }
+
+    get fontSize() {
+        return this.get('size');
+    }
+
+    get font() {
+        return this.get('font');
+    }
+
+    get string() {
+        return this.get('string');
+    }
+
     get bbox() {
-        if (!this._bbox) {
-            let size = this.size;
-            let position = this.position;
+        if (!this._bbox || !this.actor._bbox) {
+            let { position, size } = this;
 
             this._bbox = {
                 x: position.x - (size.width / 2),

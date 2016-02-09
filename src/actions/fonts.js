@@ -1,13 +1,30 @@
 import { Texture, TextureLoader } from 'three';
 
+import { scene as sceneActions } from './index';
+
 const loader = new TextureLoader();
 
 class SDFFont {
-    constructor(name, definition, texture) {
+    constructor(dispatch, name, definition, texture) {
+        this._dispatch = dispatch;
         this.name = name;
         this.test = definition.test;
         this.metrics = definition.metrics;
-        this.texture = texture;
+        this.texture = new Texture();
+        this._textureURI = texture;
+
+        this._loadTexture();
+    }
+
+    _loadTexture() {
+        loader.load(
+            this._textureURI,
+            (texture) => {
+                this.texture = texture;
+
+                this._dispatch(sceneActions.forceRedraw());
+            }
+        );
     }
 
     canUseFor(str) {
@@ -43,7 +60,7 @@ function registerAsync(name, fontDef) {
     };
 }
 
-function registerWithData(name, fontDef) {
+function registerWithURI(name, fontDef) {
     return (dispatch) => {
         let img = new Image();
         img.src = fontDef.dataURI;
@@ -51,35 +68,10 @@ function registerWithData(name, fontDef) {
         dispatch(registerSync(
             name,
             new SDFFont(
+                dispatch,
                 name,
                 fontDef,
-                new Texture(img)
-            )
-        ));
-    };
-}
-
-function registerWithImage(name, fontDef) {
-    return (dispatch) => {
-        dispatch(registerSync(
-            name,
-            new SDFFont(
-                name,
-                fontDef,
-                new Texture(fontDef.image)
-            )
-        ));
-    };
-}
-
-function registerWithTexture(name, fontDef) {
-    return (dispatch) => {
-        dispatch(registerSync(
-            name,
-            new SDFFont(
-                name,
-                fontDef,
-                fontDef.texture
+                fontDef.uri
             )
         ));
     };
@@ -95,7 +87,5 @@ function registerSync(name, font) {
 
 export default {
     registerAsync,
-    registerWithData,
-    registerWithImage,
-    registerWithTexture
+    registerWithURI
 };

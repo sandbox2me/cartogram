@@ -16,18 +16,17 @@ import fragmentShader from 'shaders/instanced_text_fragment.glsl';
 
 
 class Text extends Rectangle {
-    initialize() {
-        this.font = this.sceneState.get('fonts').get('fonts').get(this.shapes[0].shape.font);
+    initializeGeometry() {
+        this.font = this.sceneState.get('fonts').get('fonts').get(this.shapes[0].font);
 
         this.parseStrings();
-        this._constructVertices();
 
-        this._attributes();
+        super.initializeGeometry();
     }
 
     parseStrings() {
         this.objectCount = 0;
-        this.shapes.forEach((shape) => { this.objectCount += shape.type.chunks.length; });
+        this.shapes.forEach((shapeTypeInstance) => { this.objectCount += shapeTypeInstance.chunks.length; });
     }
 
     _attributes() {
@@ -37,18 +36,17 @@ class Text extends Rectangle {
         this.colors = new InstancedBufferAttribute(new Float32Array(this.objectCount * 4), 4);
         this.texOffsets = new InstancedBufferAttribute(new Float32Array(this.objectCount * 4), 4);
 
-        this.shapes.forEach((shape, i) => {
-            let { position, bbox } = shape.type;
-            let { size, fill } = shape.shape;
+        this.shapes.forEach((shapeTypeInstance, i) => {
+            let { position, bbox, fontSize, fill } = shapeTypeInstance;
 
-            shape.type.chunks.forEach((chunk, j) => {
+            shapeTypeInstance.chunks.forEach((chunk, j) => {
                 let index = i + j;
 
                 // Resize character
                 this.scales.setXY(index, chunk.width, chunk.height);
 
                 // Pass in font size
-                this.fontSizes.setX(index, size);
+                this.fontSizes.setX(index, fontSize);
 
                 // Position character
                 // console.log(index, chunk.x * 1.2, chunk.y, this.objectCount);
@@ -60,6 +58,8 @@ class Text extends Rectangle {
                 // Character texture UV offsets
                 this.texOffsets.setXYZW(index, chunk.uv.x, chunk.uv.y, chunk.uv.width, chunk.uv.height);
             });
+
+            shapeTypeInstance.setIndex(i);
         });
 
         this.geometry.addAttribute('scale', this.scales);
@@ -67,6 +67,43 @@ class Text extends Rectangle {
         this.geometry.addAttribute('offset', this.offsets);
         this.geometry.addAttribute('color', this.colors);
         this.geometry.addAttribute('texOffset', this.texOffsets);
+    }
+
+    updateAttributesAtIndex(index) {
+        let shapeTypeInstance = this.shapes[index];
+        let { position, bbox, fontSize, fill } = shapeTypeInstance;
+
+        shapeTypeInstance.chunks.forEach((chunk, j) => {
+            let chunkIndex = index + j;
+
+            // Resize character
+            this.scales.setXY(chunkIndex, chunk.width, chunk.height);
+
+            // Pass in font size
+            this.fontSizes.setX(chunkIndex, fontSize);
+
+            // Position character
+            // console.log(chunkIndex, chunk.x * 1.2, chunk.y, this.objectCount);
+            this.offsets.setXYZ(chunkIndex, chunk.x - bbox.width / 2 - position.x, chunk.y + bbox.height / 2 + position.y, position.z);
+
+            // Color character
+            this.colors.setXYZW(chunkIndex, fill.r, fill.g, fill.b, 1.0);
+
+            // Character texture UV offsets
+            this.texOffsets.setXYZW(chunkIndex, chunk.uv.x, chunk.uv.y, chunk.uv.width, chunk.uv.height);
+        });
+
+        this.geometry.attributes.scale.needsUpdate = true;
+        this.geometry.attributes.fontSize.needsUpdate = true;
+        this.geometry.attributes.offset.needsUpdate = true;
+        this.geometry.attributes.color.needsUpdate = true;
+        this.geometry.attributes.texOffset.needsUpdate = true;
+
+        if (this.material.uniforms.uSampler.value.uuid !== this.font.texture.uuid) {
+            // Font texture updated, refresh uniform
+            this.material.uniforms.uSampler.value = this.font.texture;
+            this.material.needsUpdate = true;
+        }
     }
 
     get vertexShader() {

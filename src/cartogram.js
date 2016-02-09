@@ -106,16 +106,7 @@ class Cartogram {
     }
 
     registerFont(name, definition) {
-        let action = actions.fonts.registerAsync;
-        if (definition.dataURI) {
-            action = actions.fonts.registerWithData;
-        } else if (definition.image) {
-            action = actions.fonts.registerWithImage;
-        } else if (definition.texture) {
-            action = actions.fonts.registerWithTexture;
-        }
-
-        this.dispatch(action(
+        this.dispatch(actions.fonts.registerWithURI(
             name,
             definition
         ));
