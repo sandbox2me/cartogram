@@ -99,8 +99,6 @@ export default class TTFont extends Font {
 
         this.ctx.fillText(character, this._cacheX, this._cacheY);
 
-        this._cacheX += width + SPACER;
-
         this.texture.needsUpdate = true;
 
         this.metrics.chars[character] = {
@@ -112,5 +110,7 @@ export default class TTFont extends Font {
             x: this._cacheX,
             y: this._cacheY
         };
+
+        this._cacheX += width + SPACER;
     }
 }
