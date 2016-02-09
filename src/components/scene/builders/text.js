@@ -91,7 +91,6 @@ class Text extends Rectangle {
             // Position character
             this.offsets.setXYZ(chunkIndex, position.x - (bbox.width / 2) + chunk.x, position.y + (bbox.height / 2) + chunk.y, position.z);
 
-
             // Color character
             this.colors.setXYZW(chunkIndex, fill.r, fill.g, fill.b, 1.0);
 
