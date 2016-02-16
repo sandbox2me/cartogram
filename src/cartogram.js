@@ -25,8 +25,8 @@ class Cartogram {
         }
 
         this.options = Object.assign({}, defaultOptions, {
-            width: document.body.parentNode.clientWidth,
-            height: document.body.parentNode.clientHeight
+            width: this.el.parentNode.clientWidth,
+            height: this.el.parentNode.clientHeight,
         }, options);
 
         this.width = this.options.width;
@@ -80,6 +80,11 @@ class Cartogram {
     }
 
     _updateCanvasDimensions() {
+        // Briefly force the canvas size to be small. This allows us to
+        // properly calculate the size of the parent node, otherwise the canvas
+        // can only ever get larger.
+        this.renderer.setSize(0, 0);
+
         let width = this.el.parentNode.clientWidth;
         let height = this.el.parentNode.clientHeight;
         let bbox = this.el.parentNode.getBoundingClientRect();
