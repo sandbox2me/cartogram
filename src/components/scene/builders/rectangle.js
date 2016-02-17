@@ -142,11 +142,16 @@ class Rectangle {
         return 'Rectangle';
     }
 
+    get drawPriority() {
+        return 0;
+    }
+
     get mesh() {
         if (!this._mesh && this.shapes.length) {
             this._mesh = new Mesh(this.geometry, this.material);
             this._mesh.frustumCulled = false;
             this._mesh.builderType = this.builderType;
+            this._mesh.position.z += this.drawPriority;
         }
 
         return [this._mesh];

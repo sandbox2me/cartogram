@@ -163,6 +163,10 @@ class Font extends Rectangle {
     get builderType() {
         return `Text:${ this.font.name }`;
     }
+
+    get drawPriority() {
+        return 0.05;
+    }
 }
 
 export default Font;

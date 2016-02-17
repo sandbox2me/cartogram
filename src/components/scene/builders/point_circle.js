@@ -61,14 +61,12 @@ class PointCircle extends Rectangle {
         return fragmentShader;
     }
 
-    get mesh() {
-        if (!this._mesh && this.shapes.length) {
-            this._mesh = new Mesh(this.geometry, this.material);
-            this._mesh.frustumCulled = false;
-            this._mesh.builderType = 'PointCircle';
-        }
+    get builderType() {
+        return 'PointCircle';
+    }
 
-        return [this._mesh];
+    get drawPriority() {
+        return 0.01;
     }
 }
 
