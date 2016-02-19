@@ -603,6 +603,14 @@ class Scene {
         return this.objectsAtPath(path).group;
     }
 
+    registerLayers(layers) {
+        this.dispatch(sceneActions.registerLayers(layers));
+    }
+
+    getLayerValue(layer) {
+        return this.state.get('layers').get(layer) || 0;
+    }
+
     forceRedraw() {
         this.dispatch(sceneActions.forceRedraw());
     }

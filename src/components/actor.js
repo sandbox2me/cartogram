@@ -8,6 +8,7 @@ class Actor {
         this.group = this.definition.group;
         this.scene = this.definition.scene;
         this._position = this.definition.position;
+        this._layer = this.definition.layer || 'default';
         this._angle = this.definition.angle || 0;
         this._events = this.definition.events || {};
         this.types = {};
@@ -39,7 +40,7 @@ class Actor {
         let position = {
             x: this._position.x + this.group.position.x,
             y: this._position.y + this.group.position.y,
-            z: this._position.z + this.group.position.z
+            z: this.scene.getLayerValue(this._layer) + this.group.position.z
         };
 
         if (this.group.angle) {
@@ -242,6 +243,17 @@ class Actor {
                 angleRad,
                 angleCos: Math.cos(angleRad),
                 angleSin: Math.sin(angleRad)
+            }
+        });
+    }
+
+    changeLayer(layer) {
+        this.scene.pushChange({
+            type: 'actor',
+            actor: this,
+            action: 'update',
+            data: {
+                layer
             }
         });
     }

@@ -1,80 +1,74 @@
-function addCameraController(controller) {
+export default function addCameraController(controller) {
     return {
         type: 'ADD_CAMERA_CONTROLLER',
         controller
     };
 }
 
-function addActor(actor) {
+export default function addActor(actor) {
     return {
         type: 'ADD_ACTOR',
         actor
     };
 }
 
-function addGroup(group) {
+export default function addGroup(group) {
     return {
         type: 'ADD_GROUP',
         group
     };
 }
 
-function addGroups(groups) {
+export default function addGroups(groups) {
     return {
         type: 'ADD_GROUPS',
         groups
     };
 }
 
-function addActorObjects(actorObjects) {
+export default function addActorObjects(actorObjects) {
     return {
         type: 'ADD_ACTOR_OBJECTS',
         actorObjects
     };
 }
 
-function addGroupObjects(groupObjects) {
+export default function addGroupObjects(groupObjects) {
     return {
         type: 'ADD_GROUP_OBJECTS',
         groupObjects
     };
 }
 
-function removeGroupObjects(groupObjectPaths) {
+export default function removeGroupObjects(groupObjectPaths) {
     return {
         type: 'REMOVE_GROUP_OBJECTS',
         groupObjectPaths
     };
 }
 
-function commitChanges(changes) {
+export default function commitChanges(changes) {
     return {
         type: 'COMMIT_CHANGES',
         changes
     };
 }
 
-function resetUpdates() {
+export default function resetUpdates() {
     return {
         type: 'RESET_UPDATES'
     };
 }
 
-function forceRedraw() {
+export default function forceRedraw() {
     return {
         type: 'FORCE_REDRAW'
     };
 }
 
-export default {
-    addCameraController,
-    addActor,
-    addGroup,
-    addGroups,
-    addActorObjects,
-    addGroupObjects,
-    removeGroupObjects,
-    commitChanges,
-    resetUpdates,
-    forceRedraw,
-};
+export default function registerLayers(layers) {
+    return {
+        type: 'REGISTER_LAYERS',
+        layers
+    };
+}

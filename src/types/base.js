@@ -36,7 +36,7 @@ class BaseType {
         return {
             x: this.get('position').x + this.actor.position.x,
             y: this.get('position').y + this.actor.position.y,
-            z: this.get('position').z + this.actor.position.z,
+            z: this.actor.position.z,
         };
     }
 

@@ -10,6 +10,10 @@ const initialState = Map({
 
     pendingUpdates: List([]),
 
+    layers: Map({
+        default: 0
+    }),
+
     actors: Map({}),
     actorObjects: Map({}),
     groupObjects: Map({}),
@@ -56,6 +60,14 @@ function fixGroupAngleProperties(group) {
 const handlers = {
     'ADD_CAMERA_CONTROLLER': (state, action) => {
         return state.set('cameraController', action.controller);
+    },
+
+    'REGISTER_LAYERS': (state, action) => {
+        let layers = state.get('layers');
+
+        layers = layers.merge(action.layers);
+
+        return state.set('layers', layers);
     },
 
     'ADD_ACTOR': (state, action) => {

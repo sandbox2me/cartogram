@@ -7,6 +7,7 @@ class Group {
         this.name = this.definition.name;
         this.scene = this.definition.scene;
         this._position = this.definition.position;
+        this._layer = this.definition.layer || 'default';
         this._events = this.definition.events || {};
         this.actors = {};
         this.actorList = [];
@@ -54,7 +55,11 @@ class Group {
     }
 
     get position() {
-        return this.definition.position;
+        return {
+            x: this._position.x,
+            y: this._position.y,
+            z: this.scene.getLayerValue(this._layer)
+        };
     }
 
     addActorObject(actor) {
@@ -130,6 +135,17 @@ class Group {
                 angleRad,
                 angleCos: Math.cos(angleRad),
                 angleSin: Math.sin(angleRad)
+            }
+        });
+    }
+
+    changeLayer(layer) {
+        this.scene.pushChange({
+            type: 'group',
+            group: this,
+            action: 'update',
+            data: {
+                layer
             }
         });
     }
