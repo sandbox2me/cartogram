@@ -27,14 +27,14 @@ InteractiveApp.prototype = {
             type: 'PointCircle',
             name: 'primary',
             radius: 20,
-            position: { x: 0, y: 0, z: 0 },
+            position: { x: 0, y: 0 },
             fill: { r: 1.0, g: 0, b: 0 },
             hitMask: true
         },
         {
             type: 'Rectangle',
             name: 'rectLeft',
-            position: { x: -6, y: 0, z: 0 },
+            position: { x: -6, y: 0 },
             size: {
                 width: 12,
                 height: 17
@@ -45,7 +45,7 @@ InteractiveApp.prototype = {
         {
             type: 'Rectangle',
             name: 'rectRight',
-            position: { x: 6, y: -3, z: 0 },
+            position: { x: 6, y: -3 },
             size: {
                 width: 12,
                 height: 10
@@ -57,13 +57,13 @@ InteractiveApp.prototype = {
     CircleActors: [
         {
             name: 'circleActor',
-            position: { x: 0, y: 0, z: 0 },
+            position: { x: 0, y: 0 },
             shapes: [
                 {
                     type: 'PointCircle',
                     name: 'primary',
                     radius: 50,
-                    position: { x: 0, y: 0, z: 0 },
+                    position: { x: 0, y: 0 },
                     fill: { r: 1.0, g: 0, b: 0, a: 0.5},
                     stroke: { r: 1.0, g: 0.3, b: 0.3 },
                     strokeWidth: 0.1,
@@ -76,7 +76,7 @@ InteractiveApp.prototype = {
     SquareActors: [
         {
             name: 'squareActor',
-            position: { x: 0, y: 0, z: 0 },
+            position: { x: 0, y: 0 },
             shapes: [
                 {
                     type: 'Rectangle',
@@ -85,7 +85,7 @@ InteractiveApp.prototype = {
                         width: 75,
                         height: 75
                     },
-                    position: { x: 0, y: 0, z: 0 },
+                    position: { x: 0, y: 0 },
                     fill: { r: 1.0, g: 0, b: 0 },
                 }
             ]
@@ -96,17 +96,17 @@ InteractiveApp.prototype = {
         return [
             {
                 name: 'actor1',
-                position: { x: -50, y: 0, z: 0 },
+                position: { x: -50, y: 0 },
                 shapes: this.GroupShapes
             },
             {
                 name: 'actor2',
-                position: { x: 0, y: 0, z: 0 },
+                position: { x: 0, y: 0 },
                 shapes: this.GroupShapes
             },
             {
                 name: 'actor3',
-                position: { x: 50, y: 0, z: 0 },
+                position: { x: 50, y: 0 },
                 shapes: this.GroupShapes
             }
         ];
@@ -116,47 +116,47 @@ InteractiveApp.prototype = {
         return [
             {
                 name: 'actor1',
-                position: { x: -50, y: 50, z: 0 },
+                position: { x: -50, y: 50 },
                 shapes: this.GroupShapes
             },
             {
                 name: 'actor2',
-                position: { x: 0, y: 50, z: 0 },
+                position: { x: 0, y: 50 },
                 shapes: this.GroupShapes
             },
             {
                 name: 'actor3',
-                position: { x: 50, y: 50, z: 0 },
+                position: { x: 50, y: 50 },
                 shapes: this.GroupShapes
             },
             {
                 name: 'actor4',
-                position: { x: -50, y: 0, z: 0 },
+                position: { x: -50, y: 0 },
                 shapes: this.GroupShapes
             },
             {
                 name: 'actor5',
-                position: { x: 0, y: 0, z: 0 },
+                position: { x: 0, y: 0 },
                 shapes: this.GroupShapes
             },
             {
                 name: 'actor6',
-                position: { x: 50, y: 0, z: 0 },
+                position: { x: 50, y: 0 },
                 shapes: this.GroupShapes
             },
             {
                 name: 'actor7',
-                position: { x: -50, y: -50, z: 0 },
+                position: { x: -50, y: -50 },
                 shapes: this.GroupShapes
             },
             {
                 name: 'actor8',
-                position: { x: 0, y: -50, z: 0 },
+                position: { x: 0, y: -50 },
                 shapes: this.GroupShapes
             },
             {
                 name: 'actor9',
-                position: { x: 50, y: -50, z: 0 },
+                position: { x: 50, y: -50 },
                 shapes: this.GroupShapes
             }
         ];
@@ -166,22 +166,22 @@ InteractiveApp.prototype = {
         return [
             {
                 name: 'actor1',
-                position: { x: -25, y: 25, z: 0 },
+                position: { x: -25, y: 25 },
                 shapes: this.GroupShapes
             },
             {
                 name: 'actor2',
-                position: { x: 25, y: 25, z: 0 },
+                position: { x: 25, y: 25 },
                 shapes: this.GroupShapes
             },
             {
                 name: 'actor3',
-                position: { x: -25, y: -25, z: 0 },
+                position: { x: -25, y: -25 },
                 shapes: this.GroupShapes
             },
             {
                 name: 'actor4',
-                position: { x: 25, y: -25, z: 0 },
+                position: { x: 25, y: -25 },
                 shapes: this.GroupShapes
             },
         ];
@@ -243,7 +243,7 @@ InteractiveApp.prototype = {
 
         this.scene.addGroup({
             name: 'group' + this.groupCount++,
-            position: { x: coordinates.x, y: coordinates.y, z: 0 },
+            position: { x: coordinates.x, y: coordinates.y },
             rotateChildren: true,
             actors: this.BigGroupActors()
         });
@@ -256,7 +256,7 @@ InteractiveApp.prototype = {
 
         this.scene.addGroup({
             name: 'group' + this.groupCount++,
-            position: { x: coordinates.x, y: coordinates.y, z: 0 },
+            position: { x: coordinates.x, y: coordinates.y },
             rotateChildren: false,
             actors: this.SmallGroupActors()
         });
@@ -269,7 +269,7 @@ InteractiveApp.prototype = {
 
         this.scene.addGroup({
             name: 'group' + this.groupCount++,
-            position: { x: coordinates.x, y: coordinates.y, z: 0 },
+            position: { x: coordinates.x, y: coordinates.y },
             actors: this.TwoByTwoActors()
         });
     },
@@ -281,7 +281,7 @@ InteractiveApp.prototype = {
 
         this.scene.addGroup({
             name: 'group' + this.groupCount++,
-            position: { x: coordinates.x, y: coordinates.y, z: 0 },
+            position: { x: coordinates.x, y: coordinates.y },
             actors: this.CircleActors
         });
     },
@@ -293,7 +293,7 @@ InteractiveApp.prototype = {
 
         this.scene.addGroup({
             name: 'group' + this.groupCount++,
-            position: { x: coordinates.x, y: coordinates.y, z: 0 },
+            position: { x: coordinates.x, y: coordinates.y },
             angle: 5,
             actors: this.SquareActors
         });
