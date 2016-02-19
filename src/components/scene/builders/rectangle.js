@@ -65,9 +65,9 @@ class Rectangle {
             let size = shapeTypeInstance.size;
             this.scales.setXY(i, size.width, size.height);
 
-            // Assuming r,g,b object. Handle other things plz.
+            // Assuming r,g,b,[a] object. Handle other things plz.
             let color = shapeTypeInstance.fill;
-            this.colors.setXYZW(i, color.r, color.g, color.b, 1.0);
+            this.colors.setXYZW(i, color.r, color.g, color.b, (color.a === undefined ? 1.0 : color.a));
 
             let angle = shapeTypeInstance.angle;
             this.angles.setX(i, angle);
@@ -88,7 +88,7 @@ class Rectangle {
 
         this.scales.setXY(index, size.width, size.height);
         this.offsets.setXYZ(index, position.x, position.y, position.z);
-        this.colors.setXYZW(index, fill.r, fill.g, fill.b, 1.0);
+        this.colors.setXYZW(index, fill.r, fill.g, fill.b, (fill.a === undefined ? 1.0 : fill.a));
         this.angles.setX(index, angle);
 
         this.geometry.attributes.scale.needsUpdate = true;
