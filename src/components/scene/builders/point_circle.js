@@ -42,7 +42,7 @@ class PointCircle extends Rectangle {
 
         this.scales.setXY(index, size.width, size.height);
         this.offsets.setXYZ(index, position.x, position.y, position.z);
-        this.colors.setXYZW(index, fill.r, fill.g, fill.b, (color.a === undefined ? 1.0 : color.a));
+        this.colors.setXYZW(index, fill.r, fill.g, fill.b, (fill.a === undefined ? 1.0 : fill.a));
         this.strokes.setXYZW(index, stroke.r, stroke.g, stroke.b, (stroke.a === undefined ? 1.0 : stroke.a));
         this.strokeWidths.setX(index, strokeWidth);
 
