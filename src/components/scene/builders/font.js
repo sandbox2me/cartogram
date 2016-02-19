@@ -55,7 +55,7 @@ class Font extends Rectangle {
                 this.offsets.setXYZ(index, position.x - (bbox.width / 2) + chunk.x, position.y + (bbox.height / 2) + chunk.y, position.z);
 
                 // Color character
-                this.colors.setXYZW(index, fill.r, fill.g, fill.b, (color.a === undefined ? 1.0 : color.a));
+                this.colors.setXYZW(index, fill.r, fill.g, fill.b, (fill.a === undefined ? 1.0 : fill.a));
 
                 // Character texture UV offsets
                 this.texOffsets.setXYZW(index, chunk.uv.x, chunk.uv.y, chunk.uv.width, chunk.uv.height);
