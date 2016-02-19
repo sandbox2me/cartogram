@@ -89,6 +89,11 @@ class Group {
     translate(position) {
         this._bbox = undefined;
 
+        console.log({
+            x: position.x + this.position.x,
+            y: position.y + this.position.y,
+        })
+
         this.scene.pushChange({
             type: 'group',
             group: this,
@@ -96,14 +101,12 @@ class Group {
                 position: {
                     x: position.x + this.position.x,
                     y: position.y + this.position.y,
-                    z: (position.z || 0) + this.position.z,
                 }
             }
         });
     }
 
     moveTo(position) {
-        position.z = this.position.z;
         this._bbox = undefined;
 
         this.scene.pushChange({
@@ -114,7 +117,6 @@ class Group {
                 position: {
                     x: position.x,
                     y: position.y,
-                    z: (position.z || 0),
                 }
             }
         });

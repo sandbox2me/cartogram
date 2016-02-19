@@ -223,7 +223,7 @@ class Scene {
             groupObjects[groupObject.path] = groupObject;
 
             group.actors.forEach((actor) => {
-                let actorObject = new Actor(actor);
+                let actorObject = new Actor(actor, groupObject);
                 actorObjectList.push(actorObject);
                 groupObject.addActorObject(actorObject);
 
@@ -320,7 +320,7 @@ class Scene {
 
             groupObjects[groupObject.path] = groupObject;
             group.actors.forEach((actor) => {
-                let actorObject = new Actor(actor);
+                let actorObject = new Actor(actor, groupObject);
 
                 actorObjectList.push(actorObject);
                 groupObject.addActorObject(actorObject);

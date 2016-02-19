@@ -2,15 +2,18 @@ import _ from 'lodash';
 import * as Types from 'types';
 
 class Actor {
-    constructor(definition) {
+    constructor(definition, groupObject) {
         this.hasHitMask = false;
         this.definition = definition;
         this.group = this.definition.group;
         this.scene = this.definition.scene;
+        this._groupObject = groupObject;
+
         this._position = this.definition.position;
         this._layer = this.definition.layer || 'default';
         this._angle = this.definition.angle || 0;
         this._events = this.definition.events || {};
+
         this.types = {};
         this.children = {};
 
@@ -33,14 +36,14 @@ class Actor {
     }
 
     get position() {
-        if (!this.group) {
+        if (!this._groupObject) {
             return this._position;
         }
 
         let position = {
             x: this._position.x + this.group.position.x,
             y: this._position.y + this.group.position.y,
-            z: this.scene.getLayerValue(this._layer) + this.group.position.z
+            z: this.scene.getLayerValue(this._layer) + this._groupObject.position.z
         };
 
         if (this.group.angle) {
@@ -56,8 +59,8 @@ class Actor {
             let newX = (x * angleCos) - (y * angleSin);
             let newY = ((x * angleSin) + (y * angleCos));
 
-            position.x = newX + this.group.position.x;
-            position.y = newY + this.group.position.y;
+            position.x = newX + this._groupObject.position.x;
+            position.y = newY + this._groupObject.position.y;
         }
 
         return position;
@@ -196,7 +199,6 @@ class Actor {
     translate(position) {
         position.x += this.position.x;
         position.y += this.position.y;
-        position.z = this.position.z;
         this._bbox = undefined;
 
         this.scene.pushChange({
@@ -210,7 +212,6 @@ class Actor {
 
     // Absolute movement
     moveTo(position) {
-        position.z = this.position.z;
         this._bbox = undefined;
 
         this.scene.pushChange({
