@@ -55,18 +55,18 @@ class Scene {
     }
 
     stateDidChange(oldState) {
-        if (this.state.get('actors').size && !this.state.get('actorObjects').size) {
-            // 1+ actors are in the scene, but no mesh data has been generated yet. Get to it!
-            this._generateMeshes();
-        } else if (this.state.get('groups').size && !this.state.get('groupObjects').size) {
-            this._generateMeshes();
-        } else if (oldState && this.state.get('actors') !== oldState.get('actors')) {
-            // actors changed, update scene
+        // Iterate pending changes
+        if (oldState && this.state.get('pendingUpdates') !== oldState.get('pendingUpdates') && this.state.get('pendingUpdates').size) {
+            console.log(`processing ${ this.state.get('pendingUpdates').size } updates...`);
+            this._updateMeshes();
+        }
+
+        if (this.state.get('groups').size && !this.state.get('groupObjects').size) {
+            this._addObjects();
         } else if (oldState && this.state.get('groups').size > oldState.get('groups').size) {
             // actors changed, update scene
+            console.log('adding objects to scene')
             this._addObjects();
-        } else if (oldState && this.state.get('pendingUpdates') !== oldState.get('pendingUpdates') && this.state.get('pendingUpdates').size) {
-            this._updateMeshes();
         }
     }
 
@@ -74,13 +74,6 @@ class Scene {
         controller.setScene(this);
 
         this.dispatch(sceneActions.addCameraController(controller));
-    }
-
-    addActor(actor) {
-        actor = _.cloneDeep(actor);
-        actor.scene = this;
-
-        this.dispatch(sceneActions.addActor(actor));
     }
 
     addGroup(group) {
@@ -211,101 +204,6 @@ class Scene {
                 this.camera.camera
             );
             this._needsRepaint = false;
-        }
-    }
-
-    _generateMeshes() {
-        let actorObjectList = [];
-        let actorObjects = {};
-        let groupObjects = {};
-        let types = {};
-
-        this.rtree.reset();
-
-        this.state.get('groups').forEach((group, name) => {
-            console.log(`Generating for group "${ name }"`);
-
-            let groupObject = new Group(group);
-            groupObjects[groupObject.path] = groupObject;
-
-            group.actors.forEach((actor) => {
-                let actorObject = new Actor(actor, groupObject);
-                actorObjectList.push(actorObject);
-                groupObject.addActorObject(actorObject);
-
-                _.forEach(actorObject.types, (shapeList, type) => {
-                    if (!types[type]) {
-                        types[type] = [];
-                        this.typedTrees[type] = new RTree();
-                    }
-
-                    types[type] = types[type].concat(shapeList);
-                });
-            });
-        });
-
-        this.state.get('actors').forEach((actor, name) => {
-            console.log(`Generating for actor "${ name }"`);
-            let actorObject = new Actor(actor);
-
-            console.log(actorObject.bbox);
-
-            _.forEach(actorObject.types, (shapeList, type) => {
-                if (!types[type]) {
-                    types[type] = [];
-                    this.typedTrees[type] = new RTree();
-                }
-                types[type] = [...types[type], ...shapeList];
-                this.rtree.insertShapes(shapeList);
-                this.typedTrees[type].insertShapes(shapeList);
-            });
-
-            actorObjects[`/${ name }`] = actorObject;
-            actorObjectList.push(actorObject);
-        });
-
-        this.rtree.insertActors(actorObjectList);
-
-        // XXX Implement rtree based mesh grouping optimization in the future
-        console.log('Building meshes');
-        let meshes = [];
-        _.forEach(types, (shapes, type) => {
-            if (type === 'PointCircle' && this.usePointClouds) {
-                // Generate point cloud
-                let cloud = new Builders.PointCloud(shapes);
-
-                meshes.push(cloud.getMesh());
-            } else {
-                // Use type class to create the appropriate shapes
-                console.time('Builder create');
-                let builder = new Builders[type](shapes, this.typedTrees[type], this.state);
-                this.builders[type] = builder;
-                meshes = [...meshes, ...builder.mesh];
-                console.timeEnd('Builder create');
-            }
-        });
-
-
-        // Check we're within drawcall limits
-        if (meshes.length > this.state.get('targetDrawCallLimit')) {
-            // merge geometries now
-            console.log('draw call limit passed!')
-
-            // Split meshes into smaller master Object3Ds
-            let i = 0;
-            let groups = [new three.Object3D(), new three.Object3D()];
-            for (i; i < meshes.length; i++) {
-                groups[i % 2].add(meshes[i]);
-            }
-
-            meshes = groups;
-        }
-
-        if (meshes.length) {
-            this.threeScene.add(...meshes);
-            this.dispatch(sceneActions.addGroupObjects(groupObjects));
-            this.dispatch(sceneActions.addActorObjects(actorObjects));
-            this._needsRepaint = true;
         }
     }
 
@@ -602,11 +500,13 @@ class Scene {
     }
 
     actorAtPath(path) {
-        return this.objectsAtPath(path).actor;
+        let objects = this.objectsAtPath(path);
+        return objects ? objects.actor : null;
     }
 
     groupAtPath(path) {
-        return this.objectsAtPath(path).group;
+        let objects = this.objectsAtPath(path);
+        return objects ? objects.group : null;
     }
 
     registerLayers(layers) {
