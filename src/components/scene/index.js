@@ -11,6 +11,7 @@ import { Actor, Group } from 'components';
 
 import * as Builders from './builders';
 
+const DELETED_BUILDER = -1;
 
 class Scene {
     constructor(name, store) {
@@ -39,7 +40,7 @@ class Scene {
     }
 
     _initializeStoreObserver() {
-        this.store.subscribe(() => this._stateChanged = true);
+        this.store.subscribe(this._updateState.bind(this));
         this._updateState();
         this.eventDispatch = new EventBinder(this);
     }
@@ -56,17 +57,11 @@ class Scene {
 
     stateDidChange(oldState) {
         // Iterate pending changes
-        if (oldState && this.state.get('pendingUpdates') !== oldState.get('pendingUpdates') && this.state.get('pendingUpdates').size) {
-            console.log(`processing ${ this.state.get('pendingUpdates').size } updates...`);
-            this._updateMeshes();
-        }
-
-        if (this.state.get('groups').size && !this.state.get('groupObjects').size) {
-            this._addObjects();
-        } else if (oldState && this.state.get('groups').size > oldState.get('groups').size) {
-            // actors changed, update scene
-            console.log('adding objects to scene')
-            this._addObjects();
+        if (!oldState || this.state.get('pendingUpdates') !== oldState.get('pendingUpdates')) {
+            if (this.state.get('pendingUpdates').size) {
+                console.log(`processing ${ this.state.get('pendingUpdates').size } updates...`);
+                this._updateMeshes();
+            }
         }
     }
 
@@ -81,6 +76,8 @@ class Scene {
     }
 
     addGroups(groups) {
+        let changes = [];
+
         groups.forEach((group) => {
             group.scene = this;
             group.actors = _.cloneDeep(group.actors);
@@ -88,16 +85,22 @@ class Scene {
                 actor.group = group;
                 actor.scene = this;
             });
+
+            changes.push({
+                type: 'group',
+                action: 'create',
+                group
+            });
         });
 
-        this.dispatch(sceneActions.addGroups(groups));
+        this.pushChanges(changes);
     }
 
     updateShape(shapeTypeInstance, properties) {
         let { actor, index } = shapeTypeInstance;
         let definitionIndex = actor.definition.shapes.indexOf(shapeTypeInstance.shape);
 
-        this._pendingChanges.push({
+        this.pushChange({
             type: 'shape',
             actor,
             index,
@@ -168,23 +171,18 @@ class Scene {
     }
 
     _update(userCallback) {
-        if (this._stateChanged) {
-            this._updateState();
-            this._stateChanged = false;
-        }
-
         if (typeof userCallback === 'function') {
             userCallback(this);
-        }
-
-        let cameraController = this.state.get('cameraController');
-        if (cameraController) {
-            cameraController.update();
         }
 
         if (this._pendingChanges.length) {
             this.dispatch(sceneActions.commitChanges(this._pendingChanges));
             this._pendingChanges = [];
+        }
+
+        let cameraController = this.state.get('cameraController');
+        if (cameraController) {
+            cameraController.update();
         }
     }
 
@@ -200,88 +198,12 @@ class Scene {
         }
     }
 
-    _addObjects() {
-        let actorObjectList = [];
-        let actorObjects = {};
-        let groupObjects = {};
-        let types = {};
-
-        this.state.get('groups').forEach((group, name) => {
-            if (this.objectsAtPath(`/${ name }`)) {
-                console.log(`Group "${ name }" exists. Continuing.`);
-                return;
-            }
-            console.log(`Generating for group "${ name }"`);
-
-            let groupObject = new Group(group);
-
-            groupObjects[groupObject.path] = groupObject;
-            group.actors.forEach((actor) => {
-                let actorObject = new Actor(actor, groupObject);
-
-                actorObjectList.push(actorObject);
-                groupObject.addActorObject(actorObject);
-
-                _.forEach(actorObject.types, (shapeList, type) => {
-                    if (!types[type]) {
-                        types[type] = [];
-                    }
-
-                    types[type] = types[type].concat(shapeList);
-                });
-            });
-        });
-
-        if (!Object.keys(types).length) {
-            console.log('No changes to scene');
-            return;
-        }
-
-        this.rtree.insertActors(actorObjectList);
-
-        console.log('Building meshes');
-        let meshes = [];
-        _.forEach(types, (shapes, type) => {
-            // Use type class to create the appropriate shapes
-            let builder = this.builders[type];
-
-            if (!builder) {
-                builder = new Builders[type](shapes, this.typedTrees[type], this.state);
-                this.builders[type] = builder;
-            } else {
-                builder.addShapes(shapes, this.state);
-            }
-            meshes = [...meshes, ...builder.mesh];
-        });
-
-        if (meshes.length) {
-            meshes.forEach((mesh) => {
-                let index = _.findIndex(this.threeScene.children, { builderType: mesh.builderType });
-
-                if (index > -1) {
-                    this.threeScene.children[index] = mesh;
-                } else {
-                    this.threeScene.add(mesh);
-                }
-            });
-        }
-
-        // Finalize state
-        if (Object.keys(actorObjects).length) {
-            this.dispatch(sceneActions.addActorObjects(actorObjects));
-            this._needsRepaint = true;
-        }
-        if (Object.keys(groupObjects).length) {
-            this.dispatch(sceneActions.addGroupObjects(groupObjects));
-            this._needsRepaint = true;
-        }
-    }
-
     _updateMeshes() {
         let pendingChanges = this.state.get('pendingUpdates');
         let hasActorChanges = false;
         let destroyedGroups = [];
         let destroyedActors = [];
+        let newGroups = [];
 
         pendingChanges.forEach((change) => {
             let { type, action } = change;
@@ -310,6 +232,8 @@ class Scene {
                 let { group } = change;
                 if (action === 'destroy') {
                     destroyedGroups.push(group);
+                } else if (action === 'create') {
+                    newGroups.push(group);
                 } else {
                     group.actorList.forEach((actor) => {
                         actor._bbox = undefined;
@@ -323,7 +247,14 @@ class Scene {
         });
 
         if (destroyedGroups.length || destroyedActors.length) {
+            console.log('Removing groups...')
             this._removeObjects(destroyedGroups, destroyedActors);
+            hasActorChanges = true;
+        }
+
+        if (newGroups.length) {
+            console.log('Adding groups...')
+            this._addObjects(newGroups);
             hasActorChanges = true;
         }
 
@@ -331,7 +262,10 @@ class Scene {
             this.dispatch(sceneActions.resetUpdates());
             this._needsRepaint = true;
         }
+
         if (hasActorChanges) {
+            this._generateMeshes();
+
             // XXX Fix this brute-force approach
             this.rtree.reset();
 
@@ -376,20 +310,99 @@ class Scene {
             });
         });
 
-        let meshes = [];
-        let removedMeshes = [];
-
         _.forEach(removedTypes, (shapes, type) => {
             let builder = this.builders[type];
 
             builder.removeShapes(shapes, this.state);
 
             let mesh = builder.mesh;
-            if (mesh) {
-                meshes = [...meshes, ...mesh];
+            if (!mesh.length) {
+                // Mark mesh as deleted for later
+                // This might get recreated during an add, that's cool.
+                this.builders[type] = DELETED_BUILDER;
+            }
+        });
+
+        if (removedGroupObjects.length) {
+            this.dispatch(sceneActions.removeGroupObjects(removedGroupObjects));
+        }
+    }
+
+    _addObjects(groups) {
+        let actorObjectList = [];
+        let actorObjects = {};
+        let groupObjects = {};
+        let types = {};
+
+        groups.forEach((group) => {
+            let name = group.name;
+
+            // if (this.objectsAtPath(`/${ name }`)) {
+            //     console.log(`Group "${ name }" exists. Continuing.`);
+            //     return;
+            // }
+            console.log(`Generating for group "${ name }"`);
+
+            let groupObject = new Group(group);
+
+            groupObjects[groupObject.path] = groupObject;
+            group.actors.forEach((actor) => {
+                let actorObject = new Actor(actor, groupObject);
+
+                actorObjectList.push(actorObject);
+                groupObject.addActorObject(actorObject);
+
+                _.forEach(actorObject.types, (shapeList, type) => {
+                    if (!types[type]) {
+                        types[type] = [];
+                    }
+
+                    types[type] = types[type].concat(shapeList);
+                });
+            });
+        });
+
+        if (!Object.keys(types).length) {
+            console.log('No changes to scene');
+            // return ;
+        }
+
+        // let meshes = [];
+        _.forEach(types, (shapes, type) => {
+            // Use type class to create the appropriate shapes
+            let builder = this.builders[type];
+
+            if (!builder || builder === DELETED_BUILDER) {
+                builder = new Builders[type](shapes, this.typedTrees[type], this.state);
+                this.builders[type] = builder;
             } else {
+                builder.addShapes(shapes, this.state);
+            }
+        });
+
+        // Finalize state
+        if (Object.keys(actorObjects).length) {
+            this.dispatch(sceneActions.addActorObjects(actorObjects));
+            this._needsRepaint = true;
+        }
+        if (Object.keys(groupObjects).length) {
+            this.dispatch(sceneActions.addGroupObjects(groupObjects));
+            this._needsRepaint = true;
+        }
+    }
+
+    _generateMeshes() {
+        console.log('Building meshes');
+
+        let meshes = [];
+        let removedMeshes = [];
+
+        _.forEach(this.builders, (builder, type) => {
+            if (builder === DELETED_BUILDER) {
                 delete this.builders[type];
                 removedMeshes.push(type);
+            } else {
+                meshes = [...meshes, ...builder.mesh];
             }
         });
 
@@ -411,10 +424,6 @@ class Scene {
                     this.threeScene.add(mesh);
                 }
             });
-        }
-
-        if (removedGroupObjects.length) {
-            this.dispatch(sceneActions.removeGroupObjects(removedGroupObjects));
         }
     }
 
