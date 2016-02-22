@@ -5,27 +5,6 @@ function addCameraController(controller) {
     };
 }
 
-function addActor(actor) {
-    return {
-        type: 'ADD_ACTOR',
-        actor
-    };
-}
-
-function addGroup(group) {
-    return {
-        type: 'ADD_GROUP',
-        group
-    };
-}
-
-function addGroups(groups) {
-    return {
-        type: 'ADD_GROUPS',
-        groups
-    };
-}
-
 function addActorObjects(actorObjects) {
     return {
         type: 'ADD_ACTOR_OBJECTS',
@@ -75,9 +54,6 @@ function registerLayers(layers) {
 
 export default {
     addCameraController,
-    addActor,
-    addGroup,
-    addGroups,
     addActorObjects,
     addGroupObjects,
     removeGroupObjects,
