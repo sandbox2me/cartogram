@@ -28,6 +28,7 @@ class Scene {
 
         this._pendingChanges = [];
         this._needsRepaint = true;
+        this._stateChanged = false;
 
         this._initializeStoreObserver();
     }
@@ -38,18 +39,8 @@ class Scene {
     }
 
     _initializeStoreObserver() {
-        let handleChange = () => {
-            let state = this.state;
-            let nextState = this._select(this.store.getState());
-
-            if (nextState !== state) {
-                this.state = nextState;
-                this.stateDidChange(state);
-            }
-        };
-
-        this.store.subscribe(handleChange);
-        handleChange();
+        this.store.subscribe(() => this._stateChanged = true);
+        this._updateState();
         this.eventDispatch = new EventBinder(this);
     }
 
@@ -180,7 +171,22 @@ class Scene {
         }
     }
 
+    _updateState() {
+        let state = this.state;
+        let nextState = this._select(this.store.getState());
+
+        if (nextState !== state) {
+            this.state = nextState;
+            this.stateDidChange(state);
+        }
+    }
+
     _update(userCallback) {
+        if (this._stateChanged) {
+            this._updateState();
+            this._stateChanged = false;
+        }
+
         if (typeof userCallback === 'function') {
             userCallback(this);
         }
