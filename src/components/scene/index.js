@@ -77,14 +77,7 @@ class Scene {
     }
 
     addGroup(group) {
-        group.scene = this;
-        group.actors = _.cloneDeep(group.actors);
-        group.actors.forEach((actor) => {
-            actor.group = group;
-            actor.scene = this;
-        });
-
-        this.dispatch(sceneActions.addGroup(group));
+        this.addGroups([group]);
     }
 
     addGroups(groups) {
