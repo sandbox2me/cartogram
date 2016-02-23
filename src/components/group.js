@@ -58,7 +58,7 @@ class Group {
         return {
             x: this.definition.position.x,
             y: this.definition.position.y,
-            z: this.scene.getLayerValue(this._layer)
+            z: this.scene.getLayerValue(this.definition.layer)
         };
     }
 

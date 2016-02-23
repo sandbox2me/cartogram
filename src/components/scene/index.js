@@ -201,6 +201,7 @@ class Scene {
     _updateMeshes() {
         let pendingChanges = this.state.get('pendingUpdates');
         let hasActorChanges = false;
+        let hasDestructiveAction = false;
         let destroyedGroups = [];
         let destroyedActors = [];
         let newGroups = [];
@@ -250,12 +251,14 @@ class Scene {
             console.log('Removing groups...')
             this._removeObjects(destroyedGroups, destroyedActors);
             hasActorChanges = true;
+            hasDestructiveAction = true;
         }
 
         if (newGroups.length) {
             console.log('Adding groups...')
             this._addObjects(newGroups);
             hasActorChanges = true;
+            hasDestructiveAction = true;
         }
 
         if (pendingChanges.size) {
@@ -264,7 +267,9 @@ class Scene {
         }
 
         if (hasActorChanges) {
-            this._generateMeshes();
+            if (hasDestructiveAction) {
+                this._generateMeshes();
+            }
 
             // XXX Fix this brute-force approach
             this.rtree.reset();
@@ -392,8 +397,6 @@ class Scene {
     }
 
     _generateMeshes() {
-        console.log('Building meshes');
-
         let meshes = [];
         let removedMeshes = [];
 
@@ -415,6 +418,8 @@ class Scene {
         }
 
         if (meshes.length) {
+            console.log(`Building ${ meshes.length } meshes`);
+
             meshes.forEach((mesh) => {
                 let index = _.findIndex(this.threeScene.children, { builderType: mesh.builderType });
 
