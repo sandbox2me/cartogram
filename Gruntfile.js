@@ -27,8 +27,9 @@ module.exports = function(grunt) {
                 output: {
                     path: 'dist/',
                     filename: 'cartogram-dev.js',
-                    library: 'Cartogram',
-                    libraryTarget: 'umd'
+                    library: 'cartogram2',
+                    libraryTarget: 'umd',
+                    umdNamedDefine: true
                 },
                 devtool: 'sourcemap',
                 debug: true

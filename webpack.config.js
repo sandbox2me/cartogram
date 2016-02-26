@@ -7,8 +7,9 @@ module.exports = {
     output: {
         path: './dist/',
         filename: 'cartogram.js',
-        library: 'Cartogram',
-        libraryTarget: 'umd'
+        library: 'cartogram2',
+        libraryTarget: 'umd',
+        umdNamedDefine: true
     },
     module: {
         loaders: [
@@ -20,9 +21,4 @@ module.exports = {
         root: path.join(__dirname, 'src')
     },
     plugins: [],
-    externals: {
-        // Don't bundle in THREE
-        //'three': 'THREE',
-        //'lodash': '_'
-    }
 };
