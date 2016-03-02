@@ -22,7 +22,7 @@ class Scene {
         this.eventBus = new EventBus();
 
         this.threeScene = new three.Scene();
-        this.camera = new Camera(store);
+        this.camera = new Camera(store, this);
         this.rtree = new RTree();
         this.typedTrees = {};
         this.builders = {};
@@ -483,27 +483,30 @@ class Scene {
         return this.actorsAtWorldPosition(worldPosition);
     }
 
-    actorsInScreenRegion(bbox) {
-        let worldOrigin = this.screenToWorldPosition(bbox);
-        let worldDest = this.screenToWorldPosition({ x: bbox.x + bbox.width, y: bbox.y + bbox.height });
-        let intersections = this.rtree.search({
+    _intersectionsInScreenRegion(bbox) {
+        let worldOrigin = this.screenToWorldPosition({ x: bbox.x, y: bbox.y });
+        let worldDest = this.screenToWorldPosition({ x: bbox.x2, y: bbox.y2 });
+
+        return this.rtree.search({
             x: worldOrigin.x,
             y: worldOrigin.y,
             x2: worldDest.x,
             y2: worldDest.y
         });
+    }
 
-        let actorPaths = intersections.map((intersection) => {
-            let actor = intersection[4].actor;
+    actorsInScreenRegion(bbox) {
+        let intersections = this._intersectionsInScreenRegion(bbox);
 
-            if (!actor.hasHitMask || actor.checkHitMask(position)) {
-                return actor.path;
-            }
+        return intersections.map((intersection) => intersection[4].actor.path);
+    }
 
-            return undefined;
+    groupsInScreenRegion(bbox) {
+        let intersections = this._intersectionsInScreenRegion(bbox);
+        let groups = intersections.map((intersection) => {
+            return intersection[4].actor._groupObject.path;
         });
-
-        return _.compact(actorPaths);
+        return _.uniq(groups);
     }
 
     actorAtPath(path) {

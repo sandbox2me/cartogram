@@ -148,6 +148,8 @@ class Actor {
             this._bbox = {
                 x: minX,
                 y: minY,
+                x2: maxX,
+                y2: maxY,
                 width: maxX - minX,
                 height: maxY - minY
             };

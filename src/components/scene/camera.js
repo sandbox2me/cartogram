@@ -4,9 +4,11 @@ import { OrthographicCamera, PerspectiveCamera, Vector3 } from 'three';
 import { camera as cameraActions } from 'actions';
 
 class Camera {
-    constructor(store) {
+    constructor(store, scene) {
         this.store = store;
         this.dispatch = this.store.dispatch;
+
+        this._scene = scene;
 
         this._initializeStoreObserver();
     }
@@ -117,6 +119,15 @@ class Camera {
             y: this.camera.position.y,
             z: this.camera.position.z,
         }));
+
+        _.defer(() => { this._scene.trigger('camera:motion'); })
+    }
+
+    moveTo({ x, y }) {
+        this.camera.position.x = x;
+        this.camera.position.y = y;
+        this.updatePosition();
+        this._scene._needsRepaint = true;
     }
 
 };

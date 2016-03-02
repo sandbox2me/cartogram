@@ -31,22 +31,24 @@ class Group {
                     minX = bbox.x;
                 }
 
-                if (bbox.x + bbox.width > maxX) {
-                    maxX = bbox.x + bbox.width;
+                if (bbox.x2 > maxX) {
+                    maxX = bbox.x2;
                 }
 
                 if (bbox.y < minY) {
                     minY = bbox.y;
                 }
 
-                if (bbox.y + bbox.height > maxY) {
-                    maxY = bbox.y + bbox.height;
+                if (bbox.y2 > maxY) {
+                    maxY = bbox.y2;
                 }
             });
 
             this._bbox = {
                 x: minX,
                 y: minY,
+                x2: maxX,
+                y2: maxY,
                 width: maxX - minX,
                 height: maxY - minY
             };
