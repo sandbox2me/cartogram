@@ -119,8 +119,6 @@ class Camera {
             this.camera.position.z = maxZoom;
         }
 
-        console.log(this.camera.position.z);
-
         if (triggerChange) {
             this.dispatch(cameraActions.updatePosition({
                 x: this.camera.position.x,
