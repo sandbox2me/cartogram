@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import three from 'three';
 
-import { scene as sceneActions } from '../../actions';
+import { scene as sceneActions, camera as cameraActions } from '../../actions';
 import Camera from './camera';
 import EventBinder from './events';
 import EventBus from './event_bus';
@@ -69,6 +69,11 @@ class Scene {
         controller.setScene(this);
 
         this.dispatch(sceneActions.addCameraController(controller));
+    }
+
+    setCameraZoomRange(min, max) {
+        this.dispatch(cameraActions.updateMinZoom(min));
+        this.dispatch(cameraActions.updateMaxZoom(max));
     }
 
     addGroup(group) {

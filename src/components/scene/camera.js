@@ -54,7 +54,7 @@ class Camera {
             height / 2,
             height / -2,
             1,
-            maxZoom + 100
+            minZoom + 100
         );
 
         this.camera.position.z = currentZoom;
@@ -65,13 +65,13 @@ class Camera {
 
     _initializePerspectiveCamera() {
         let { width, height } = this.state.get('screenSize');
-        let { currentZoom, maxZoom } = this.state.toObject();
+        let { currentZoom, minZoom } = this.state.toObject();
 
         this.camera = new PerspectiveCamera(
             50,
             width / height,
             1,
-            maxZoom + 100
+            minZoom + 100
         );
         this.camera.position.z = currentZoom;
     }
@@ -96,31 +96,40 @@ class Camera {
                 this.camera.aspect = screenSize.width / screenSize.height;
             }
         }
-        this.camera.updateProjectionMatrix();
 
+        if (oldState.get('minZoom') !== this.state.get('minZoom')) {
+            this.camera.far = this.state.get('minZoom') + 1;
+        }
+
+        this.updatePosition(false);
+        this.camera.updateProjectionMatrix();
     }
 
     getCamera() {
         return this.camera;
     }
 
-    updatePosition() {
+    updatePosition(triggerChange=true) {
         let maxZoom = this.state.get('maxZoom');
         let minZoom = this.state.get('minZoom');
 
-        if (this.camera.position.z > maxZoom) {
-            this.camera.position.z = maxZoom;
-        } else if (this.camera.position.z < minZoom) {
+        if (this.camera.position.z > minZoom) {
             this.camera.position.z = minZoom;
+        } else if (this.camera.position.z < maxZoom) {
+            this.camera.position.z = maxZoom;
         }
 
-        this.dispatch(cameraActions.updatePosition({
-            x: this.camera.position.x,
-            y: this.camera.position.y,
-            z: this.camera.position.z,
-        }));
+        console.log(this.camera.position.z);
 
-        _.defer(() => { this._scene.trigger('camera:motion'); })
+        if (triggerChange) {
+            this.dispatch(cameraActions.updatePosition({
+                x: this.camera.position.x,
+                y: this.camera.position.y,
+                z: this.camera.position.z,
+            }));
+
+            _.defer(() => { this._scene.trigger('camera:motion'); })
+        }
     }
 
     moveTo({ x, y }) {

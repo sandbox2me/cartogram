@@ -3,8 +3,8 @@ import createReducer from 'utils/create_reducer';
 
 const initialState = Map({
     mode: 'perspective',
-    maxZoom: 2000,
-    minZoom: 50,
+    minZoom: 2000,
+    maxZoom: 50,
     currentZoom: 500,
     position: { x: 0, y: 0, z: 500 }
 });
