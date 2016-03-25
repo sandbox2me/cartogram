@@ -31,7 +31,7 @@ module.exports = function(grunt) {
                     libraryTarget: 'umd',
                     umdNamedDefine: true
                 },
-                devtool: 'sourcemap',
+                devtool: 'inline-source-map',
                 debug: true
             }
         },
