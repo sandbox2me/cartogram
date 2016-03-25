@@ -535,6 +535,10 @@ class Scene {
     forceRedraw() {
         this.dispatch(sceneActions.forceRedraw());
     }
+
+    setCursor(style) {
+        this.state.get('core').get('canvas').style.cursor = style;
+    }
 };
 
 export default Scene;
