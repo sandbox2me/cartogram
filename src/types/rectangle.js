@@ -1,11 +1,14 @@
 import _ from 'lodash';
 
 import BaseType from './base';
-import { degToRad, V2, isPointInTriangle } from 'utils/math';
+import {
+    degToRad,
+    fixNum,
+    isPointInTriangle,
+    V2,
+} from 'utils/math';
 
-function fixNum(n, fix=3) {
-    return Number(n.toFixed(fix));
-}
+const axisAlignedAngles = [0, 90, 180, 270, 360];
 
 class Rectangle extends BaseType {
     constructor(shape, actor) {
@@ -24,11 +27,11 @@ class Rectangle extends BaseType {
         return this.get('fill');
     }
 
-    get baseBBox() {
-        if (!this._bbbox || !this.actor._bbox) {
+    get shapeBBox() {
+        if (!this._shapeBBox || !this.actor._bbox) {
             let { position, size } = this;
 
-            this._bbbox = {
+            this._shapeBBox = {
                 x: position.x - (size.width / 2),
                 y: position.y - (size.height / 2),
                 x2: position.x + (size.width / 2),
@@ -37,20 +40,22 @@ class Rectangle extends BaseType {
                 height: size.height,
             };
         }
-        return this._bbbox;
+        return this._shapeBBox;
     }
 
     // Generate a bounding box that fits the rotated rectangle
-    // get rotatedBBox() {
-    get bbox() {
+    get axisAlignedBBox() {
+        if (axisAlignedAngles.indexOf(this.angle) > -1) {
+            return this.shapeBBox;
+        }
+
         if (!this._bbox || !this.actor._bbox) {
             let { position } = this;
-            let bbox = { ...this.baseBBox };
-            let angle = degToRad(-this.actor.angle);
+            let bbox = { ...this.shapeBBox };
+            let angle = degToRad(this.actor.angle);
 
             let angleCos = Math.cos(angle);
             let angleSin = Math.sin(angle);
-
 
             let topLeft = {
                 x: (bbox.x * angleCos) - (bbox.y * angleSin),
@@ -77,6 +82,9 @@ class Rectangle extends BaseType {
             let width = maxX - minX;
             let height = maxY - minY;
 
+            // Using fixNum throughout the rest of this function because floating point
+            // math with JavaScript is not to be trusted. Decreasing chances for errors
+            // by reducing the precision to 3 places.
             this._bbox = {
                 x: fixNum(position.x - (width / 2)),
                 y: fixNum(position.y - (height / 2)),
@@ -95,14 +103,13 @@ class Rectangle extends BaseType {
             };
 
             this._bbox.corners = [
-                { x: fixNum(topLeft.x + offset.x), y: fixNum(topLeft.y + offset.y) },
-                { x: fixNum(topRight.x + offset.x), y: fixNum(topRight.y + offset.y) },
-                { x: fixNum(bottomLeft.x + offset.x), y: fixNum(bottomLeft.y + offset.y) },
-                { x: fixNum(bottomRight.x + offset.x), y: fixNum(bottomRight.y + offset.y) },
+                new V2(fixNum(topLeft.x + offset.x), fixNum(topLeft.y + offset.y)),
+                new V2(fixNum(topRight.x + offset.x), fixNum(topRight.y + offset.y)),
+                new V2(fixNum(bottomLeft.x + offset.x), fixNum(bottomLeft.y + offset.y)),
+                new V2(fixNum(bottomRight.x + offset.x), fixNum(bottomRight.y + offset.y)),
             ];
-
-            // console.log('bounding boxes', this.baseBBox, position, topLeft, topRight, bottomLeft, bottomRight, offset, this._bbox, '----')
         }
+
         return this._bbox;
     }
 
@@ -115,84 +122,52 @@ class Rectangle extends BaseType {
      * * Collect the vertices making up the 4 triangles that now surround the box
      * * Cross-product check each triangle to see where the input position is within each.
      * * If none of the triangles contain the input position, then we're actually over the box
+     *
      * * (Optimization) Determine which triangle the input position is likely to be
      *                  and check that one only, by splitting the bounding box into 4.
      *
      */
     checkIntersection(position) {
-        if (!this.angle) {
+        if (axisAlignedAngles.indexOf(this.angle) > -1) {
             return true;
         }
+
         // get the rotated bounding box
-        let bbox = this.bbox;
+        let bbox = this.axisAlignedBBox;
 
         // extract the corner verts
         let corners = [
-            {
-                n: 'top-left',
-                x: bbox.x,
-                y: bbox.y,
-            },
-            {
-                n: 'top-right',
-                x: bbox.x2,
-                y: bbox.y,
-            },
-            {
-                n: 'bottom-left',
-                x: bbox.x,
-                y: bbox.y2,
-            },
-            {
-                n: 'bottom-right',
-                x: bbox.x2,
-                y: bbox.y2,
-            }
+            new V2(
+                bbox.x,
+                bbox.y,
+            ),
+            new V2(
+                bbox.x2,
+                bbox.y,
+            ),
+            new V2(
+                bbox.x,
+                bbox.y2,
+            ),
+            new V2(
+                bbox.x2,
+                bbox.y2,
+            ),
         ];
 
         // Get the 4 corner triangles as vertices
         let triangles = corners.map((corner) => {
-            let {x, y} = corner;
-
-            let vertexY = _.find(bbox.corners, { x });
-            let vertexX = _.find(bbox.corners, { y });
-
-            // Order vertices clockwise
-            switch(corner.n) {
-                case 'top-left':
-                    return [
-                        new V2(corner.x, corner.y),
-                        new V2(vertexX.x, vertexX.y),
-                        new V2(vertexY.x, vertexY.y),
-                    ];
-                case 'top-right':
-                    return [
-                        new V2(corner.x, corner.y),
-                        new V2(vertexY.x, vertexY.y),
-                        new V2(vertexX.x, vertexX.y),
-                    ];
-                case 'bottom-left':
-                    return [
-                        new V2(corner.x, corner.y),
-                        new V2(vertexX.x, vertexX.y),
-                        new V2(vertexY.x, vertexY.y),
-                    ];
-                case 'bottom-right':
-                    return [
-                        new V2(corner.x, corner.y),
-                        new V2(vertexY.x, vertexY.y),
-                        new V2(vertexX.x, vertexX.y),
-                    ];
-            }
-
+            return [
+                corner,
+                _.find(bbox.corners, { x }),
+                _.find(bbox.corners, { y }),
+            ];
         });
 
         let point = new V2(position.x, position.y);
-        let intersectionChecks = triangles.map((triangle) => {
-            return isPointInTriangle(point, triangle);
-        });
-        let isIntersecting = intersectionChecks.indexOf(true) === -1;
-        console.log('is intersecting: ', isIntersecting, intersectionChecks);
+        let isIntersecting = triangles.map(
+            (triangle) => isPointInTriangle(point, triangle)
+        ).indexOf(true) === -1;
 
         return isIntersecting;
     }

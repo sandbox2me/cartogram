@@ -2,6 +2,10 @@ export function degToRad(angle) {
     return angle * 0.01745329252;
 };
 
+export function fixNum(n, fix=3) {
+    return Number(n.toFixed(fix));
+}
+
 export class V2 {
     constructor(x, y) {
         this.x = x;
@@ -45,36 +49,11 @@ export class V2 {
 
 /*
     Math from http://www.blackpawn.com/texts/pointinpoly/
-
-    function SameSide(p1,p2, a,b)
-        cp1 = CrossProduct(b-a, p1-a)
-        cp2 = CrossProduct(b-a, p2-a)
-        if DotProduct(cp1, cp2) >= 0 then return true
-        else return false
-
-    function PointInTriangle(p, a,b,c)
-        if SameSide(p,a, b,c) and SameSide(p,b, a,c)
-            and SameSide(p,c, a,b) then return true
-        else return false
 */
-
-function _sameSide(point1, point2, vertexA, vertexB) {
-    let cross1 = vertexB.sub(vertexA).cross(point1.sub(vertexA));
-    let cross2 = vertexB.sub(vertexA).cross(point2.sub(vertexA));
-
-    return cross1.dot(cross2) >= 0;
-}
-
-export function isPointInTriangle(point, triangle) {
-    // return (
-    //     _sameSide(point, triangle[0], triangle[1], triangle[2]) &&
-    //     _sameSide(point, triangle[1], triangle[0], triangle[2]) &&
-    //     _sameSide(point, triangle[2], triangle[0], triangle[1])
-    // );
-
-    let v0 = triangle[2].sub(triangle[0]);
-    let v1 = triangle[1].sub(triangle[0]);
-    let v2 = point.sub(triangle[0]);
+export function isPointInTriangle(point, triangleVertices) {
+    let v0 = triangleVertices[2].sub(triangleVertices[0]);
+    let v1 = triangleVertices[1].sub(triangleVertices[0]);
+    let v2 = point.sub(triangleVertices[0]);
 
     let dot00 = v0.dot(v0);
     let dot01 = v0.dot(v1);
@@ -89,8 +68,6 @@ export function isPointInTriangle(point, triangle) {
     // Check if point is in triangle
     return (u >= 0) && (v >= 0) && (u + v < 1);
 }
-
-
 
 export function _isPointInTriangle(p, [p0, p1, p2]) {
     var A = 1/2 * (-p1.y * p2.x + p0.y * (-p1.x + p2.x) + p0.x * (p1.y - p2.y) + p1.x * p2.y);
