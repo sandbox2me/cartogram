@@ -85,6 +85,10 @@ class Group {
         };
     }
 
+    get angle() {
+        return this.definition.angle;
+    }
+
     addActorObject(actor) {
         this.actors[actor.name] = actor;
         this.actorList.push(actor);
