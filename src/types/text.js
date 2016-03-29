@@ -111,18 +111,18 @@ class Text extends BaseType {
         return this.get('string');
     }
 
-    get bbox() {
-        if (!this._bbox || !this.actor._bbox) {
+    get shapeBBox() {
+        if (!this._shapeBBox || !this.actor._bbox) {
             let { position, size } = this;
 
-            this._bbox = {
+            this._shapeBBox = {
                 x: position.x - (size.width / 2),
                 y: position.y - (size.height / 2),
                 width: size.width,
                 height: size.height,
             };
         }
-        return this._bbox;
+        return this._shapeBBox;
     }
 };
 

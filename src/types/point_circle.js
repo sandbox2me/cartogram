@@ -29,18 +29,18 @@ class PointCircle extends BaseType {
         return radius * radius;
     }
 
-    get bbox() {
-        if (!this._bbox || !this.actor._bbox) {
+    get shapeBBox() {
+        if (!this._shapeBBox || !this.actor._bbox) {
             let { radius, position } = this;
 
-            this._bbox = {
+            this._shapeBBox = {
                 width: radius * 2,
                 height: radius * 2,
                 x: position.x - radius,
                 y: position.y - radius
             };
         }
-        return this._bbox;
+        return this._shapeBBox;
     }
 
     get fill() {

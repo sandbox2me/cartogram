@@ -53,8 +53,12 @@ class BaseType {
         return this._index;
     }
 
-    get bbox() {
+    get shapeBBox() {
         throw new Error('getBBox not implemented');
+    }
+
+    get axisAlignedBBox() {
+        return this.shapeBBox;
     }
 
     checkIntersection(position) {

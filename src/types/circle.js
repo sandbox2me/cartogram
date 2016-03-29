@@ -26,19 +26,19 @@ class Circle extends BaseType {
         return this.get('radius');
     }
 
-    get bbox() {
-        if (!this._bbox) {
+    get shapeBBox() {
+        if (!this._shapeBBox) {
             let size = this.size;
             let position = this.position;
 
-            this._bbox = {
+            this._shapeBBox = {
                 x: position.x - (size.width / 2),
                 y: position.y - (size.height / 2),
                 width: size.width,
                 height: size.height,
             };
         }
-        return this._bbox;
+        return this._shapeBBox;
     }
 };
 
