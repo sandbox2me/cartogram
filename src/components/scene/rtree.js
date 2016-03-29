@@ -6,7 +6,7 @@ class RTree {
     }
 
     _dataForShape(shape) {
-        let bbox = shape.type.bbox;
+        let bbox = shape.type.axisAlignedBBox;
 
         return [
             bbox.x,
@@ -18,7 +18,7 @@ class RTree {
     }
 
     _dataForActor(actor) {
-        let bbox = actor.bbox;
+        let bbox = actor.axisAlignedBBox;
 
         return [
             bbox.x,

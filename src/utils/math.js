@@ -51,9 +51,13 @@ export class V2 {
     Math from http://www.blackpawn.com/texts/pointinpoly/
 */
 export function isPointInTriangle(point, triangleVertices) {
-    let v0 = triangleVertices[2].sub(triangleVertices[0]);
-    let v1 = triangleVertices[1].sub(triangleVertices[0]);
-    let v2 = point.sub(triangleVertices[0]);
+    try {
+        var v0 = triangleVertices[2].sub(triangleVertices[0]);
+        var v1 = triangleVertices[1].sub(triangleVertices[0]);
+        var v2 = point.sub(triangleVertices[0]);
+    } catch(e) {
+        return false;
+    }
 
     let dot00 = v0.dot(v0);
     let dot01 = v0.dot(v1);

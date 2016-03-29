@@ -118,34 +118,35 @@ class Actor {
         this._bbox = undefined;
     }
 
-    get bbox() {
-        if (!this._bbox) {
+    _generateBBoxes() {
+        let bboxForType = (bboxType) => {
             let minX = Infinity,
                 maxX = -Infinity,
                 minY = Infinity,
-                maxY = -Infinity;
+                maxY = -Infinity,
+                bbox = {};
 
             _.values(this.children).forEach((typeInstance) => {
-                let bbox = typeInstance.bbox;
+                let childBBox = typeInstance[bboxType];
 
-                if (bbox.x < minX) {
-                    minX = bbox.x;
+                if (childBBox.x < minX) {
+                    minX = childBBox.x;
                 }
 
-                if (bbox.x + bbox.width > maxX) {
-                    maxX = bbox.x + bbox.width;
+                if (childBBox.x + childBBox.width > maxX) {
+                    maxX = childBBox.x + childBBox.width;
                 }
 
-                if (bbox.y < minY) {
-                    minY = bbox.y;
+                if (childBBox.y < minY) {
+                    minY = childBBox.y;
                 }
 
-                if (bbox.y + bbox.height > maxY) {
-                    maxY = bbox.y + bbox.height;
+                if (childBBox.y + childBBox.height > maxY) {
+                    maxY = childBBox.y + childBBox.height;
                 }
             });
 
-            this._bbox = {
+            bbox = {
                 x: minX,
                 y: minY,
                 x2: maxX,
@@ -153,6 +154,27 @@ class Actor {
                 width: maxX - minX,
                 height: maxY - minY
             };
+
+            return bbox;
+        }
+
+        this._aaBBox = bboxForType('axisAlignedBBox');
+        this._bbox = bboxForType('shapeBBox');
+    }
+
+    // Returns the axis-aligned bounding box for the actor
+    get axisAlignedBBox() {
+        if (!this._aaBBox || !this._bbox) {
+            this._generateBBoxes();
+        }
+
+        return this._aaBBox;
+    }
+
+    // Returns the bounding box that fits the actor when rotated
+    get bbox() {
+        if (!this._aaBBox || !this._bbox) {
+            this._generateBBoxes();
         }
 
         return this._bbox;

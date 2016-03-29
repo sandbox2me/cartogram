@@ -36,7 +36,7 @@ class Font extends Rectangle {
 
         let index = 0;
         this.shapes.forEach((shapeTypeInstance, shapeIndex) => {
-            let { position, bbox, fontSize, fill } = shapeTypeInstance;
+            let { position, shapeBBox, fontSize, fill } = shapeTypeInstance;
 
             if (shapeTypeInstance.chunks.length) {
                 // debugger;
@@ -52,7 +52,7 @@ class Font extends Rectangle {
                 this.fontSizes.setX(index, fontSize);
 
                 // Position character
-                this.offsets.setXYZ(index, position.x - (bbox.width / 2) + chunk.x, position.y + (bbox.height / 2) + chunk.y, position.z);
+                this.offsets.setXYZ(index, position.x - (shapeBBox.width / 2) + chunk.x, position.y + (shapeBBox.height / 2) + chunk.y, position.z);
 
                 // Color character
                 this.colors.setXYZW(index, fill.r, fill.g, fill.b, (fill.a === undefined ? 1.0 : fill.a));
@@ -76,7 +76,7 @@ class Font extends Rectangle {
     updateAttributesAtIndex(fullIndex) {
         let index = fullIndex.split(':')[1];
         let shapeTypeInstance = this.shapes[index];
-        let { position, bbox, fontSize, fill } = shapeTypeInstance;
+        let { position, shapeBBox, fontSize, fill } = shapeTypeInstance;
 
         shapeTypeInstance.chunks.forEach((chunk) => {
             let chunkIndex = chunk.renderIndex;
@@ -88,7 +88,7 @@ class Font extends Rectangle {
             this.fontSizes.setX(chunkIndex, fontSize);
 
             // Position character
-            this.offsets.setXYZ(chunkIndex, position.x - (bbox.width / 2) + chunk.x, position.y + (bbox.height / 2) + chunk.y, position.z);
+            this.offsets.setXYZ(chunkIndex, position.x - (shapeBBox.width / 2) + chunk.x, position.y + (shapeBBox.height / 2) + chunk.y, position.z);
 
             // Color character
             this.colors.setXYZW(chunkIndex, fill.r, fill.g, fill.b, (fill.a === undefined ? 1.0 : fill.a));

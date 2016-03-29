@@ -157,6 +157,8 @@ class Rectangle extends BaseType {
 
         // Get the 4 corner triangles as vertices
         let triangles = corners.map((corner) => {
+            let { x, y } = corner;
+
             return [
                 corner,
                 _.find(bbox.corners, { x }),

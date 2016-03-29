@@ -17,34 +17,35 @@ class Group {
         return `/${ this.definition.name }`;
     }
 
-    get bbox() {
-        if (!this._bbox) {
+    _generateBBoxes() {
+        let bboxForType = (bboxType) => {
             let minX = Infinity,
                 maxX = -Infinity,
                 minY = Infinity,
-                maxY = -Infinity;
+                maxY = -Infinity,
+                bbox = {};
 
             this.actorList.forEach((actorObject) => {
-                let bbox = actorObject.bbox;
+                let childBBox = actorObject[bboxType];
 
-                if (bbox.x < minX) {
-                    minX = bbox.x;
+                if (childBBox.x < minX) {
+                    minX = childBBox.x;
                 }
 
-                if (bbox.x2 > maxX) {
-                    maxX = bbox.x2;
+                if (childBBox.x2 > maxX) {
+                    maxX = childBBox.x2;
                 }
 
-                if (bbox.y < minY) {
-                    minY = bbox.y;
+                if (childBBox.y < minY) {
+                    minY = childBBox.y;
                 }
 
-                if (bbox.y2 > maxY) {
-                    maxY = bbox.y2;
+                if (childBBox.y2 > maxY) {
+                    maxY = childBBox.y2;
                 }
             });
 
-            this._bbox = {
+            bbox = {
                 x: minX,
                 y: minY,
                 x2: maxX,
@@ -52,7 +53,27 @@ class Group {
                 width: maxX - minX,
                 height: maxY - minY
             };
+
+            return bbox;
         }
+
+        this._aaBBox = bboxForType('axisAlignedBBox');
+        this._bbox = bboxForType('bbox');
+    }
+
+    get axisAlignedBBox() {
+        if (!this._aaBBox || !this._bbox) {
+            this._generateBBoxes();
+        }
+
+        return this._aaBBox;
+    }
+
+    get bbox() {
+        if (!this._aaBBox || !this._bbox) {
+            this._generateBBoxes();
+        }
+
         return this._bbox;
     }
 
