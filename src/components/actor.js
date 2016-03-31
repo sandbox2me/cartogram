@@ -9,7 +9,6 @@ class Actor {
         this.scene = this.definition.scene;
         this._groupObject = groupObject;
 
-        this._position = this.definition.position;
         this._layer = this.definition.layer || 'default';
         this._angle = this.definition.angle || 0;
         this._events = this.definition.events || {};
@@ -33,6 +32,10 @@ class Actor {
         segments.push(this.definition.name);
 
         return `/${ segments.join('/') }`;
+    }
+
+    get _position() {
+        return this.definition.position;
     }
 
     get position() {
@@ -225,6 +228,10 @@ class Actor {
         position.y += this.position.y;
         this._bbox = undefined;
 
+        if (_.isEqual(position, this._position)) {
+            return;
+        }
+
         this.scene.pushChange({
             type: 'actor',
             actor: this,
@@ -236,12 +243,20 @@ class Actor {
 
     // Absolute movement
     moveTo(position) {
+        let pp = { x: this._position.x, y: this._position.y };
         this._bbox = undefined;
+
+        if (_.isEqual(position, pp)) {
+            return;
+        }
 
         this.scene.pushChange({
             type: 'actor',
             actor: this,
-            position
+            action: 'update',
+            data: {
+                position
+            }
         });
     }
 
