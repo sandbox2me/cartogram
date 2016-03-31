@@ -228,7 +228,7 @@ class Actor {
         position.y += this.position.y;
         this._bbox = undefined;
 
-        if (_.isEqual(position, this._position)) {
+        if (_.isEqual(position, { x: this._position.x, y: this._position.y })) {
             return;
         }
 
@@ -243,10 +243,9 @@ class Actor {
 
     // Absolute movement
     moveTo(position) {
-        let pp = { x: this._position.x, y: this._position.y };
         this._bbox = undefined;
 
-        if (_.isEqual(position, pp)) {
+        if (_.isEqual(position, { x: this._position.x, y: this._position.y })) {
             return;
         }
 
