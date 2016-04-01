@@ -20,7 +20,14 @@ module.exports = function(grunt) {
 						}
 					}),
 					new webpack.optimize.DedupePlugin(),
-					new webpack.optimize.UglifyJsPlugin()
+					new webpack.optimize.UglifyJsPlugin({
+                        compress: {
+                            unused: true,
+                            dead_code: true,
+                            drop_debugger: true,
+                            drop_console: true,
+                        }
+                    })
 				)
             },
             dev: {

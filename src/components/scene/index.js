@@ -210,6 +210,7 @@ class Scene {
         let destroyedGroups = [];
         let destroyedActors = [];
         let newGroups = [];
+        let insertedGroups = {};
 
         pendingChanges.forEach((change) => {
             let { type, action } = change;
@@ -240,6 +241,13 @@ class Scene {
                     destroyedGroups.push(group);
                 } else if (action === 'create') {
                     newGroups.push(group);
+                } else if (action === 'insertActor') {
+                    if (!insertedGroups[group.path]) {
+                        insertedGroups[group.path] = { group, actors: [] };
+                    }
+                    insertedGroups[group.path].actors.push(change.actor);
+                } else if (action === 'removeActor') {
+
                 } else {
                     group.actorList.forEach((actor) => {
                         actor._bbox = undefined;
@@ -262,6 +270,13 @@ class Scene {
         if (newGroups.length) {
             console.log('Adding groups...')
             this._addObjects(newGroups);
+            hasActorChanges = true;
+            hasDestructiveAction = true;
+        }
+
+        if (!_.isEmpty(insertedGroups)) {
+            console.log('Adding actors to groups...');
+            _.forEach(insertedGroups, (info, groupPath) => this._addActorsToGroup(info));
             hasActorChanges = true;
             hasDestructiveAction = true;
         }
@@ -399,6 +414,48 @@ class Scene {
             this.dispatch(sceneActions.addGroupObjects(groupObjects));
             this._needsRepaint = true;
         }
+    }
+
+    _addActorsToGroup({ group, actors }) {
+        let groupObject = this.state.get('groupObjects').get(group.path);
+        let actorObjectList = [];
+        let types = {};
+
+        actors.forEach((actor) => {
+            let actorObject = new Actor(actor, groupObject);
+
+            actorObjectList.push(actorObject);
+            groupObject.addActorObject(actorObject);
+
+            _.forEach(actorObject.types, (shapeList, type) => {
+                if (!types[type]) {
+                    types[type] = [];
+                }
+
+                types[type] = types[type].concat(shapeList);
+            });
+        });
+
+        // Push updated groupObject to store or will that happen automatically?
+
+        if (!Object.keys(types).length) {
+            console.log('No changes to scene');
+            // return ;
+        } else {
+            this._needsRepaint = true;
+        }
+
+        _.forEach(types, (shapes, type) => {
+            // Use type class to create the appropriate shapes
+            let builder = this.builders[type];
+
+            if (!builder || builder === DELETED_BUILDER) {
+                builder = new Builders[type](shapes, this.typedTrees[type], this.state);
+                this.builders[type] = builder;
+            } else {
+                builder.addShapes(shapes, this.state);
+            }
+        });
     }
 
     _generateMeshes() {

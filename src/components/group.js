@@ -89,6 +89,21 @@ class Group {
         return this.definition.angle;
     }
 
+    addActor(actor) {
+        actor = _.cloneDeep(actor);
+
+        this.definition.actors.push(actor);
+        actor.group = this.definition;
+        actor.scene = this.scene;
+
+        this.scene.pushChange({
+            type: 'group',
+            action: 'insertActor',
+            group: this,
+            actor,
+        });
+    }
+
     addActorObject(actor) {
         this.actors[actor.name] = actor;
         this.actorList.push(actor);

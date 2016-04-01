@@ -208,7 +208,7 @@ class Actor {
     setShapeProps(props) {
         let shapeProps = Object.assign({}, this.definition.shapeProps, props);
 
-        if (_.isEqual(shapeProps, this.shapeProps)) {
+        if (_.isEqual(shapeProps, this.definition.shapeProps)) {
             // No-op
             return;
         }
