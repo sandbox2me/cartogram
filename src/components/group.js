@@ -104,6 +104,18 @@ class Group {
         });
     }
 
+    removeActor(actorName) {
+        let actor = _.find(this.definition.actors, { name: actorName });
+        this.definition.actors = _.without(this.definition.actors, actor);
+
+        this.scene.pushChange({
+            type: 'group',
+            action: 'removeActor',
+            group: this,
+            actor,
+        });
+    }
+
     addActorObject(actor) {
         this.actors[actor.name] = actor;
         this.actorList.push(actor);

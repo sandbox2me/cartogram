@@ -210,12 +210,15 @@ class Scene {
         let destroyedGroups = [];
         let destroyedActors = [];
         let newGroups = [];
-        let insertedGroups = {};
+        let insertedActors = {};
+        let removedActors = {};
 
         pendingChanges.forEach((change) => {
             let { type, action } = change;
 
             if (type === 'shape') {
+                console.warn('Manipulating shapes is deprecated!');
+
                 let { actor, properties } = change;
                 let shape = actor.children[properties.name];
                 actor.updateChild(properties);
@@ -223,10 +226,12 @@ class Scene {
                 this.builders[properties.type].updateAttributesAtIndex(shape.index);
             }
 
+
             if (type === 'actor') {
                 let { actor } = change;
                 if (action === 'destroy') {
-                    destroyedActors.push(actor);
+                    console.error('Actors without a group are no longer supported');
+                    // destroyedActors.push(actor);
                 } else {
                     _.values(actor.children).forEach((shapeTypeInstance) => {
                         this.builders[shapeTypeInstance.shape.type].updateAttributesAtIndex(shapeTypeInstance.index);
@@ -242,12 +247,15 @@ class Scene {
                 } else if (action === 'create') {
                     newGroups.push(group);
                 } else if (action === 'insertActor') {
-                    if (!insertedGroups[group.path]) {
-                        insertedGroups[group.path] = { group, actors: [] };
+                    if (!insertedActors[group.path]) {
+                        insertedActors[group.path] = { group, actors: [] };
                     }
-                    insertedGroups[group.path].actors.push(change.actor);
+                    insertedActors[group.path].actors.push(change.actor);
                 } else if (action === 'removeActor') {
-
+                    if (!removedActors[group.path]) {
+                        removedActors[group.path] = { group, actors: [] };
+                    }
+                    removedActors[group.path].actors.push(change.actor);
                 } else {
                     group.actorList.forEach((actor) => {
                         actor._bbox = undefined;
@@ -260,6 +268,20 @@ class Scene {
             }
         });
 
+        if (!_.isEmpty(removedActors)) {
+            console.log('Removing actors from groups...');
+            _.forEach(removedActors, ::this._removeActorsFromGroup);
+            hasActorChanges = true;
+            hasDestructiveAction = true;
+        }
+
+        if (!_.isEmpty(insertedActors)) {
+            console.log('Adding actors to groups...');
+            _.forEach(insertedActors, ::this._addActorsToGroup);
+            hasActorChanges = true;
+            hasDestructiveAction = true;
+        }
+
         if (destroyedGroups.length || destroyedActors.length) {
             console.log('Removing groups...')
             this._removeObjects(destroyedGroups, destroyedActors);
@@ -270,13 +292,6 @@ class Scene {
         if (newGroups.length) {
             console.log('Adding groups...')
             this._addObjects(newGroups);
-            hasActorChanges = true;
-            hasDestructiveAction = true;
-        }
-
-        if (!_.isEmpty(insertedGroups)) {
-            console.log('Adding actors to groups...');
-            _.forEach(insertedGroups, (info, groupPath) => this._addActorsToGroup(info));
             hasActorChanges = true;
             hasDestructiveAction = true;
         }
@@ -440,7 +455,7 @@ class Scene {
 
         if (!Object.keys(types).length) {
             console.log('No changes to scene');
-            // return ;
+            return;
         } else {
             this._needsRepaint = true;
         }
@@ -454,6 +469,45 @@ class Scene {
                 this.builders[type] = builder;
             } else {
                 builder.addShapes(shapes, this.state);
+            }
+        });
+    }
+
+    _removeActorsFromGroup({ group, actors }) {
+        let groupObject = this.state.get('groupObjects').get(group.path);
+        let actorObjectList = [];
+        let removedTypes = {};
+
+        actors.forEach((actor) => {
+            let actorObject = groupObject.actors[actor.name];
+            groupObject.removeActorObject(actorObject);
+
+            _.forEach(actorObject.types, (shapeList, type) => {
+                if (!removedTypes[type]) {
+                    removedTypes[type] = [];
+                }
+
+                removedTypes[type] = removedTypes[type].concat(shapeList);
+            });
+        });
+
+        if (!Object.keys(removedTypes).length) {
+            console.log('No changes to scene');
+            return;
+        } else {
+            this._needsRepaint = true;
+        }
+
+        _.forEach(removedTypes, (shapes, type) => {
+            let builder = this.builders[type];
+
+            builder.removeShapes(shapes, this.state);
+
+            let mesh = builder.mesh;
+            if (!mesh.length) {
+                // Mark mesh as deleted for later
+                // This might get recreated during an add, that's cool.
+                this.builders[type] = DELETED_BUILDER;
             }
         });
     }
