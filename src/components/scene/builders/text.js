@@ -14,14 +14,10 @@ class Text {
         let shapeTypeInstance = font.shapes[splitIndex[1]];
 
         if (shapeTypeInstance.hasChangedString()) {
-            console.log('Recalculating text!')
             // Recalculate and re-render the string
             font.removeShapes([shapeTypeInstance], font.sceneState);
-            console.log([...shapeTypeInstance.chunks]);
-            
-            shapeTypeInstance.calculate();
-            console.log([...shapeTypeInstance.chunks]);
 
+            shapeTypeInstance.calculate();
             font.addShapes([shapeTypeInstance], font.sceneState);
         } else {
             font.updateAttributesAtIndex(index);
