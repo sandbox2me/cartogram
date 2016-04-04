@@ -10,6 +10,10 @@ class Text extends BaseType {
 
         super(shape, actor);
 
+        this.calculate();
+    }
+
+    calculate() {
         this.calculateChunks();
         this.calculateSize();
     }
@@ -57,7 +61,7 @@ class Text extends BaseType {
             x += xAdvance; // - xOffset;
         });
 
-        this.chunks = chunks;
+        this._chunks = chunks;
     }
 
     calculateSize() {
@@ -95,6 +99,10 @@ class Text extends BaseType {
         };
     }
 
+    hasChangedString() {
+        return this._string !== this.get('string');
+    }
+
     get fill() {
         return this.get('fill');
     }
@@ -108,7 +116,12 @@ class Text extends BaseType {
     }
 
     get string() {
-        return this.get('string');
+        this._string = this.get('string');
+        return this._string;
+    }
+
+    get chunks() {
+        return this._chunks;
     }
 
     get shapeBBox() {

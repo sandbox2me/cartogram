@@ -234,6 +234,11 @@ class Scene {
                     // destroyedActors.push(actor);
                 } else {
                     _.values(actor.children).forEach((shapeTypeInstance) => {
+                        if (shapeTypeInstance.shape.type === 'Text' && shapeTypeInstance.hasChangedString()) {
+                            // Text objects need to recalulate chunks and sizing when the string changes
+                            hasActorChanges = true;
+                            hasDestructiveAction = true;
+                        }
                         this.builders[shapeTypeInstance.shape.type].updateAttributesAtIndex(shapeTypeInstance.index);
                     });
                 }
@@ -260,6 +265,11 @@ class Scene {
                     group.actorList.forEach((actor) => {
                         actor._bbox = undefined;
                         _.values(actor.children).forEach((shapeTypeInstance) => {
+                            if (shapeTypeInstance.shape.type === 'Text' && shapeTypeInstance.hasChangedString()) {
+                                // Text objects need to recalulate chunks and sizing when the string changes
+                                hasActorChanges = true;
+                                hasDestructiveAction = true;
+                            }
                             this.builders[shapeTypeInstance.shape.type].updateAttributesAtIndex(shapeTypeInstance.index);
                         });
                         hasActorChanges = true;

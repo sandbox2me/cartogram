@@ -8,9 +8,25 @@ class Text {
     }
 
     updateAttributesAtIndex(index) {
-        let font = index.split(':')[0];
+        let splitIndex = index.split(':');
+        let fontName = splitIndex[0];
+        let font = this._fontCache[fontName];
+        let shapeTypeInstance = font.shapes[splitIndex[1]];
 
-        this._fontCache[font].updateAttributesAtIndex(index);
+        if (shapeTypeInstance.hasChangedString()) {
+            console.log('Recalculating text!')
+            // Recalculate and re-render the string
+            font.removeShapes([shapeTypeInstance], font.sceneState);
+            console.log([...shapeTypeInstance.chunks]);
+            
+            shapeTypeInstance.calculate();
+            console.log([...shapeTypeInstance.chunks]);
+
+            font.addShapes([shapeTypeInstance], font.sceneState);
+        } else {
+            font.updateAttributesAtIndex(index);
+        }
+
     }
 
     _buildShapeFontMap(shapes) {
