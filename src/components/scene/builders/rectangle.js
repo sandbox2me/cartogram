@@ -154,6 +154,9 @@ class Rectangle {
             this._mesh.position.z += this.drawPriority;
         }
 
+        if (!this._mesh) {
+            return [];
+        }
         return [this._mesh];
     }
 }

@@ -167,6 +167,16 @@ class Font extends Rectangle {
     get drawPriority() {
         return 0.05;
     }
+
+    get mesh() {
+        let mesh = super.mesh;
+
+        if (!mesh.length) {
+            return  [undefined];
+        }
+
+        return mesh;
+    }
 }
 
 export default Font;

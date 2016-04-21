@@ -369,7 +369,12 @@ class Scene {
             if (!mesh.length) {
                 // Mark mesh as deleted for later
                 // This might get recreated during an add, that's cool.
-                this.builders[type] = DELETED_BUILDER;
+                if (type === 'Text') {
+                    // Mark specific fonts as deleted
+                    this.builders = Object.assign({}, this.builders, builder.removedMeshes);
+                } else {
+                    this.builders[type] = DELETED_BUILDER;
+                }
             }
         });
 
@@ -517,7 +522,12 @@ class Scene {
             if (!mesh.length) {
                 // Mark mesh as deleted for later
                 // This might get recreated during an add, that's cool.
-                this.builders[type] = DELETED_BUILDER;
+                if (type === 'Text') {
+                    // Mark specific fonts as deleted
+                    this.builders = Object.assign({}, this.builders, builder.removedMeshes);
+                } else {
+                    this.builders[type] = DELETED_BUILDER;
+                }
             }
         });
     }

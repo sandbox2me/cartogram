@@ -65,6 +65,18 @@ class Text {
 
         _.forEach(this._fontCache, (font) => meshes.push(...font.mesh));
 
+        return _.compact(meshes);
+    }
+
+    get removedMeshes() {
+        let meshes = {};
+
+        _.forEach(this._fontCache, (font) => {
+            if (!_.compact(font.mesh).length) {
+                meshes[font.builderType] = -1;
+            }
+        });
+
         return meshes;
     }
 }
