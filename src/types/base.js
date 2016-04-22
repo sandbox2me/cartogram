@@ -33,10 +33,12 @@ class BaseType {
     }
 
     get position() {
+        let actorPosition = this.actor.position;
+
         return {
-            x: this.get('position').x + this.actor.position.x,
-            y: this.get('position').y + this.actor.position.y,
-            z: this.actor.position.z,
+            x: this.get('position').x + actorPosition.x,
+            y: this.get('position').y + actorPosition.y,
+            z: actorPosition.z,
         };
     }
 
