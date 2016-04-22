@@ -25,12 +25,25 @@ class Text {
 
     }
 
-    shapesToTop(indexes) {
+    shapesToTop(fontIndexes) {
+        let groupedByFont = {};
 
+        fontIndexes.forEach((fontIndex) => {
+            let [fontName, index] = fontIndex.split(':');
+
+            if (!groupedByFont[fontName]) {
+                groupedByFont[fontName] = [];
+            }
+            groupedByFont[fontName].push(index);
+        });
+
+        _.forEach(groupedByFont, (indexes, fontName) => {
+            this._fontCache[fontName].shapesToTop(indexes);
+        });
     }
 
     reindex() {
-
+        _.forEach(this._fontCache, (font) => font.reindex());
     }
 
     _buildShapeFontMap(shapes) {

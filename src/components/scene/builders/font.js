@@ -110,6 +110,15 @@ class Font extends Rectangle {
         }
     }
 
+    reindex() {
+        this.shapes.forEach((shapeTypeInstance, i) => {
+            let index = `${ this.font.name }:${ i }`;
+
+            shapeTypeInstance.setIndex(index);
+            this.updateAttributesAtIndex(index);
+        });
+    }
+
     get vertexShader() {
         if (this.font.isTTF) {
             return atlasVertexShader;
