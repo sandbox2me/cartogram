@@ -25,6 +25,14 @@ class Text {
 
     }
 
+    shapesToTop(indexes) {
+
+    }
+
+    reindex() {
+
+    }
+
     _buildShapeFontMap(shapes) {
         let shapeFontMap = {};
 

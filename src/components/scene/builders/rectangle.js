@@ -97,6 +97,44 @@ class Rectangle {
         this.geometry.attributes.angle.needsUpdate = true;
     }
 
+    shapesToTop(indexes) {
+        let indexGroups = [[]];
+        let currentGroup = 0;
+
+        // Sort numbers properly
+        indexes.sort((a, b) => a - b);
+
+        if (indexes[indexes.length - 1] - indexes[0] === indexes.length) {
+            // We have one sequence of indexes
+            indexGroups[0] = indexes;
+        } else {
+            indexes.forEach((index, i) => {
+                // Create groups of sequential indexes -> [[10, 12, 13, 14], [22, 23, 24]]
+                if (i === 0 || indexes[i - 1] + 1 === index) {
+                    indexGroups[currentGroup].push(index);
+                } else {
+                    indexGroups.push([]);
+                    currentGroup += 1;
+                }
+            });
+        }
+
+        // Extract all the groups of shapes and push them onto the end
+        this.shapes = indexGroups.map(
+            (group) => this.shapes.splice(group[0], group.length)
+        ).reduce(
+            (shapes, instanceGroup) => shapes.concat(instanceGroup),
+            this.shapes
+        );
+    }
+
+    reindex() {
+        this.shapes.forEach((shapeTypeInstance, i) => {
+            shapeTypeInstance.setIndex(i);
+            this.updateAttributesAtIndex(i);
+        });
+    }
+
     addShapes(shapes, sceneState) {
         this.sceneState = sceneState;
 

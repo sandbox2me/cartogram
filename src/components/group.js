@@ -206,6 +206,15 @@ class Group {
         });
     }
 
+    toTop() {
+        this.scene.pushChange({
+            type: 'group',
+            group: this,
+            action: 'toTop',
+            data: {}
+        });
+    }
+
     destroy() {
         this.scene.pushChange({
             type: 'group',

@@ -261,6 +261,26 @@ class Scene {
                         removedActors[group.path] = { group, actors: [] };
                     }
                     removedActors[group.path].actors.push(change.actor);
+                } else if (action === 'toTop') {
+                    let typesIndexes = {};
+
+                    group.actorList.forEach((actor) => {
+                        _.values(actor.children).forEach((shapeTypeInstance) => {
+                            let type = shapeTypeInstance.shape.type;
+
+                            if (!typesIndexes[type]) {
+                                typesIndexes[type] = [];
+                            }
+                            typesIndexes[type].push(shapeTypeInstance.index);
+                        });
+                    });
+
+                    _.forEach(typesIndexes, (indexes, type) => {
+                        this.builders[type].shapesToTop(indexes);
+                        this.builders[type].reindex();
+                    });
+
+                    hasActorChanges = true;
                 } else {
                     group.actorList.forEach((actor) => {
                         actor._bbox = undefined;
@@ -541,7 +561,7 @@ class Scene {
                 delete this.builders[type];
                 removedMeshes.push(type);
             } else {
-                meshes = [...meshes, ...builder.mesh];
+                meshes.push(...builder.mesh);
             }
         });
 
