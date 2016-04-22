@@ -687,7 +687,15 @@ class Scene {
         this.dispatch(sceneActions.forceRedraw());
     }
 
-    setCursor(style) {
+    setCursor(style, options={}) {
+        if (this._lockCursorSet && options.lock !== false) {
+            return;
+        }
+
+        if (options.lock !== undefined) {
+            this._lockCursorSet = options.lock;
+        }
+
         this.state.get('core').get('canvas').style.cursor = style;
     }
 };
