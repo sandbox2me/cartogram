@@ -130,8 +130,10 @@ class Rectangle {
 
     reindex() {
         this.shapes.forEach((shapeTypeInstance, i) => {
-            shapeTypeInstance.setIndex(i);
-            this.updateAttributesAtIndex(i);
+            if (shapeTypeInstance.index !== i) {
+                shapeTypeInstance.setIndex(i);
+                this.updateAttributesAtIndex(i);                
+            }
         });
     }
 

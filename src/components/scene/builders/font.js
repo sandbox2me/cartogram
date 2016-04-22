@@ -114,8 +114,10 @@ class Font extends Rectangle {
         this.shapes.forEach((shapeTypeInstance, i) => {
             let index = `${ this.font.name }:${ i }`;
 
-            shapeTypeInstance.setIndex(index);
-            this.updateAttributesAtIndex(index);
+            if (shapeTypeInstance.index !== index) {
+                shapeTypeInstance.setIndex(index);
+                this.updateAttributesAtIndex(index);                
+            }
         });
     }
 
