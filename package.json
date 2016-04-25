@@ -39,7 +39,7 @@
     "redux": "^3.0.5",
     "redux-thunk": "^1.0.3",
     "reselect": "^2.0.1",
-    "three": "^0.75.0",
+    "three": "^0.76.1",
     "tinycolor2": "^1.3.0"
   }
 }
