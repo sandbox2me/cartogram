@@ -70,13 +70,14 @@ export default class Path {
             };
         } else if (segments.length == 3) {
             let group = groupObjects.get(`/${ segments[0] }`);
+            let threeScene = this.scene.threeScenes[group.layer];
             let actor = group.actors[segments[1]];
 
             let shape = _.find(actor.definition.shapes, { name: segments[2] });
 
             return {
                 ...shape,
-                threeMesh: _.find(this.scene.threeScenes.default.children, { builderType: shape.type }),
+                threeMesh: _.find(threeScene.children, { builderType: shape.type }),
             };
         }
 

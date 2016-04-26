@@ -3,6 +3,9 @@ import { List, Map } from 'immutable';
 import createReducer from 'utils/create_reducer';
 import { degToRad } from 'utils/math';
 
+import { Scene } from 'three';
+
+
 const initialState = Map({
     cameraController: undefined,
 
@@ -12,6 +15,9 @@ const initialState = Map({
 
     layers: Map({
         default: 0
+    }),
+    sceneLayers: Map({
+        default: new Scene(),
     }),
 
     actors: Map({}),
@@ -70,10 +76,21 @@ const handlers = {
 
     'REGISTER_LAYERS': (state, action) => {
         let layers = state.get('layers');
+        let sceneLayers = state.get('sceneLayers');
+        const sceneLayerKeys = Object.keys(sceneLayers.toObject());
 
         layers = layers.merge(action.layers);
 
-        return state.set('layers', layers);
+        let scenes = {};
+        Object.keys(action.layers).forEach((layer) => {
+            if (sceneLayerKeys.indexOf(layer) == -1) {
+                scenes[layer] = new Scene();
+            }
+        });
+        sceneLayers = sceneLayers.merge(scenes);
+
+        state = state.set('layers', layers);
+        return state.set('sceneLayers', sceneLayers);
     },
 
     'ADD_ACTOR_OBJECTS': (state, action) => {

@@ -22,10 +22,6 @@ class Scene {
 
         this.eventBus = new EventBus();
 
-        this.threeScenes = {
-            default: new three.Scene(),
-        };
-
         this.camera = new Camera(store, this);
         this.path = new Path(this);
         this.rtree = new RTree();
@@ -68,6 +64,10 @@ class Scene {
                 this._updateMeshes();
             }
         }
+    }
+
+    get threeScenes() {
+        return this.state.get('sceneLayers').toObject();
     }
 
     addCameraController(controller) {
