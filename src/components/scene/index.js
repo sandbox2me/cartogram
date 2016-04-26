@@ -5,6 +5,7 @@ import { scene as sceneActions, camera as cameraActions } from '../../actions';
 import Camera from './camera';
 import EventBinder from './events';
 import EventBus from './event_bus';
+import Path from './path';
 import RTree from './rtree';
 
 import { Actor, Group } from 'components';
@@ -23,6 +24,7 @@ class Scene {
 
         this.threeScene = new three.Scene();
         this.camera = new Camera(store, this);
+        this.path = new Path(this);
         this.rtree = new RTree();
         this.typedTrees = {};
         this.builders = {};
@@ -226,9 +228,9 @@ class Scene {
                 this.builders[properties.type].updateAttributesAtIndex(shape.index);
             }
 
-
             if (type === 'actor') {
                 let { actor } = change;
+
                 if (action === 'destroy') {
                     console.error('Actors without a group are no longer supported');
                     // destroyedActors.push(actor);
