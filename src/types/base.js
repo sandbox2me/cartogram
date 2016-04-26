@@ -2,9 +2,15 @@ import { degToRad } from 'utils/math';
 
 class BaseType {
     constructor(shape, actor) {
+        this._checkType(shape);
+
         this.actor = actor;
         this.shape = shape;
         this._index = -1;
+    }
+
+    _checkType(shape) {
+        throw new Error('_checkType has not been implemented');
     }
 
     update(properties) {

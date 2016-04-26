@@ -4,13 +4,14 @@ import BaseType from './base';
 
 class Text extends BaseType {
     constructor(shape, actor) {
+        super(shape, actor);
+        this.calculate();
+    }
+
+    _checkType(shape) {
         if (shape.type !== 'Text') {
             throw new Error(`Type mismatch, expected 'Rectangle' got '${ shape.type }'`);
         }
-
-        super(shape, actor);
-
-        this.calculate();
     }
 
     calculate() {

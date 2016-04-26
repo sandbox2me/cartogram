@@ -11,12 +11,10 @@ import {
 const axisAlignedAngles = [0, 90, 180, 270, 360];
 
 class Rectangle extends BaseType {
-    constructor(shape, actor) {
+    _checkType(shape) {
         if (shape.type !== 'Rectangle') {
             throw new Error(`Type mismatch, expected 'Rectangle' got '${ shape.type }'`);
         }
-
-        super(shape, actor);
     }
 
     get size() {

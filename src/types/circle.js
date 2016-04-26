@@ -1,12 +1,10 @@
 import BaseType from './base';
 
 class Circle extends BaseType {
-    constructor(shape, actor) {
+    _checkType(shape) {
         if (shape.type !== 'Circle') {
             throw new Error(`Type mismatch, expected 'Circle' got '${ shape.type }'`);
         }
-
-        super(shape, actor);
     }
 
     get size() {

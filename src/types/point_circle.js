@@ -1,12 +1,10 @@
 import BaseType from './base';
 
 class PointCircle extends BaseType {
-    constructor(shape, actor) {
+    _checkType(shape) {
         if (shape.type !== 'PointCircle') {
             throw new Error(`Type mismatch, expected 'PointCircle' got '${ shape.type }'`);
         }
-
-        super(shape, actor);
     }
 
     get size() {
