@@ -132,7 +132,7 @@ class Rectangle {
         this.shapes.forEach((shapeTypeInstance, i) => {
             if (shapeTypeInstance.index !== i) {
                 shapeTypeInstance.setIndex(i);
-                this.updateAttributesAtIndex(i);                
+                this.updateAttributesAtIndex(i);
             }
         });
     }
@@ -182,7 +182,7 @@ class Rectangle {
         return 'Rectangle';
     }
 
-    get drawPriority() {
+    get renderOrder() {
         return 0;
     }
 
@@ -191,7 +191,8 @@ class Rectangle {
             this._mesh = new Mesh(this.geometry, this.material);
             this._mesh.frustumCulled = false;
             this._mesh.builderType = this.builderType;
-            this._mesh.position.z += this.drawPriority;
+            this._mesh.depthTest = false;
+            this._mesh.renderOrder = this.renderOrder;
         }
 
         if (!this._mesh) {

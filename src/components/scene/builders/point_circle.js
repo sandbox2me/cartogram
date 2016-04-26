@@ -65,8 +65,8 @@ class PointCircle extends Rectangle {
         return 'PointCircle';
     }
 
-    get drawPriority() {
-        return 0.01;
+    get renderOrder() {
+        return 1;
     }
 }
 

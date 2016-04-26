@@ -116,7 +116,7 @@ class Font extends Rectangle {
 
             if (shapeTypeInstance.index !== index) {
                 shapeTypeInstance.setIndex(index);
-                this.updateAttributesAtIndex(index);                
+                this.updateAttributesAtIndex(index);
             }
         });
     }
@@ -175,15 +175,15 @@ class Font extends Rectangle {
         return `Text:${ this.font.name }`;
     }
 
-    get drawPriority() {
-        return 0.05;
+    get renderOrder() {
+        return 2;
     }
 
     get mesh() {
         let mesh = super.mesh;
 
         if (!mesh.length) {
-            return  [undefined];
+            return [undefined];
         }
 
         return mesh;
