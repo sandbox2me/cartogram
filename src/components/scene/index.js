@@ -22,7 +22,10 @@ class Scene {
 
         this.eventBus = new EventBus();
 
-        this.threeScene = new three.Scene();
+        this.threeScenes = {
+            default: new three.Scene(),
+        };
+
         this.camera = new Camera(store, this);
         this.path = new Path(this);
         this.rtree = new RTree();
@@ -197,10 +200,15 @@ class Scene {
         this._update(userCallback);
 
         if (this._needsRepaint) {
-            renderer.render(
-                this.threeScene,
-                this.camera.camera
-            );
+            renderer.clear();
+
+            _.forEach(this.threeScenes, (scene) => {
+                if (scene.children.length) {
+                    renderer.render(scene, this.camera.camera);
+                    renderer.clearDepth();
+                }
+            });
+
             this._needsRepaint = false;
         }
     }
@@ -249,6 +257,7 @@ class Scene {
 
             if (type === 'group') {
                 let { group } = change;
+
                 if (action === 'destroy') {
                     destroyedGroups.push(group);
                 } else if (action === 'create') {
@@ -263,6 +272,9 @@ class Scene {
                         removedActors[group.path] = { group, actors: [] };
                     }
                     removedActors[group.path].actors.push(change.actor);
+                } else if (action === 'changeLayer') {
+                    // Here we extract the group from its present mesh and move it to a layer specific mesh
+                    // Allowing for nicer layering visuals with transparencies
                 } else if (action === 'toTop') {
                     let typesIndexes = {};
 
@@ -557,6 +569,7 @@ class Scene {
     _generateMeshes() {
         let meshes = [];
         let removedMeshes = [];
+        let scene = this.threeScenes.default;
 
         _.forEach(this.builders, (builder, type) => {
             if (builder === DELETED_BUILDER) {
@@ -569,9 +582,9 @@ class Scene {
 
         if (removedMeshes.length) {
             removedMeshes.forEach((builderType) => {
-                let index = _.findIndex(this.threeScene.children, { builderType });
+                let index = _.findIndex(scene.children, { builderType });
 
-                this.threeScene.remove(this.threeScene.children[index]);
+                scene.remove(scene.children[index]);
             });
         }
 
@@ -579,12 +592,12 @@ class Scene {
             console.log(`Building ${ meshes.length } meshes`);
 
             meshes.forEach((mesh) => {
-                let index = _.findIndex(this.threeScene.children, { builderType: mesh.builderType });
+                let index = _.findIndex(scene.children, { builderType: mesh.builderType });
 
                 if (index > -1) {
-                    this.threeScene.children[index] = mesh;
+                    scene.children[index] = mesh;
                 } else {
-                    this.threeScene.add(mesh);
+                    scene.add(mesh);
                 }
             });
         }

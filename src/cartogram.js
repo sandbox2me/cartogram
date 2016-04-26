@@ -45,6 +45,7 @@ class Cartogram {
         this.renderer.setClearColor((new three.Color(this.options.backgroundColor)).getHex());
         this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.sortObjects = true;
+        this.renderer.autoClear = false;
 
         this.el.appendChild(this.renderer.domElement);
 

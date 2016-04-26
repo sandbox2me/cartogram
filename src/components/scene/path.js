@@ -76,7 +76,7 @@ export default class Path {
 
             return {
                 ...shape,
-                threeMesh: _.find(this.scene.threeScene.children, { builderType: shape.type }),
+                threeMesh: _.find(this.scene.threeScenes.default.children, { builderType: shape.type }),
             };
         }
 
