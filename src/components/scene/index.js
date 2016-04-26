@@ -213,6 +213,13 @@ class Scene {
         }
     }
 
+    buildersForLayer(layer) {
+        if (!this.builders[layer]) {
+            this.builders[layer] = {};
+        }
+        return this.builders[layer];
+    }
+
     _updateMeshes() {
         let pendingChanges = this.state.get('pendingUpdates');
         let hasActorChanges = false;
@@ -222,6 +229,8 @@ class Scene {
         let newGroups = [];
         let insertedActors = {};
         let removedActors = {};
+
+        let layer = 'default';
 
         pendingChanges.forEach((change) => {
             let { type, action } = change;
@@ -233,7 +242,7 @@ class Scene {
                 let shape = actor.children[properties.name];
                 actor.updateChild(properties);
 
-                this.builders[properties.type].updateAttributesAtIndex(shape.index);
+                this.buildersForLayer(layer)[properties.type].updateAttributesAtIndex(shape.index);
             }
 
             if (type === 'actor') {
@@ -243,13 +252,15 @@ class Scene {
                     console.error('Actors without a group are no longer supported');
                     // destroyedActors.push(actor);
                 } else {
+                    // let layer = actor.group.layer;
+
                     _.values(actor.children).forEach((shapeTypeInstance) => {
                         if (shapeTypeInstance.shape.type === 'Text' && shapeTypeInstance.hasChangedString()) {
                             // Text objects need to recalulate chunks and sizing when the string changes
                             hasActorChanges = true;
                             hasDestructiveAction = true;
                         }
-                        this.builders[shapeTypeInstance.shape.type].updateAttributesAtIndex(shapeTypeInstance.index);
+                        this.buildersForLayer(layer)[shapeTypeInstance.shape.type].updateAttributesAtIndex(shapeTypeInstance.index);
                     });
                 }
                 hasActorChanges = true;
@@ -290,8 +301,8 @@ class Scene {
                     });
 
                     _.forEach(typesIndexes, (indexes, type) => {
-                        this.builders[type].shapesToTop(indexes);
-                        this.builders[type].reindex();
+                        this.buildersForLayer(layer)[type].shapesToTop(indexes);
+                        this.buildersForLayer(layer)[type].reindex();
                     });
 
                     hasActorChanges = true;
@@ -304,7 +315,7 @@ class Scene {
                                 hasActorChanges = true;
                                 hasDestructiveAction = true;
                             }
-                            this.builders[shapeTypeInstance.shape.type].updateAttributesAtIndex(shapeTypeInstance.index);
+                            this.buildersForLayer(layer)[shapeTypeInstance.shape.type].updateAttributesAtIndex(shapeTypeInstance.index);
                         });
                         hasActorChanges = true;
                     });
@@ -363,10 +374,13 @@ class Scene {
     _removeObjects(groups=[], actors=[]) {
         let removedGroupObjects = [];
         let removedTypes = {};
+        let layer = 'default';
 
         actors.forEach((actorObject) => {
             this.groupAtPath(actorObject.path).removeActorObject(actorObject);
-            _.forEach(actorObject.types, (shapeList, type) => {
+            _.forEach(actorObject.types, (shapeList, shapeType) => {
+                let type = `${ layer }:${ shapeType }`;
+
                 if (!removedTypes[type]) {
                     removedTypes[type] = [];
                 }
@@ -384,7 +398,9 @@ class Scene {
             definition.actors.forEach((actor) => {
                 let actorObject = groupObject.actors[actor.name];
                 if (actorObject === undefined) debugger;
-                _.forEach(actorObject.types, (shapeList, type) => {
+                _.forEach(actorObject.types, (shapeList, shapeType) => {
+                    let type = `${ layer }:${ shapeType }`;
+
                     if (!removedTypes[type]) {
                         removedTypes[type] = [];
                     }
@@ -394,8 +410,9 @@ class Scene {
             });
         });
 
-        _.forEach(removedTypes, (shapes, type) => {
-            let builder = this.builders[type];
+        _.forEach(removedTypes, (shapes, layerType) => {
+            let [layer, type] = layerType.split(':');
+            let builder = this.buildersForLayer(layer)[type];
 
             builder.removeShapes(shapes, this.state);
 
@@ -405,9 +422,10 @@ class Scene {
                 // This might get recreated during an add, that's cool.
                 if (type === 'Text') {
                     // Mark specific fonts as deleted
-                    this.builders = Object.assign({}, this.builders, builder.removedMeshes);
+                    let builders = this.buildersForLayer(layer);
+                    this.builders[layer] = Object.assign({}, this.buildersForLayer(layer), builder.removedMeshes);
                 } else {
-                    this.builders[type] = DELETED_BUILDER;
+                    this.buildersForLayer(layer)[type] = DELETED_BUILDER;
                 }
             }
         });
@@ -422,6 +440,7 @@ class Scene {
         let actorObjects = {};
         let groupObjects = {};
         let types = {};
+        let layer = 'default';
 
         groups.forEach((group) => {
             let name = group.name;
@@ -441,7 +460,9 @@ class Scene {
                 actorObjectList.push(actorObject);
                 groupObject.addActorObject(actorObject);
 
-                _.forEach(actorObject.types, (shapeList, type) => {
+                _.forEach(actorObject.types, (shapeList, layerType) => {
+                    let type = `${ layer }:${ layerType }`;
+
                     if (!types[type]) {
                         types[type] = [];
                     }
@@ -457,13 +478,14 @@ class Scene {
         }
 
         // let meshes = [];
-        _.forEach(types, (shapes, type) => {
+        _.forEach(types, (shapes, layerType) => {
             // Use type class to create the appropriate shapes
-            let builder = this.builders[type];
+            let [layer, type] = layerType.split(':');
+            let builder = this.buildersForLayer(layer)[type];
 
             if (!builder || builder === DELETED_BUILDER) {
                 builder = new Builders[type](shapes, this.typedTrees[type], this.state);
-                this.builders[type] = builder;
+                this.buildersForLayer(layer)[type] = builder;
             } else {
                 builder.addShapes(shapes, this.state);
             }
@@ -484,6 +506,7 @@ class Scene {
         let groupObject = this.state.get('groupObjects').get(group.path);
         let actorObjectList = [];
         let types = {};
+        let layer = 'default';
 
         actors.forEach((actor) => {
             let actorObject = new Actor(actor, groupObject);
@@ -491,7 +514,9 @@ class Scene {
             actorObjectList.push(actorObject);
             groupObject.addActorObject(actorObject);
 
-            _.forEach(actorObject.types, (shapeList, type) => {
+            _.forEach(actorObject.types, (shapeList, layerType) => {
+                let type = `${ layer }:${ layerType }`;
+
                 if (!types[type]) {
                     types[type] = [];
                 }
@@ -509,13 +534,14 @@ class Scene {
             this._needsRepaint = true;
         }
 
-        _.forEach(types, (shapes, type) => {
+        _.forEach(types, (shapes, layerType) => {
             // Use type class to create the appropriate shapes
-            let builder = this.builders[type];
+            let [layer, type] = layerType.split(':');
+            let builder = this.buildersForLayer(layer)[type];
 
             if (!builder || builder === DELETED_BUILDER) {
-                builder = new Builders[type](shapes, this.typedTrees[type], this.state);
-                this.builders[type] = builder;
+                builder = new Builders[layers][type](shapes, this.typedTrees[type], this.state);
+                this.builders[layers][type] = builder;
             } else {
                 builder.addShapes(shapes, this.state);
             }
@@ -526,12 +552,15 @@ class Scene {
         let groupObject = this.state.get('groupObjects').get(group.path);
         let actorObjectList = [];
         let removedTypes = {};
+        let layer = 'default';
 
         actors.forEach((actor) => {
             let actorObject = groupObject.actors[actor.name];
             groupObject.removeActorObject(actorObject);
 
-            _.forEach(actorObject.types, (shapeList, type) => {
+            _.forEach(actorObject.types, (shapeList, layerType) => {
+                let type = `${ layer }:${ layerType }`;
+
                 if (!removedTypes[type]) {
                     removedTypes[type] = [];
                 }
@@ -547,8 +576,9 @@ class Scene {
             this._needsRepaint = true;
         }
 
-        _.forEach(removedTypes, (shapes, type) => {
-            let builder = this.builders[type];
+        _.forEach(removedTypes, (shapes, layerType) => {
+            let [layer, type] = layerType.split(':');
+            let builder = this.buildersForLayer(layer)[type];
 
             builder.removeShapes(shapes, this.state);
 
@@ -558,49 +588,53 @@ class Scene {
                 // This might get recreated during an add, that's cool.
                 if (type === 'Text') {
                     // Mark specific fonts as deleted
-                    this.builders = Object.assign({}, this.builders, builder.removedMeshes);
+                    let builders = this.buildersForLayer(layer);
+                    this.builders[layer] = Object.assign({}, this.buildersForLayer(layer), builder.removedMeshes);
                 } else {
-                    this.builders[type] = DELETED_BUILDER;
+                    this.buildersForLayer(layer)[type] = DELETED_BUILDER;
                 }
             }
         });
     }
 
     _generateMeshes() {
-        let meshes = [];
-        let removedMeshes = [];
-        let scene = this.threeScenes.default;
+        _.forEach(this.builders, (builders, layer) => {
+            let meshes = [];
+            let removedMeshes = [];
+            let scene = this.threeScenes[layer];
 
-        _.forEach(this.builders, (builder, type) => {
-            if (builder === DELETED_BUILDER) {
-                delete this.builders[type];
-                removedMeshes.push(type);
-            } else {
-                meshes.push(...builder.mesh);
+            _.forEach(builders, (builder, type) => {
+                if (builder === DELETED_BUILDER) {
+                    delete builders[type];
+                    removedMeshes.push(type);
+                } else {
+                    meshes.push(...builder.mesh);
+                }
+            });
+
+            if (removedMeshes.length) {
+                removedMeshes.forEach((builderType) => {
+                    let index = _.findIndex(scene.children, { builderType });
+
+                    scene.remove(scene.children[index]);
+                });
+            }
+
+            if (meshes.length) {
+                console.log(`Building ${ meshes.length } meshes`);
+
+                meshes.forEach((mesh) => {
+                    let index = _.findIndex(scene.children, { builderType: mesh.builderType });
+
+                    if (index > -1) {
+                        scene.children[index] = mesh;
+                    } else {
+                        scene.add(mesh);
+                    }
+                });
             }
         });
 
-        if (removedMeshes.length) {
-            removedMeshes.forEach((builderType) => {
-                let index = _.findIndex(scene.children, { builderType });
-
-                scene.remove(scene.children[index]);
-            });
-        }
-
-        if (meshes.length) {
-            console.log(`Building ${ meshes.length } meshes`);
-
-            meshes.forEach((mesh) => {
-                let index = _.findIndex(scene.children, { builderType: mesh.builderType });
-
-                if (index > -1) {
-                    scene.children[index] = mesh;
-                } else {
-                    scene.add(mesh);
-                }
-            });
-        }
     }
 
     worldToScreenPositionVector(position) {
