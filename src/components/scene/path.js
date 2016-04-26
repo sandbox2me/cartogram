@@ -72,7 +72,12 @@ export default class Path {
             let group = groupObjects.get(`/${ segments[0] }`);
             let actor = group.actors[segments[1]];
 
-            return _.find(actor.definition.shapes, { name: segments[2] });
+            let shape = _.find(actor.definition.shapes, { name: segments[2] });
+
+            return {
+                ...shape,
+                threeMesh: _.find(this.scene.threeScene.children, { builderType: shape.type }),
+            };
         }
 
         return {};
