@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { List, Map } from 'immutable';
+import { List, Map, OrderedMap } from 'immutable';
 import createReducer from 'utils/create_reducer';
 import { degToRad } from 'utils/math';
 
@@ -13,10 +13,10 @@ const initialState = Map({
 
     pendingUpdates: List([]),
 
-    layers: Map({
+    layers: OrderedMap({
         default: 0
     }),
-    sceneLayers: Map({
+    sceneLayers: OrderedMap({
         default: new Scene(),
     }),
 
