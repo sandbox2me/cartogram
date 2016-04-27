@@ -89,6 +89,10 @@ class Group {
         return this.definition.angle;
     }
 
+    get layer() {
+        return this.definition.layer || 'default';
+    }
+
     addActor(actor) {
         actor = _.cloneDeep(actor);
 
@@ -199,7 +203,7 @@ class Group {
         this.scene.pushChange({
             type: 'group',
             group: this,
-            action: 'update',
+            action: 'changeLayer',
             data: {
                 layer
             }

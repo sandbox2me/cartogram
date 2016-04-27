@@ -81,24 +81,33 @@ class Text {
         });
     }
 
+    yankShapes(fontIndexes) {
+        let groupedByFont = {};
+
+        fontIndexes.forEach((fontIndex) => {
+            let [fontName, index] = fontIndex.split(':');
+
+            if (!groupedByFont[fontName]) {
+                groupedByFont[fontName] = [];
+            }
+            groupedByFont[fontName].push(Number(index));
+        });
+
+        let shapes = _.reduce(
+            groupedByFont,
+            (shapes, indexes, fontName) => shapes.concat(this._fontCache[fontName].yankShapes(indexes)),
+            []
+        );
+
+        return shapes;
+    }
+
     get mesh() {
         let meshes = [];
 
         _.forEach(this._fontCache, (font) => meshes.push(...font.mesh));
 
         return _.compact(meshes);
-    }
-
-    get removedMeshes() {
-        let meshes = {};
-
-        _.forEach(this._fontCache, (font) => {
-            if (!_.compact(font.mesh).length) {
-                meshes[font.builderType] = -1;
-            }
-        });
-
-        return meshes;
     }
 }
 

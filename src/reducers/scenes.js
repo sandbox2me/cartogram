@@ -167,6 +167,9 @@ const handlers = {
                     groups = groups.set(group.name, mergeMissing(group, defaultGroupDefinition));
                 } else if (change.action === 'destroy') {
                     groups = groups.delete(group.name);
+                } else if (change.action === 'changeLayer') {
+                    change.data.prevLayer = group.layer;
+                    basicMerge(group.definition, data);
                 } else if (change.action === 'update') {
                     basicMerge(group.definition, data);
                 }

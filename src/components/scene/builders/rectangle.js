@@ -17,7 +17,6 @@ class Rectangle {
         this.sceneState = sceneState;
         this.shapes = shapes;
 
-
         this.initializeGeometry();
     }
 
@@ -97,7 +96,7 @@ class Rectangle {
         this.geometry.attributes.angle.needsUpdate = true;
     }
 
-    shapesToTop(indexes) {
+    _groupIndexes(indexes) {
         let indexGroups = [[]];
         let currentGroup = 0;
 
@@ -118,6 +117,12 @@ class Rectangle {
                 }
             });
         }
+
+        return indexGroups;
+    }
+
+    shapesToTop(indexes) {
+        let indexGroups = this._groupIndexes(indexes);
 
         // Extract all the groups of shapes and push them onto the end
         this.shapes = indexGroups.map(
@@ -156,6 +161,28 @@ class Rectangle {
             this.initializeGeometry();
         }
         this._mesh = undefined;
+    }
+
+    yankShapes(indexes) {
+        // This is like removeShapes except we only have the indexes
+        let indexGroups = this._groupIndexes(indexes);
+
+        this._mesh = undefined;
+
+        let shapes = indexGroups.map(
+            (group) => this.shapes.splice(group[0], group.length)
+        ).reduce(
+            (shapes, instanceGroup) => shapes.concat(instanceGroup),
+            []
+        );
+
+        this.reindex();
+
+        if (this.shapes.length) {
+            this.initializeGeometry();
+        }
+
+        return shapes;
     }
 
     get vertexShader() {

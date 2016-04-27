@@ -46,7 +46,7 @@ class Actor {
         let position = {
             x: this._position.x + this.group.position.x,
             y: this._position.y + this.group.position.y,
-            z: this.scene.getLayerValue(this._layer) + this._groupObject.position.z
+            z: this.scene.getLayerValue(this.layer) + this._groupObject.position.z
         };
 
         if (this.group.angle) {
@@ -78,6 +78,10 @@ class Actor {
             return this._angle + this.group.angle;
         }
         return 0;
+    }
+
+    get layer() {
+        return this.definition.layer || 'default';
     }
 
     checkHitMask(position) {
