@@ -58,6 +58,10 @@ class Scene {
 
     stateDidChange(oldState) {
         // Iterate pending changes
+        if (oldState && oldState.get('core').get('size') !== this.state.get('core').get('size')) {
+            this.trigger('screen:resized');
+        }
+
         if (!oldState || this.state.get('pendingUpdates') !== oldState.get('pendingUpdates')) {
             if (this.state.get('pendingUpdates').size) {
                 console.log(`processing ${ this.state.get('pendingUpdates').size } updates...`);
