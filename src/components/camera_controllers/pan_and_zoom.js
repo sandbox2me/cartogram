@@ -161,6 +161,8 @@ export default class PanAndZoomCameraController {
             return;
         }
 
+        this._target = this.threeCamera.position.clone();
+        this._target.z = 0;
         this._eye.subVectors(this.threeCamera.position, this._target);
 
         this.doZoom();
