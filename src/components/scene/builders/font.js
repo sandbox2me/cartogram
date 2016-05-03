@@ -33,17 +33,20 @@ class Font extends Rectangle {
         this.offsets = new InstancedBufferAttribute(new Float32Array(this.objectCount * 3), 3);
         this.colors = new InstancedBufferAttribute(new Float32Array(this.objectCount * 4), 4);
         this.texOffsets = new InstancedBufferAttribute(new Float32Array(this.objectCount * 4), 4);
+        this.angles = new InstancedBufferAttribute(new Float32Array(this.objectCount), 1);
 
         let index = 0;
         this.shapes.forEach((shapeTypeInstance, shapeIndex) => {
-            let { position, shapeBBox, fontSize, fill } = shapeTypeInstance;
+            let { position, shapeBBox, fontSize, fill, angle } = shapeTypeInstance;
 
             if (shapeTypeInstance.chunks.length) {
                 // debugger;
             }
 
-            shapeTypeInstance.chunks.forEach((chunk) => {
+            shapeTypeInstance.chunks.forEach((chunk, i) => {
                 chunk.renderIndex = index;
+
+                let chunkPosition = shapeTypeInstance.positionForChunk(i);
 
                 // Resize character
                 this.scales.setXY(index, chunk.width, chunk.height);
@@ -52,13 +55,17 @@ class Font extends Rectangle {
                 this.fontSizes.setX(index, fontSize);
 
                 // Position character
-                this.offsets.setXYZ(index, position.x - (shapeBBox.width / 2) + chunk.x, position.y + (shapeBBox.height / 2) + chunk.y, position.z);
+                // this.offsets.setXYZ(index, position.x - (shapeBBox.width / 2) + chunk.x, position.y + (shapeBBox.height / 2) + chunk.y, position.z);
+                this.offsets.setXYZ(index, chunkPosition.x, chunkPosition.y, position.z);
 
                 // Color character
                 this.colors.setXYZW(index, fill.r, fill.g, fill.b, (fill.a === undefined ? 1.0 : fill.a));
 
                 // Character texture UV offsets
                 this.texOffsets.setXYZW(index, chunk.uv.x, chunk.uv.y, chunk.uv.width, chunk.uv.height);
+
+                // Individual character angle
+                this.angles.setX(index, angle);
 
                 index++;
             });
@@ -71,15 +78,17 @@ class Font extends Rectangle {
         this.geometry.addAttribute('offset', this.offsets);
         this.geometry.addAttribute('color', this.colors);
         this.geometry.addAttribute('texOffset', this.texOffsets);
+        this.geometry.addAttribute('angle', this.angles);
     }
 
     updateAttributesAtIndex(fullIndex) {
         let index = fullIndex.split(':')[1];
         let shapeTypeInstance = this.shapes[index];
-        let { position, shapeBBox, fontSize, fill } = shapeTypeInstance;
+        let { position, shapeBBox, fontSize, fill, angle } = shapeTypeInstance;
 
-        shapeTypeInstance.chunks.forEach((chunk) => {
+        shapeTypeInstance.chunks.forEach((chunk, i) => {
             let chunkIndex = chunk.renderIndex;
+            let chunkPosition = shapeTypeInstance.positionForChunk(i);
 
             // Resize character
             this.scales.setXY(chunkIndex, chunk.width, chunk.height);
@@ -88,13 +97,17 @@ class Font extends Rectangle {
             this.fontSizes.setX(chunkIndex, fontSize);
 
             // Position character
-            this.offsets.setXYZ(chunkIndex, position.x - (shapeBBox.width / 2) + chunk.x, position.y + (shapeBBox.height / 2) + chunk.y, position.z);
+            // this.offsets.setXYZ(chunkIndex, position.x - (shapeBBox.width / 2) + chunk.x, position.y + (shapeBBox.height / 2) + chunk.y, position.z);
+            this.offsets.setXYZ(chunkIndex, chunkPosition.x, chunkPosition.y, position.z);
 
             // Color character
             this.colors.setXYZW(chunkIndex, fill.r, fill.g, fill.b, (fill.a === undefined ? 1.0 : fill.a));
 
             // Character texture UV offsets
             this.texOffsets.setXYZW(chunkIndex, chunk.uv.x, chunk.uv.y, chunk.uv.width, chunk.uv.height);
+
+            // Individual character angle
+            this.angles.setX(chunkIndex, angle);
         });
 
         this.geometry.attributes.scale.needsUpdate = true;
@@ -102,6 +115,7 @@ class Font extends Rectangle {
         this.geometry.attributes.offset.needsUpdate = true;
         this.geometry.attributes.color.needsUpdate = true;
         this.geometry.attributes.texOffset.needsUpdate = true;
+        this.geometry.attributes.angle.needsUpdate = true;
 
         if (this.material.uniforms.uSampler.value.uuid !== this.font.texture.uuid) {
             // Font texture updated, refresh uniform

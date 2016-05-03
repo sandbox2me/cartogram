@@ -1,8 +1,11 @@
 import _ from 'lodash';
 
-import BaseType from './base';
+import Rectangle from './rectangle';
+import {
+    degToRad,
+} from 'utils/math';
 
-class Text extends BaseType {
+class Text extends Rectangle {
     constructor(shape, actor) {
         super(shape, actor);
         this.calculate();
@@ -94,7 +97,7 @@ class Text extends BaseType {
             throw new Error(`Error finding size for string '${ this.string }'`);
         }
 
-        this.size = {
+        this._size = {
             width: maxX - minX,
             height: maxY - minY
         };
@@ -102,6 +105,36 @@ class Text extends BaseType {
 
     hasChangedString() {
         return this._string !== this.get('string');
+    }
+
+    positionForChunk(chunkIndex) {
+        let chunk = this._chunks[chunkIndex];
+        let bbox = this.shapeBBox;
+
+        let chunkOrigin = {
+            x: -(bbox.width / 2),
+            y: (bbox.height / 2),
+        };
+
+        let position = {
+            x: chunkOrigin.x + chunk.x,
+            y: chunkOrigin.y + chunk.y,
+        };
+
+        if (this.angle !== 0) {
+            let angleCos = Math.cos(this.angle);
+            let angleSin = Math.sin(this.angle);
+
+            let { x, y } = position;
+
+            position.x = ((x * angleCos) - (y * angleSin));
+            position.y = ((x * angleSin) + (y * angleCos));
+        }
+
+        position.x += this.position.x;
+        position.y += this.position.y;
+
+        return position;
     }
 
     get fill() {
@@ -125,18 +158,8 @@ class Text extends BaseType {
         return this._chunks;
     }
 
-    get shapeBBox() {
-        if (!this._shapeBBox || !this.actor._bbox) {
-            let { position, size } = this;
-
-            this._shapeBBox = {
-                x: position.x - (size.width / 2),
-                y: position.y - (size.height / 2),
-                width: size.width,
-                height: size.height,
-            };
-        }
-        return this._shapeBBox;
+    get size() {
+        return this._size;
     }
 };
 
