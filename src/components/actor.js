@@ -38,16 +38,20 @@ class Actor {
         return this.definition.position;
     }
 
+    get originPosition() {
+        return {
+            x: this._position.x + this.group.position.x,
+            y: this._position.y + this.group.position.y,
+            z: this.scene.getLayerValue(this.layer) + this._groupObject.position.z
+        };
+    }
+
     get position() {
         if (!this._groupObject) {
             return this._position;
         }
 
-        let position = {
-            x: this._position.x + this.group.position.x,
-            y: this._position.y + this.group.position.y,
-            z: this.scene.getLayerValue(this.layer) + this._groupObject.position.z
-        };
+        let position = this.originPosition;
 
         if (this.group.angle) {
             // Return a value that's been rotated in relation to the group origin
@@ -166,6 +170,7 @@ class Actor {
         }
 
         this._aaBBox = bboxForType('axisAlignedBBox');
+        this._originBBox = bboxForType('originBBox');
         this._bbox = bboxForType('shapeBBox');
     }
 
@@ -176,6 +181,14 @@ class Actor {
         }
 
         return this._aaBBox;
+    }
+
+    get originBBox() {
+        if (!this._originBBox || !this._bbox) {
+            this._generateBBoxes()
+        }
+
+        return this._originBBox;
     }
 
     // Returns the bounding box that fits the actor when rotated

@@ -58,7 +58,16 @@ class Group {
         }
 
         this._aaBBox = bboxForType('axisAlignedBBox');
+        this._originBBox = bboxForType('originBBox');
         this._bbox = bboxForType('bbox');
+    }
+
+    get originBBox() {
+        if (!this._originBBox || !this._bbox) {
+            this._generateBBoxes()
+        }
+
+        return this._originBBox;
     }
 
     get axisAlignedBBox() {

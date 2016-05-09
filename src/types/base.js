@@ -38,14 +38,20 @@ class BaseType {
         return `${ this.actor.path }/${ this.shape.name }`;
     }
 
-    get position() {
-        let actorPosition = this.actor.position;
-
+    _generatePosition(origin) {
         return {
-            x: this.get('position').x + actorPosition.x,
-            y: this.get('position').y + actorPosition.y,
-            z: actorPosition.z,
+            x: this.get('position').x + origin.x,
+            y: this.get('position').y + origin.y,
+            z: origin.z,
         };
+    }
+
+    get originPosition() {
+        return this._generatePosition(this.actor.originPosition);
+    }
+
+    get position() {
+        return this._generatePosition(this.actor.position);
     }
 
     get angle() {
@@ -66,6 +72,10 @@ class BaseType {
     }
 
     get axisAlignedBBox() {
+        return this.shapeBBox;
+    }
+
+    get originBBox() {
         return this.shapeBBox;
     }
 

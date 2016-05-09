@@ -25,20 +25,31 @@ class Rectangle extends BaseType {
         return this.get('fill');
     }
 
+    _bboxFromPosition(position) {
+        let { size } = this;
+
+        return {
+            x: position.x - (size.width / 2),
+            y: position.y - (size.height / 2),
+            x2: position.x + (size.width / 2),
+            y2: position.y + (size.height / 2),
+            width: size.width,
+            height: size.height,
+        };
+    }
+
     get shapeBBox() {
         if (!this._shapeBBox || !this.actor._bbox) {
-            let { position, size } = this;
-
-            this._shapeBBox = {
-                x: position.x - (size.width / 2),
-                y: position.y - (size.height / 2),
-                x2: position.x + (size.width / 2),
-                y2: position.y + (size.height / 2),
-                width: size.width,
-                height: size.height,
-            };
+            this._shapeBBox = this._bboxFromPosition(this.position);
         }
         return this._shapeBBox;
+    }
+
+    get originBBox() {
+        if (!this._originBBox || !this.actor._originBBox) {
+            this._originBBox = this._bboxFromPosition(this.originPosition);
+        }
+        return this._originBBox;
     }
 
     // Generate a bounding box that fits the rotated rectangle
