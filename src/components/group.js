@@ -79,7 +79,7 @@ class Group {
     }
 
     get bbox() {
-        if (!this._aaBBox || !this._bbox) {
+        if (!this._aaBBox || !this._bbox || !this._originBBox) {
             this._generateBBoxes();
         }
 

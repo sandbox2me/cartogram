@@ -46,7 +46,7 @@ class PointCircle extends BaseType {
     }
 
     get originBBox() {
-        if (!this._originBBox || !this.actor._originBBox) {
+        if (!this._originBBox || !this.actor._bbox) {
             this._originBBox = this._bboxFromPosition(this.originPosition);
         }
         return this._originBBox;
