@@ -9,6 +9,12 @@ varying vec2 vUv;
 void main() {
     float inset = 0.01;
     float radius = 0.5; // - inset;
+    float centerX = 0.5;
+    float centerY = 0.5;
+
+    float eHoriz = (vUv.x - centerX) / radius;
+    float eVert = (vUv.y - centerY) / radius;
+    // float distance = (eHoriz * eHoriz) + (eVert * eVert);
     float distance = distance(vUv, vec2(0.5, 0.5));
 
     float afwidth = 0.9 * length(vec2(dFdx(distance), dFdy(distance)));

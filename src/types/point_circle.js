@@ -8,6 +8,10 @@ class PointCircle extends BaseType {
     }
 
     get size() {
+        if (!this.radius) {
+            return this.get('size');
+        }
+
         if (!this._size || this.radius !== this._size.width) {
             this._size = {
                 width: this.radius * 2,
@@ -22,19 +26,14 @@ class PointCircle extends BaseType {
         return this.get('radius');
     }
 
-    get radiusSq() {
-        let radius = this.radius;
-        return radius * radius;
-    }
-
     _bboxFromPosition(position) {
-        let { radius } = this;
+        let { width, height } = this.size;
 
         return {
-            width: radius * 2,
-            height: radius * 2,
-            x: position.x - radius,
-            y: position.y - radius
+            width,
+            height,
+            x: position.x - (width / 2),
+            y: position.y - (height / 2)
         }
     }
 
@@ -70,11 +69,16 @@ class PointCircle extends BaseType {
     }
 
     checkIntersection(position) {
+        let { width, height } = this.size;
         let shapePosition = this.position;
-        let x = (shapePosition.x - position.x);
-        let y = (shapePosition.y - position.y);
 
-        return (x * x) + (y * y) < this.radiusSq;
+        // Ellipse equation
+        let eHoriz = (position.x - shapePosition.x) / width;
+        let eVert = (position.y - shapePosition.y) / height;
+
+        let distance = Math.pow(eHoriz, 2) + Math.pow(eVert, 2);
+
+        return distance < 0.25;
     }
 };
 
