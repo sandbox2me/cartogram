@@ -261,7 +261,13 @@ class Scene {
                             hasActorChanges = true;
                             hasDestructiveAction = true;
                         }
-                        this.buildersForLayer(layer)[shapeTypeInstance.shape.type].updateAttributesAtIndex(shapeTypeInstance.index);
+
+                        let builder = this.buildersForLayer(layer)[shapeTypeInstance.shape.type];
+                        if (builder) {
+                            builder.updateAttributesAtIndex(shapeTypeInstance.index);
+                        } else {
+                            console.warn(`Builder for ${ shapeTypeInstance.shape.type } type on ${ layer } layer not found when trying to update attributes for shape at ${ shapeTypeInstance.index }.`);
+                        }
                     });
                 }
                 hasActorChanges = true;

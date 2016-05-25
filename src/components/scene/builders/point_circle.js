@@ -42,6 +42,12 @@ class PointCircle extends Rectangle {
 
     updateAttributesAtIndex(index) {
         let shapeTypeInstance = this.shapes[index];
+
+        if (!shapeTypeInstance) {
+            console.warn(`PointCircle at index ${index} not found. Returning.`);
+            return;
+        }
+
         let { position, size, fill, stroke, strokeWidth, angle } = shapeTypeInstance;
 
         this.scales.setXY(index, size.width, size.height);

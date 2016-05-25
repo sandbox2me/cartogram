@@ -35,10 +35,13 @@ const defaultGroupDefinition = {
 };
 
 const crudOrdering = {
-    update: 0,
-    destroy: 1,
-    create: 2,
-};
+    changeLayer: 0,
+    update: 1,
+    destroy: 2,
+    create: 3,
+}
+
+const sceneChangesSort = (a, b) => crudOrdering[a.action] - crudOrdering[b.action];
 
 function basicMerge(left, right) {
     _.forEach(right, (v, k) => {
@@ -122,9 +125,7 @@ const handlers = {
         let groups = state.get('groups');
 
         // Ensure order of changes: update -> destroy -> create
-        changes.sort((a, b) => {
-            return crudOrdering[a.action] - crudOrdering[b.action];
-        });
+        changes.sort(sceneChangesSort);
 
         changes.forEach((change) => {
             if (change.type === 'shape') {
@@ -178,7 +179,7 @@ const handlers = {
         });
         state = state.set('groups', groups);
 
-        pendingUpdates = pendingUpdates.push(...updateList);
+        pendingUpdates = pendingUpdates.push(...updateList).sort(sceneChangesSort);
         return state.set('pendingUpdates', pendingUpdates);
     },
 
@@ -207,7 +208,7 @@ const handlers = {
             });
         });
 
-        pendingUpdates = pendingUpdates.push(...updateList);
+        pendingUpdates = pendingUpdates.push(...updateList).sort(sceneChangesSort);
         return state.set('pendingUpdates', pendingUpdates);
     }
 };

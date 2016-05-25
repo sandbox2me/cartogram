@@ -83,6 +83,12 @@ class Rectangle {
     updateAttributesAtIndex(index) {
         let shapeTypeInstance = this.shapes[index];
 
+        if (!shapeTypeInstance) {
+            console.warn(`Rectangle at index ${index} not found. Returning.`);
+            return;
+        }
+
+
         let { position, angle, size, fill } = shapeTypeInstance;
 
         this.scales.setXY(index, size.width, size.height);

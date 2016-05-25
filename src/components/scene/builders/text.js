@@ -13,6 +13,12 @@ class Text {
         let font = this._fontCache[fontName];
         let shapeTypeInstance = font.shapes[splitIndex[1]];
 
+        if (!shapeTypeInstance) {
+            console.warn(`Text at index ${index} not found. Returning.`);
+            return;
+        }
+
+
         if (shapeTypeInstance.hasChangedString()) {
             // Recalculate and re-render the string
             font.removeShapes([shapeTypeInstance], font.sceneState);

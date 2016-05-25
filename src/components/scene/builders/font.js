@@ -84,6 +84,12 @@ class Font extends Rectangle {
     updateAttributesAtIndex(fullIndex) {
         let index = fullIndex.split(':')[1];
         let shapeTypeInstance = this.shapes[index];
+
+        if (!shapeTypeInstance) {
+            console.warn(`Text at index ${fullIndex} not found. Returning.`);
+            return;
+        }
+
         let { position, shapeBBox, fontSize, fill, angle } = shapeTypeInstance;
 
         shapeTypeInstance.chunks.forEach((chunk, i) => {

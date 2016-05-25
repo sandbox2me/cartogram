@@ -85,7 +85,8 @@ class Actor {
     }
 
     get layer() {
-        return this.definition.layer || 'default';
+        // return this.definition.layer || 'default';
+        return this._groupObject.layer;
     }
 
     checkHitMask(position) {
