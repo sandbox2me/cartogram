@@ -55,6 +55,11 @@ class BaseType {
     }
 
     get angle() {
+        if (this.get('rotate') === false) {
+            // Forced rotation off on this shape
+            return 0;
+        }
+
         return degToRad((-1 * this.get('angle') || 0) + this.actor.angle);
     }
 
