@@ -190,6 +190,7 @@ class Scene {
         }
 
         if (this._pendingChanges.length) {
+            console.log(this._pendingChanges);
             this.dispatch(sceneActions.commitChanges(this._pendingChanges));
             this._pendingChanges = [];
         }
@@ -231,6 +232,7 @@ class Scene {
         let newGroups = [];
         let insertedActors = {};
         let removedActors = {};
+        let layerChanges = {};
 
         let layer = 'default';
 
@@ -308,19 +310,13 @@ class Scene {
                         });
                     });
 
-                    _.forEach(typesIndexes, (indexes, type) => {
-                        let shapes = this.buildersForLayer(prevLayer)[type].yankShapes(indexes);
-                        let builder = this.buildersForLayer(layer)[type];
-
-                        console.log(shapes)
-
-                        if (!builder) {
-                            builder = new Builders[type](shapes, this.typedTrees[type], this.state);
-                            this.buildersForLayer(layer)[type] = builder;
-                        } else {
-                            builder.addShapes(shapes, this.state);
-                        }
-                    });
+                    if (!_.isEmpty(typesIndexes)) {
+                        layerChanges = {
+                            layer,
+                            prevLayer,
+                            typesIndexes,
+                        };
+                    }
 
                     hasActorChanges = true;
                     hasDestructiveAction = true;
@@ -361,6 +357,24 @@ class Scene {
                 }
             }
         });
+
+        if (!_.isEmpty(layerChanges)) {
+            let { typeChanges, prevLayer, layer } = layerChanges;
+
+            _.forEach(typeChanges, (indexes, type) => {
+                let shapes = this.buildersForLayer(prevLayer)[type].yankShapes(indexes);
+                let builder = this.buildersForLayer(layer)[type];
+
+                console.log(shapes)
+
+                if (!builder) {
+                    builder = new Builders[type](shapes, this.typedTrees[type], this.state);
+                    this.buildersForLayer(layer)[type] = builder;
+                } else {
+                    builder.addShapes(shapes, this.state);
+                }
+            });
+        }
 
         if (!_.isEmpty(removedActors)) {
             console.log('Removing actors from groups...');
