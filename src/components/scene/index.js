@@ -233,6 +233,7 @@ class Scene {
         let insertedActors = {};
         let removedActors = {};
         let layerChanges = {};
+        let actorChanges = {};
 
         let layer = 'default';
 
@@ -297,7 +298,7 @@ class Scene {
                     // Here we extract the group from its present mesh and move it to a layer specific mesh
                     // Allowing for nicer layering visuals with transparencies
                     let { layer, prevLayer } = change.data;
-                    let typesIndexes = {};
+                    let { typesIndexes = {} } = layerChanges;
 
                     group.actorList.forEach((actor) => {
                         _.values(actor.children).forEach((shapeTypeInstance) => {
@@ -350,7 +351,11 @@ class Scene {
                                 hasActorChanges = true;
                                 hasDestructiveAction = true;
                             }
-                            this.buildersForLayer(layer)[shapeTypeInstance.shape.type].updateAttributesAtIndex(shapeTypeInstance.index);
+
+                            if (!actorChanges[layer]) {
+                                actorChanges[layer] = [];
+                            }
+                            actorChanges[layer].push(shapeTypeInstance);
                         });
                         hasActorChanges = true;
                     });
@@ -359,13 +364,11 @@ class Scene {
         });
 
         if (!_.isEmpty(layerChanges)) {
-            let { typeChanges, prevLayer, layer } = layerChanges;
+            let { typesIndexes, prevLayer, layer } = layerChanges;
 
-            _.forEach(typeChanges, (indexes, type) => {
+            _.forEach(typesIndexes, (indexes, type) => {
                 let shapes = this.buildersForLayer(prevLayer)[type].yankShapes(indexes);
                 let builder = this.buildersForLayer(layer)[type];
-
-                console.log(shapes)
 
                 if (!builder) {
                     builder = new Builders[type](shapes, this.typedTrees[type], this.state);
@@ -374,6 +377,14 @@ class Scene {
                     builder.addShapes(shapes, this.state);
                 }
             });
+        }
+
+        if (!_.isEmpty(actorChanges)) {
+            _.forEach(actorChanges, function (shapeTypeInstances, layer) {
+                shapeTypeInstances.forEach(function (shapeTypeInstance) {
+                    this.buildersForLayer(layer)[shapeTypeInstance.shape.type].updateAttributesAtIndex(shapeTypeInstance.index);
+                }.bind(this));
+            }, this);
         }
 
         if (!_.isEmpty(removedActors)) {
