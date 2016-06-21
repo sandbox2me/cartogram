@@ -118,7 +118,7 @@ class Rectangle {
                 if (i === 0 || indexes[i - 1] + 1 === index) {
                     indexGroups[currentGroup].push(index);
                 } else {
-                    indexGroups.push([]);
+                    indexGroups.push([index]);
                     currentGroup += 1;
                 }
             });
@@ -175,13 +175,14 @@ class Rectangle {
 
         this._mesh = undefined;
 
-        let shapes = indexGroups.map(
+        let shapes = indexGroups.reverse().map(
             (group) => this.shapes.splice(group[0], group.length)
         ).reduce(
             (shapes, instanceGroup) => shapes.concat(instanceGroup),
             []
         );
 
+        this.shapes = _.compact(this.shapes);
         this.reindex();
 
         if (this.shapes.length) {
