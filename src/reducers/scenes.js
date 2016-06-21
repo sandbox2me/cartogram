@@ -179,6 +179,15 @@ const handlers = {
         });
         state = state.set('groups', groups);
 
+        // Remove changeLayer actions if their group has been removed
+        updateList = updateList.filter((change) => {
+            if (change.action === 'changeLayer' && !groups.get(change.group.name)) {
+                change.group.definition.layer = change.data.prevLayer;
+                return false;
+            }
+            return true;
+        });
+
         pendingUpdates = pendingUpdates.push(...updateList).sort(sceneChangesSort);
         return state.set('pendingUpdates', pendingUpdates);
     },

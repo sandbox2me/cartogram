@@ -364,6 +364,7 @@ class Scene {
         });
 
         if (!_.isEmpty(layerChanges)) {
+            console.log('Updating layers...');
             let { typesIndexes, prevLayer, layer } = layerChanges;
 
             _.forEach(typesIndexes, (indexes, type) => {
@@ -380,6 +381,7 @@ class Scene {
         }
 
         if (!_.isEmpty(actorChanges)) {
+            console.log('Running actor changes')
             _.forEach(actorChanges, function (shapeTypeInstances, layer) {
                 shapeTypeInstances.forEach(function (shapeTypeInstance) {
                     this.buildersForLayer(layer)[shapeTypeInstance.shape.type].updateAttributesAtIndex(shapeTypeInstance.index);
