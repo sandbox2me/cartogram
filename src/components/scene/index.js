@@ -688,10 +688,24 @@ class Scene {
         return camera.position.clone().add(direction.multiplyScalar(distance));
     }
 
-    actorsAtWorldPosition(position) {
-        let intersections = this.rtree.searchPoint(position);
+    actorsAtWorldPosition(position, radius=1) {
+        let intersections;
+
+        if (radius == 1) {
+            intersections = this.rtree.searchPoint(position);
+        } else {
+            intersections = this.rtree.search({
+                x: position.x - radius,
+                y: position.y - radius,
+                x2: position.x + radius,
+                y2: position.y + radius,
+            });
+        }
+
         let actorPaths = intersections.map((intersection) => {
             let actor = intersection[4].actor;
+
+            if (radius !== 1)
 
             if (!actor.hasHitMask || actor.checkHitMask(position)) {
                 return actor.path;
@@ -703,9 +717,20 @@ class Scene {
         return _.compact(actorPaths);
     }
 
-    actorsAtScreenPosition(position) {
+    actorsAtScreenPosition(position, radius=1) {
         let worldPosition = this.screenToWorldPosition(position);
-        return this.actorsAtWorldPosition(worldPosition);
+        return this.actorsAtWorldPosition(worldPosition, radius);
+    }
+
+    groupsAtScreenPosition(position) {
+        let worldPosition = this.screenToWorldPosition(position);
+        let intersections = this.rtree.searchPoint(worldPosition);
+        let groupPaths = intersections.map((intersection) => {
+            let actor = intersection[4].actor;
+            return this.path.groupFromPath(actor.path);
+        });
+
+        return _.compact(groupPaths);
     }
 
     _intersectionsInScreenRegion(bbox) {

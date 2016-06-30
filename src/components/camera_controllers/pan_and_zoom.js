@@ -119,6 +119,7 @@ export default class PanAndZoomCameraController {
         }
 
         this._zoomStart.y += delta * 0.01;
+        console.log(this._zoomStart.y);
     }
 
     doPan() {

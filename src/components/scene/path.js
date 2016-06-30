@@ -16,9 +16,18 @@ export default class Path {
             if (segments.length == 2 || (segments.length == 3 && segments[2] == '')) {
                 let group = groupObjects.get(path);
 
+                if (!group) {
+                    return;
+                }
+
                 paths = Object.keys(group.actors).map(actor => `${ path }/${ actor }`);
             } else if (segments.length == 3 && segments[2] != '') {
                 let group = groupObjects.get(`/${ segments[1] }`);
+
+                if (!group) {
+                    return;
+                }
+
                 paths = Object.keys(group.actors[segments[2]].children).map(child => `${ path }/${ child }`);
             }
         }
@@ -86,5 +95,11 @@ export default class Path {
 
     get(path) {
 
+    }
+
+    groupFromPath(path) {
+        let components = path.split('/');
+
+        return `/${ components[1] }`;
     }
 }
