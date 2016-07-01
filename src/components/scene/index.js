@@ -705,7 +705,9 @@ class Scene {
         let actorPaths = intersections.map((intersection) => {
             let actor = intersection[4].actor;
 
-            if (radius !== 1)
+            if (radius !== 1) {
+                return actor.path;
+            }
 
             if (!actor.hasHitMask || actor.checkHitMask(position)) {
                 return actor.path;
