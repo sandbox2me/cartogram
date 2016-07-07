@@ -14,6 +14,7 @@ export default class TTFont extends Font {
         this.fontface = fontface;
         this.options = options;
         this.isTTF = true;
+        this.isLoaded = true;
 
         this._initializeTexture();
         this._initializeData();

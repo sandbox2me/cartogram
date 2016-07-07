@@ -1,5 +1,6 @@
 precision highp float;
 
+uniform int uLoaded;
 uniform sampler2D uSampler;
 uniform float uMaxZoom;
 uniform float uMaxSmoothing;
@@ -17,6 +18,7 @@ const float cBuffer = 0.5;
 
 void main(void) {
     vec2 uv;
+    float fLoaded = float(uLoaded);
 
     // Calculate sampler coordinate
     uv.x = vTexOffset.x + (vUv.x * vTexOffset.z);
@@ -28,5 +30,5 @@ void main(void) {
     float dist = texture2D(uSampler, uv).a;
     float alpha = smoothstep(cBuffer - gamma, cBuffer + gamma, dist);
 
-    gl_FragColor = vec4(vColor.xyz, alpha);
+    gl_FragColor = vec4(vColor.xyz * fLoaded, alpha * fLoaded);
 }

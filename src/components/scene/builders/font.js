@@ -123,6 +123,11 @@ class Font extends Rectangle {
         this.geometry.attributes.texOffset.needsUpdate = true;
         this.geometry.attributes.angle.needsUpdate = true;
 
+        if (this.material.uniforms.uLoaded.value !== Number(this.font.isLoaded)) {
+            this.material.uniforms.uLoaded.value = Number(this.font.isLoaded);
+            this.material.needsUpdate = true;
+        }
+
         if (this.material.uniforms.uSampler.value.uuid !== this.font.texture.uuid) {
             // Font texture updated, refresh uniform
             this.material.uniforms.uSampler.value = this.font.texture;
@@ -161,6 +166,10 @@ class Font extends Rectangle {
         if (!this._material) {
             this._material = new RawShaderMaterial({
                 uniforms: {
+                    uLoaded: {
+                        type: 'i',
+                        value: Number(this.font.isLoaded)
+                    },
                     uSampler: {
                         type: 't',
                         value: this.font.texture

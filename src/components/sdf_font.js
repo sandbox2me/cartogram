@@ -14,6 +14,7 @@ export default class SDFFont extends Font {
         this.test = definition.test;
         this.metrics = definition.metrics;
         this.texture = new Texture();
+        this.isLoaded = false;
         this._textureURI = texture;
 
         this._loadTexture();
@@ -24,6 +25,7 @@ export default class SDFFont extends Font {
             this._textureURI,
             (texture) => {
                 this.texture = texture;
+                this.isLoaded = true;
 
                 this._dispatch(sceneActions.forceRedraw());
             }
