@@ -298,7 +298,12 @@ class Scene {
                     // Here we extract the group from its present mesh and move it to a layer specific mesh
                     // Allowing for nicer layering visuals with transparencies
                     let { layer, prevLayer } = change.data;
-                    let { typesIndexes = {} } = layerChanges;
+
+                    // previous layer -> new layer
+                    layerChanges[prevLayer] = layerChanges[prevLayer] || {};
+                    layerChanges[prevLayer][layer] = layerChanges[prevLayer][layer] || {};
+
+                    let typesIndexes = layerChanges[prevLayer][layer];
 
                     group.actorList.forEach((actor) => {
                         _.values(actor.children).forEach((shapeTypeInstance) => {
@@ -310,14 +315,6 @@ class Scene {
                             typesIndexes[type].push(shapeTypeInstance.index);
                         });
                     });
-
-                    if (!_.isEmpty(typesIndexes)) {
-                        layerChanges = {
-                            layer,
-                            prevLayer,
-                            typesIndexes,
-                        };
-                    }
 
                     hasActorChanges = true;
                     hasDestructiveAction = true;
@@ -365,18 +362,21 @@ class Scene {
 
         if (!_.isEmpty(layerChanges)) {
             console.log('Updating layers...');
-            let { typesIndexes, prevLayer, layer } = layerChanges;
 
-            _.forEach(typesIndexes, (indexes, type) => {
-                let shapes = this.buildersForLayer(prevLayer)[type].yankShapes(indexes);
-                let builder = this.buildersForLayer(layer)[type];
+            _.forEach(layerChanges, (layers, prevLayer) => {
+                _.forEach(layers, (typesIndexes, layer) => {
+                    _.forEach(typesIndexes, (indexes, type) => {
+                        let shapes = this.buildersForLayer(prevLayer)[type].yankShapes(indexes);
+                        let builder = this.buildersForLayer(layer)[type];
 
-                if (!builder) {
-                    builder = new Builders[type](shapes, this.typedTrees[type], this.state);
-                    this.buildersForLayer(layer)[type] = builder;
-                } else {
-                    builder.addShapes(shapes, this.state);
-                }
+                        if (!builder) {
+                            builder = new Builders[type](shapes, this.typedTrees[type], this.state);
+                            this.buildersForLayer(layer)[type] = builder;
+                        } else {
+                            builder.addShapes(shapes, this.state);
+                        }
+                    });
+                });
             });
         }
 
