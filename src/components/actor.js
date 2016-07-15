@@ -305,6 +305,10 @@ class Actor {
     }
 
     changeLayer(layer) {
+        if (layer === this.layer) {
+            return;
+        }
+
         this.scene.pushChange({
             type: 'actor',
             actor: this,

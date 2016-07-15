@@ -209,6 +209,10 @@ class Group {
     }
 
     changeLayer(layer) {
+        if (layer === this.layer) {
+            return;
+        }
+
         this.scene.pushChange({
             type: 'group',
             group: this,
