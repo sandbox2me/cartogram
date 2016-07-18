@@ -155,11 +155,19 @@ class Camera {
         cameraDistance = ( modelHeight / 2 ) / tan( fovy / 2 )
         */
 
+        let width = x2 - x;
         let height = y2 - y;
 
-        this.camera.position.z = (height / 2) / Math.tan(fov / 2);
+        let axis = height;
+        if (width > height) {
+            axis = width;
+        }
+
+        // XXX The 3 factor is an unknown, need to figure out why it's necessary... 
+        this.camera.position.z = -((axis / 2) / Math.tan(fov / 2)) / 3;
 
         this.updatePosition();
+        this._scene._needsRepaint = true;
     }
 
 };

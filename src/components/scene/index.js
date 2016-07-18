@@ -794,6 +794,16 @@ class Scene {
 
         this.state.get('core').get('canvas').style.cursor = style;
     }
+
+    sceneBBox() {
+        let [x, y, x2, y2] = this.rtree.toJSON().bbox;
+
+        return { x, y, x2, y2 };
+    }
+
+    sceneCenter() {
+        return this.rtree.getCenter();
+    }
 };
 
 export default Scene;

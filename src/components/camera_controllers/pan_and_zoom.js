@@ -119,7 +119,6 @@ export default class PanAndZoomCameraController {
         }
 
         this._zoomStart.y += delta * 0.01;
-        console.log(this._zoomStart.y);
     }
 
     doPan() {
@@ -151,6 +150,7 @@ export default class PanAndZoomCameraController {
             this._zoomStart.copy( this._zoomEnd );
 
             this.threeCamera.position.addVectors(this._target, this._eye);
+            console.log('pan and zoom: ', this.threeCamera.position.z)
             this.threeCamera.lookAt(this._target);
             this.camera.updatePosition();
             this.scene._needsRepaint = true;

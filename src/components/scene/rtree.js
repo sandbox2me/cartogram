@@ -95,7 +95,7 @@ class RTree {
 
         return {
             x: bbox[0] + (size.width / 2),
-            y: -(bbox[1] + (size.height / 2))
+            y: bbox[1] + (size.height / 2)
         };
     }
 };
