@@ -137,6 +137,31 @@ class Camera {
         this._scene._needsRepaint = true;
     }
 
+    zoomToFit({ x, y, x2, y2 }) {
+        let fov = this.camera.fov;
+
+        /*
+        Using the top triangle and what we know about the model height and the vertical field of view of
+        your camera (the angle between the two diagonal lines in your drawing), we can solve the problem
+        using the trig function: tan(angle) = opposite / adjacent; where angle is half of your vertical
+        fov angle (because we divided the space in two with the middle line), opposite is half of the
+        model height (again because the space was divided in two to get right triangles), and adjacent
+        is the distance the camera is from the model.
+
+        So:
+        tan( fovy / 2 ) = ( modelHeight / 2 ) / cameraDistance
+
+        Now solve for cameraDistance:
+        cameraDistance = ( modelHeight / 2 ) / tan( fovy / 2 )
+        */
+
+        let height = y2 - y;
+
+        this.camera.position.z = (height / 2) / Math.tan(fov / 2);
+
+        this.updatePosition();
+    }
+
 };
 
 export default Camera;
