@@ -72,6 +72,39 @@ function fixGroupAngleProperties(group) {
     return group;
 }
 
+function optimizeLayerChanges(updates) {
+    let layerChanges = updates.filter((u) => u.action === 'changeLayer');
+
+    if (layerChanges.size < 2) {
+        return updates;
+    }
+    console.log('Optimizing layer changes', layerChanges)
+    let otherChanges = updates.filterNot((u) => u.action === 'changeLayer');
+    let groupMap = {};
+
+    layerChanges.forEach((c) => {
+        if (!groupMap[c.group.name]) {
+            groupMap[c.group.name] = [];
+        }
+
+        groupMap[c.group.name].push(c);
+    });
+
+    let result = List([])
+    _.forEach(groupMap, (changes, groupName) => {
+        let length = changes.length;
+
+        if (length == 1) {
+            return;
+        }
+        console.log(changes, groupName);
+        changes[0].data.layer = changes[length - 1].data.layer;
+        result = result.push(changes[0]);
+    });
+
+    return result.concat(otherChanges);
+}
+
 const handlers = {
     'ADD_CAMERA_CONTROLLER': (state, action) => {
         return state.set('cameraController', action.controller);
@@ -189,6 +222,7 @@ const handlers = {
         });
 
         pendingUpdates = pendingUpdates.push(...updateList).sort(sceneChangesSort);
+        pendingUpdates = optimizeLayerChanges(pendingUpdates);
         return state.set('pendingUpdates', pendingUpdates);
     },
 

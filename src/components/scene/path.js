@@ -86,6 +86,7 @@ export default class Path {
 
             return {
                 ...shape,
+                actor,
                 threeMesh: _.find(this.scene.threeScenes.default.children, { builderType: shape.type }),
             };
         }
