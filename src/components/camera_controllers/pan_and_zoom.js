@@ -118,7 +118,13 @@ export default class PanAndZoomCameraController {
             delta = e.wheelDelta / 40;
         }
 
-        this._zoomStart.y += delta * 0.01;
+        let velocityMultiplier = 0.01;
+
+        if (navigator.userAgent.indexOf('irefox') > -1) {
+            velocityMultiplier = 0.05;
+        }
+
+        this._zoomStart.y += delta * velocityMultiplier;
     }
 
     doPan() {
