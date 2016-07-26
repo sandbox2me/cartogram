@@ -78,7 +78,7 @@ function optimizeLayerChanges(updates) {
     if (layerChanges.size < 2) {
         return updates;
     }
-    console.log('Optimizing layer changes', layerChanges)
+    console.log('Optimizing layer changes', layerChanges.map((c) => [c.data.layer, c.data.prevLayer, c.group.name]).toArray())
     let otherChanges = updates.filterNot((u) => u.action === 'changeLayer');
     let groupMap = {};
 
@@ -94,11 +94,10 @@ function optimizeLayerChanges(updates) {
     _.forEach(groupMap, (changes, groupName) => {
         let length = changes.length;
 
-        if (length == 1) {
-            return;
+        if (length > 1) {
+            console.log(changes, groupName);
+            changes[0].data.layer = changes[length - 1].data.layer;
         }
-        console.log(changes, groupName);
-        changes[0].data.layer = changes[length - 1].data.layer;
         result = result.push(changes[0]);
     });
 

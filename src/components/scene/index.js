@@ -316,6 +316,8 @@ class Scene {
                         });
                     });
 
+                    layerChanges[prevLayer][layer] = typesIndexes;
+
                     hasActorChanges = true;
                     hasDestructiveAction = true;
                 } else if (action === 'toTop') {
