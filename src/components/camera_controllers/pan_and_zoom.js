@@ -67,7 +67,7 @@ export default class PanAndZoomCameraController {
     @autobind
     _handleMouseDown(e) {
         if (this.button === -1) {
-            this.button = e.button;
+            this.button = e.buttons;
         }
 
         if (this.buttonDefs[this.button] === 'pan') {
@@ -85,6 +85,11 @@ export default class PanAndZoomCameraController {
 
     @autobind
     _handleMouseMove(e) {
+        if (e.buttons === 0) {
+            this._handleMouseUp(e);
+            return;
+        }
+
         if (this.buttonDefs[this.button] === 'pan' && !this._isLocked) {
             this.panEnd.copy(this.getMousePosition(e.pageX, e.pageY));
         }
@@ -96,6 +101,8 @@ export default class PanAndZoomCameraController {
             this._mouseChange = undefined;
             this.panEnd.copy(this.getMousePosition(e.pageX, e.pageY));
         }
+
+        this.button = -1;
 
         this.scene.off('mousemove', this._handleMouseMove);
         this.scene.off('mouseup', this._handleMouseUp);
