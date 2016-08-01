@@ -67,7 +67,7 @@ export default class PanAndZoomCameraController {
     @autobind
     _handleMouseDown(e) {
         if (this.button === -1) {
-            this.button = e.buttons;
+            this.button = e.buttons || e.which;
         }
 
         if (this.buttonDefs[this.button] === 'pan') {
@@ -85,7 +85,7 @@ export default class PanAndZoomCameraController {
 
     @autobind
     _handleMouseMove(e) {
-        if (e.buttons === 0) {
+        if (e.buttons === 0 || e.which === 0) {
             this._handleMouseUp(e);
             return;
         }
