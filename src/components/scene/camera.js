@@ -137,6 +137,19 @@ class Camera {
         this._scene._needsRepaint = true;
     }
 
+    translate({ x, y }) {
+        this.camera.position.x += x;
+        this.camera.position.y += y;
+        this.updatePosition();
+        this._scene._needsRepaint = true;
+    }
+
+    zoomBy(amount) {
+        this.camera.position.z += amount;
+        this.updatePosition();
+        this._scene._needsRepaint = true;
+    }
+
     zoomToFit({ x, y, x2, y2 }) {
         let fov = this.camera.fov;
 
@@ -163,7 +176,7 @@ class Camera {
             axis = width;
         }
 
-        // XXX The 3 factor is an unknown, need to figure out why it's necessary... 
+        // XXX The 3 factor is an unknown, need to figure out why it's necessary...
         this.camera.position.z = -((axis / 2) / Math.tan(fov / 2)) / 3;
 
         this.updatePosition();

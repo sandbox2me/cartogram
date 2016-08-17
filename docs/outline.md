@@ -190,6 +190,8 @@ methods
   getCamera()
   updatePosition(triggerChange=true)
   moveTo(position)
+  translate(position)
+  zoomBy(amount)
   zoomToFit(bbox)
 
 
