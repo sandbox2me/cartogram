@@ -1,5 +1,9 @@
 import computeDistance from './compute_distance';
 
+const RESOLUTION_MULTIPLIER = 100;
+const INDENT_INCREMENT = 0.5;
+
+
 /**
  * generateQuadraticBezierCurve
  * derived from: http://math.stackexchange.com/questions/1360891/find-quadratic-bezier-curve-equation-based-on-its-control-points
@@ -70,9 +74,10 @@ export function generateLinearSpacedQuadraticBezierCurve(
     controlPoint0,
     controlPoint1,
     controlPoint2,
-    steps
+    steps,
+    outputCount,
+    centered=false
 ) {
-    let RESOLUTION_MULTIPLIER = 100;
     let quadraticPoints = generateQuadraticBezierCurve(
         controlPoint0,
         controlPoint1,
@@ -81,21 +86,36 @@ export function generateLinearSpacedQuadraticBezierCurve(
     );
 
     let arcLength = estimateArcLength(quadraticPoints);
-    let segmentLength = arcLength/(steps - 1);
+    let segmentLength = arcLength / (steps - 1);
     let linearCurvePoints = [];
     let nextPointDistance = 0;
     let segmentsFound = 0;
+    let indentSteps = 0;
 
     let previousPoint = quadraticPoints[0];
 
+    if (!outputCount) {
+        outputCount = steps;
+    }
+
+    if (centered) {
+        indentSteps = (steps - outputCount) / 2;
+    }
+
     for (let i = 0; i < quadraticPoints.length; i++) {
-        if (linearCurvePoints.length >= steps) {
+        if (linearCurvePoints.length >= outputCount) {
             break;
         }
 
         if (computeDistance(previousPoint, quadraticPoints[i]) > nextPointDistance) {
-            linearCurvePoints.push(quadraticPoints[i]);
-            segmentsFound += 1;
+            if (indentSteps > 0) {
+                indentSteps -= INDENT_INCREMENT;
+                segmentsFound += INDENT_INCREMENT;
+            } else {
+                linearCurvePoints.push(quadraticPoints[i]);
+                segmentsFound += 1;
+            }
+
             nextPointDistance = Math.min(segmentsFound * segmentLength, arcLength);
         }
     }
