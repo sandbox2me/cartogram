@@ -44,6 +44,8 @@ export default class TTFont extends Font {
         this.canvas.width = TEXTURE_SIZE;
         this.canvas.height = TEXTURE_SIZE;
 
+        window.fontcanvas = this.canvas;
+
         this.texture = this._textureFromCanvas();
 
         this.ctx = this.canvas.getContext('2d');
@@ -53,6 +55,8 @@ export default class TTFont extends Font {
 
         this.ctx.textAlign = 'left';
         this.ctx.textBaseline = 'top';
+
+        window.fontctx = this.ctx;
     }
 
     _textureFromCanvas() {
@@ -82,6 +86,8 @@ export default class TTFont extends Font {
         let font = `${ this.metrics.info.size }px '${ this.fontface}'`;
         let { metrics } = this.metrics.info;
 
+        console.log(font)
+
         this.ctx.font = font;
 
         let width = this.ctx.measureText(character).width;
@@ -103,14 +109,15 @@ export default class TTFont extends Font {
         this.texture.needsUpdate = true;
 
         this.metrics.chars[character] = {
-            width,
-            height,
+            width: width,
+            height: height,
             xoffset: 0,
             yoffset: 0,
             xadvance: width,
             x: this._cacheX,
             y: this._cacheY
         };
+        console.log(this.metrics.chars, this._cacheX, this._cacheY);
 
         this._cacheX += width + SPACER;
     }

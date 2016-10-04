@@ -13,6 +13,7 @@ export default class SDFFont extends Font {
         this.name = name;
         this.test = definition.test;
         this.metrics = definition.metrics;
+        this.fallback = definition.fallback;
         this.texture = new Texture();
         this.isLoaded = false;
         this._textureURI = texture;

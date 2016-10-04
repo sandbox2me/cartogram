@@ -156,8 +156,10 @@ class Font extends Rectangle {
 
     get fragmentShader() {
         if (this.font.isTTF) {
+            console.log(this.font, 'atlas fragment shader plz!')
             return atlasFragmentShader;
         } else {
+            console.log(this.font, 'sdf fragment shader plz!')
             return sdfFragmentShader;
         }
     }

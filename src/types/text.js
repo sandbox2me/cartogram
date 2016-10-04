@@ -23,9 +23,33 @@ class Text extends Rectangle {
     }
 
     calculateChunks() {
-        let font = this.actor.scene.state.get('fonts').get('fonts').get(this.font);
+        let fontName = this.font;
+        let font = this.actor.scene.state.get('fonts').get('fonts').get(fontName);
         let chunks = [];
         let x = 0;
+
+        let originalFont = this.get('originalFont');
+        if (originalFont) {
+            fontName = originalFont;
+            font = this.actor.scene.state.get('fonts').get('fonts').get(originalFont);
+        }
+
+        if (!font.canUseFor(this.string) && font.fallback) {
+            let fallback = font.fallback;
+            console.log(`can't render string '${ this.string }' with '${fontName}' using fallback ${fallback}`)
+            originalFont = fontName;
+
+            font = this.actor.scene.state.get('fonts').get('fonts').get(fallback);
+            this.shape = {...this.shape, font: fallback, originalFont };
+        } else {
+            if (originalFont) {
+                // We've reset back to the original font, away from the fallback
+                this.shape = {...this.shape, font: originalFont, originalFont: undefined };
+                // font =
+                console.log(`returning to original font, '${ originalFont }'`)
+            }
+            console.log(`rendering string '${ this.string }' with '${fontName}'`)
+        }
 
         let textureWidth = font.metrics.common.scaleW;
         let textureHeight = font.metrics.common.scaleH;
@@ -35,9 +59,12 @@ class Text extends Rectangle {
         }
 
         _.each(this.string, (character, index) => {
-            let { width, height, xOffset, yOffset, xAdvance } = font.getDimensionsForSize(character, this.fontSize);
+            let dimensions = font.getDimensionsForSize(character, this.fontSize);
+            let { width, height, xOffset, yOffset, xAdvance } = dimensions;
             let minX = -(width / 2);
             let minY = height / 2;
+
+            yOffset = yOffset || 0;
 
             let charX = x - minX;
             let charY = -minY - yOffset;
@@ -61,6 +88,7 @@ class Text extends Rectangle {
                     height: charTexHeight
                 }
             });
+            console.log(chunks, minY, dimensions, { width, height, xOffset, yOffset, xAdvance }, this.fontSize, charMetrics)
 
             x += xAdvance; // - xOffset;
         });

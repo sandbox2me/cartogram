@@ -13,6 +13,8 @@ class Text {
         let font = this._fontCache[fontName];
         let shapeTypeInstance = font.shapes[splitIndex[1]];
 
+        // debugger
+
         if (!shapeTypeInstance) {
             console.warn(`Text at index ${index} not found. Returning.`);
             return;
@@ -24,7 +26,15 @@ class Text {
             font.removeShapes([shapeTypeInstance], font.sceneState);
 
             shapeTypeInstance.calculate();
-            font.addShapes([shapeTypeInstance], font.sceneState);
+
+
+            // Check if the font changed
+            if (shapeTypeInstance.font !== fontName) {
+                fontName = shapeTypeInstance.font;
+            }
+            this.addShapesToFont(fontName, [shapeTypeInstance], font.sceneState);
+
+            // font.addShapes([shapeTypeInstance], font.sceneState);
         } else {
             font.updateAttributesAtIndex(index);
         }
@@ -67,16 +77,19 @@ class Text {
         return shapeFontMap;
     }
 
+    addShapesToFont(fontName, shapes, sceneState) {
+        if (!(fontName in this._fontCache)) {
+            this._fontCache[fontName] = new Font(shapes, null, sceneState);
+        } else {
+            this._fontCache[fontName].addShapes(shapes, sceneState);
+        }
+        return this._fontCache[fontName];
+    }
+
     addShapes(shapes, sceneState) {
         let shapeFontMap = this._buildShapeFontMap(shapes);
 
-        _.forEach(shapeFontMap, (shapes, font) => {
-            if (!(font in this._fontCache)) {
-                this._fontCache[font] = new Font(shapes, null, sceneState);
-            } else {
-                this._fontCache[font].addShapes(shapes, sceneState);
-            }
-        });
+        _.forEach(shapeFontMap, (shapes, font) => this.addShapesToFont(font, shapes, sceneState));
     }
 
     removeShapes(shapes, sceneState) {
