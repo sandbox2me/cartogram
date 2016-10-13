@@ -4,16 +4,19 @@ import Font from './font';
 class Text {
     constructor(shapes, rtree, sceneState) {
         this._fontCache = {};
+        this._sceneState = sceneState;
         this.addShapes(shapes, sceneState);
     }
 
-    updateAttributesAtIndex(index) {
+    updateAttributesAtIndex(index, _sourceShapeTypeInstance) {
         let splitIndex = index.split(':');
         let fontName = splitIndex[0];
         let font = this._fontCache[fontName];
-        let shapeTypeInstance = font.shapes[splitIndex[1]];
 
-        // debugger
+        if (!font) {
+            font = this.addShapesToFont(_sourceShapeTypeInstance.font, [_sourceShapeTypeInstance], this._sceneState);
+        }
+        let shapeTypeInstance = font.shapes[splitIndex[1]];
 
         if (!shapeTypeInstance) {
             console.warn(`Text at index ${index} not found. Returning.`);

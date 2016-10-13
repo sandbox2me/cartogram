@@ -254,25 +254,20 @@ class Scene {
                 let { actor } = change;
                 let layer = actor._groupObject.layer;
 
-                if (action === 'destroy') {
-                    console.error('Actors without a group are no longer supported');
-                    // destroyedActors.push(actor);
-                } else {
-                    _.values(actor.children).forEach((shapeTypeInstance) => {
-                        if (shapeTypeInstance.shape.type === 'Text' && shapeTypeInstance.hasChangedString()) {
-                            // Text objects need to recalulate chunks and sizing when the string changes
-                            hasActorChanges = true;
-                            hasDestructiveAction = true;
-                        }
+                _.values(actor.children).forEach((shapeTypeInstance) => {
+                    if (shapeTypeInstance.shape.type === 'Text' && shapeTypeInstance.hasChangedString()) {
+                        // Text objects need to recalulate chunks and sizing when the string changes
+                        hasActorChanges = true;
+                        hasDestructiveAction = true;
+                    }
 
-                        let builder = this.buildersForLayer(layer)[shapeTypeInstance.shape.type];
-                        if (builder) {
-                            builder.updateAttributesAtIndex(shapeTypeInstance.index);
-                        } else {
-                            console.warn(`Builder for ${ shapeTypeInstance.shape.type } type on ${ layer } layer not found when trying to update attributes for shape at ${ shapeTypeInstance.index }.`);
-                        }
-                    });
-                }
+                    let builder = this.buildersForLayer(layer)[shapeTypeInstance.shape.type];
+                    if (builder) {
+                        builder.updateAttributesAtIndex(shapeTypeInstance.index, shapeTypeInstance);
+                    } else {
+                        console.warn(`Builder for ${ shapeTypeInstance.shape.type } type on ${ layer } layer not found when trying to update attributes for shape at ${ shapeTypeInstance.index }.`);
+                    }
+                });
                 hasActorChanges = true;
             }
 
