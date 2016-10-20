@@ -21,6 +21,10 @@ class Rectangle {
     }
 
     initializeGeometry() {
+        if (!this.shapes.length) {
+            return;
+        }
+
         this.geometry = new InstancedBufferGeometry();
         this._constructVertices();
         this._attributes();
@@ -154,7 +158,6 @@ class Rectangle {
         let oldShapesCount = this.shapes.length;
         this.shapes = this.shapes.concat(shapes);
 
-        this.initializeGeometry();
         this._mesh = undefined;
     }
 
@@ -162,10 +165,8 @@ class Rectangle {
         this.sceneState = sceneState;
 
         this.shapes = _.difference(this.shapes, shapes);
+        this.reindex();
 
-        if (this.shapes.length) {
-            this.initializeGeometry();
-        }
         this._mesh = undefined;
     }
 
@@ -183,11 +184,6 @@ class Rectangle {
         );
 
         this.shapes = _.compact(this.shapes);
-        this.reindex();
-
-        if (this.shapes.length) {
-            this.initializeGeometry();
-        }
 
         return shapes;
     }
@@ -222,6 +218,7 @@ class Rectangle {
 
     get mesh() {
         if (!this._mesh && this.shapes.length) {
+            this.initializeGeometry();
             this._mesh = new Mesh(this.geometry, this.material);
             this._mesh.frustumCulled = false;
             this._mesh.builderType = this.builderType;

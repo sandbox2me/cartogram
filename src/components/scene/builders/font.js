@@ -15,6 +15,10 @@ import atlasFragmentShader from 'shaders/instanced_atlas_rectangle_fragment.glsl
 
 class Font extends Rectangle {
     initializeGeometry() {
+        if (!this.shapes.length) {
+            return;
+        }
+
         this.font = this.sceneState.get('fonts').get('fonts').get(this.shapes[0].font);
 
         this.parseStrings();

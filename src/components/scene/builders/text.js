@@ -8,6 +8,10 @@ class Text {
         this.addShapes(shapes, sceneState);
     }
 
+    initializeGeometry() {
+        _.forEach(this._fontCache, (font) => font.initializeGeometry());
+    }
+
     updateAttributesAtIndex(index, _sourceShapeTypeInstance) {
         let splitIndex = index.split(':');
         let fontName = splitIndex[0];
@@ -23,21 +27,17 @@ class Text {
             return;
         }
 
-
         if (shapeTypeInstance.hasChangedString()) {
-            // Recalculate and re-render the string
-            font.removeShapes([shapeTypeInstance], font.sceneState);
-
             shapeTypeInstance.calculate();
-
+            font._mesh = undefined;
 
             // Check if the font changed
             if (shapeTypeInstance.font !== fontName) {
-                fontName = shapeTypeInstance.font;
-            }
-            this.addShapesToFont(fontName, [shapeTypeInstance], font.sceneState);
+                font.removeShapes([shapeTypeInstance], font.sceneState);
 
-            // font.addShapes([shapeTypeInstance], font.sceneState);
+                fontName = shapeTypeInstance.font;
+                this.addShapesToFont(fontName, [shapeTypeInstance], font.sceneState);
+            }
         } else {
             font.updateAttributesAtIndex(index);
         }
@@ -59,10 +59,6 @@ class Text {
         _.forEach(groupedByFont, (indexes, fontName) => {
             this._fontCache[fontName].shapesToTop(indexes);
         });
-    }
-
-    reindex() {
-        _.forEach(this._fontCache, (font) => font.reindex());
     }
 
     _buildShapeFontMap(shapes) {

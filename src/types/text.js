@@ -46,9 +46,7 @@ class Text extends Rectangle {
                 // We've reset back to the original font, away from the fallback
                 this.shape = {...this.shape, font: originalFont, originalFont: undefined };
                 // font =
-                console.log(`returning to original font, '${ originalFont }'`)
             }
-            console.log(`rendering string '${ this.string }' with '${fontName}'`)
         }
 
         let textureWidth = font.metrics.common.scaleW;
@@ -88,7 +86,6 @@ class Text extends Rectangle {
                     height: charTexHeight
                 }
             });
-            console.log(chunks, minY, dimensions, { width, height, xOffset, yOffset, xAdvance }, this.fontSize, charMetrics)
 
             x += xAdvance; // - xOffset;
         });

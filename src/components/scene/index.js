@@ -223,6 +223,12 @@ class Scene {
         return this.builders[layer];
     }
 
+    buildersInitializeAllGeometry() {
+        _.forEach(this.builders, (layer) => {
+            _.forEach(layer, (builder) => builder.initializeGeometry());
+        });
+    }
+
     _updateMeshes() {
         let pendingChanges = this.state.get('pendingUpdates');
         let hasActorChanges = false;
@@ -356,7 +362,6 @@ class Scene {
                 }
             }
         });
-
         if (!_.isEmpty(layerChanges)) {
             console.log('Updating layers...');
 
@@ -372,6 +377,8 @@ class Scene {
                         } else {
                             builder.addShapes(shapes, this.state);
                         }
+                        hasActorChanges = true;
+                        hasDestructiveAction = true;
                     });
                 });
             });

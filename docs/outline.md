@@ -303,7 +303,6 @@ properties
 methods
   updateAttributesAtIndex(index)
   shapesToTop(indexes)
-  reindex()
   addShapes(shapes, state)
   removeShapes(shapes, state)
   yankShapes(indexes)
