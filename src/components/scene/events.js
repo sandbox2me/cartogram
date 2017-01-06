@@ -27,10 +27,11 @@ class EventBinder {
     _bindEvents() {
         DEFAULT_EVENTS.forEach((eventName) => {
             this.canvas.addEventListener(eventName, (e) => {
+                console.log(eventName);
                 e.preventDefault();
                 e.stopPropagation();
                 this.scene.eventBus.trigger(eventName, e, this.scene);
-            }, true);
+            }, false);
         });
     }
 }
