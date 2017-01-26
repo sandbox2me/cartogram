@@ -109,6 +109,14 @@ class Camera {
         return this.camera;
     }
 
+    getZoomPercentage() {
+        // min 10000, max 550
+        let maxZoom = this.state.get('maxZoom');
+        let minZoom = this.state.get('minZoom');
+
+        return (this.camera.position.z - maxZoom) / minZoom;
+    }
+
     updatePosition(triggerChange=true) {
         let maxZoom = this.state.get('maxZoom');
         let minZoom = this.state.get('minZoom');
@@ -150,6 +158,18 @@ class Camera {
         this._scene._needsRepaint = true;
     }
 
+    zoomToPercentage(zoom) {
+        // min 10000, max 550
+
+        let maxZoom = this.state.get('maxZoom');
+        let minZoom = this.state.get('minZoom');
+        let zoomAmount = (minZoom * zoom) + maxZoom;
+
+        this.camera.position.z = zoomAmount;
+        this.updatePosition();
+        this._scene._needsRepaint = true;
+    }
+
     zoomToFit({ x, y, x2, y2 }) {
         let fov = this.camera.fov;
 
@@ -181,6 +201,10 @@ class Camera {
 
         this.updatePosition();
         this._scene._needsRepaint = true;
+    }
+
+    zoomToFitScene() {
+        this.zoomToFit(this._scene.sceneBBox());
     }
 
 };
