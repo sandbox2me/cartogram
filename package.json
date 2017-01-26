@@ -1,6 +1,6 @@
 {
   "name": "cartogram",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "WebGL graphics engine",
   "main": "dist/cartogram.js",
   "scripts": {
@@ -41,6 +41,5 @@
     "three": "^0.76.1",
     "tinycolor2": "^1.3.0"
   },
-  "dependencies": {
-  }
+  "dependencies": {}
 }
