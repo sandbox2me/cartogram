@@ -4,6 +4,7 @@
   "description": "WebGL graphics engine",
   "main": "dist/cartogram.js",
   "scripts": {
+    "prepublish": "grunt",
     "test": "grunt test"
   },
   "keywords": [

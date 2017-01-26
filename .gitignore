@@ -2,6 +2,6 @@
 node_modules
 SpecRunner.html
 .grunt
-dist/*dev*
+dist/
 .tmp
 #Gruntfile.js#
