@@ -44,11 +44,17 @@
             }
 
             console.time('add actor')
-            var actor = scene.addActor({
+            var actor = {
                 name: 'rect',
                 position: { x: 0, y: 0, z: 0 },
                 shapes: shapes
-            });
+            };
+
+            var group = scene.addGroup({
+                name: 'group',
+                position: { x: -1000, y: -1000, z: 0 },
+                actors: [actor]
+            })
 
             console.timeEnd('add actor')
 
