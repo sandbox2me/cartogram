@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Cartogram 2 - Circles Test</title>
+        <style type="text/css">
+            body {
+                margin: 0;
+                padding: 0;
+                background-color: #000000;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="container"></div>
+
+        <script type="text/javascript" src="http://raw.githack.com/mrdoob/stats.js/master/build/stats.min.js"></script>
+        <script type="text/javascript" src="../node_modules/three/three.js"></script>
+        <script type="text/javascript" src="../node_modules/lodash/index.js"></script>
+        <script type="text/javascript" src="../dist/cartogram-dev.js"></script>
+        <script type="text/javascript">
+            var cartogram = new Cartogram(document.getElementById('container'), {
+                backgroundColor: '#fff'
+            });
+
+            // System configuration
+            cartogram.registerImage('cat', './happycat.jpg');
+
+            var scene = cartogram.getDefaultScene();
+            var shapes = [{
+                type: 'TextureRectangle',
+                texture: 'cat',
+                id: 1,
+                size: {
+                    width: 1000 + (Math.random() * 8),
+                    height: 1000 + (Math.random() * 8)
+                },
+                position: {
+                    x: 0,
+                    y: 0
+                },
+                fill: { r: Math.random(), g: Math.random(), b: Math.random() }
+            }];
+
+            console.time('add actor')
+            var actor = {
+                name: 'rect',
+                position: { x: 0, y: 0, z: 0 },
+                shapes: shapes
+            };
+
+            var group = scene.addGroup({
+                name: 'group',
+                position: { x: 0, y: 0, z: 0 },
+                actors: [actor]
+            })
+
+            console.timeEnd('add actor')
+
+            var cameraController = new Cartogram.PanAndZoomCameraController({
+                buttons: {
+                    0: 'pan',
+                    3: 'zoom'
+                }
+            });
+            scene.addCameraController(cameraController);
+
+            var stats = new Stats();
+            stats.setMode( 0 ); // 0: fps, 1: ms, 2: mb
+
+            // align top-left
+            stats.domElement.style.position = 'absolute';
+            stats.domElement.style.left = '0px';
+            stats.domElement.style.top = '0px';
+
+            document.body.appendChild( stats.domElement );
+
+            cartogram.render(function() {
+                stats.begin();
+                stats.end();
+            });
+        </script>
+    </body>
+</html>
