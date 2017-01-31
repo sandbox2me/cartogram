@@ -20,7 +20,7 @@
         <script type="text/javascript" src="../dist/cartogram-dev.js"></script>
         <script type="text/javascript">
             var cartogram = new Cartogram(document.getElementById('container'), {
-                backgroundColor: '#fff'
+                backgroundColor: '#f8f8f8'
             });
 
             // System configuration
@@ -32,14 +32,19 @@
                 texture: 'cat',
                 id: 1,
                 size: {
-                    width: 1000 + (Math.random() * 8),
-                    height: 1000 + (Math.random() * 8)
+                    width: 1000,
+                    height: 1000
                 },
                 position: {
                     x: 0,
                     y: 0
                 },
-                fill: { r: Math.random(), g: Math.random(), b: Math.random() }
+                fill: { r: Math.random(), g: Math.random(), b: Math.random() },
+                multiplier: 10,
+                textureOffset: {
+                    x: 0.5,
+                    y: 0
+                }
             }];
 
             console.time('add actor')

@@ -7,8 +7,12 @@ attribute vec3 position;
 attribute vec3 offset;
 attribute float angle;
 attribute vec2 scale;
+attribute float textureMultiplier;
+attribute vec2 textureOffset;
 attribute vec2 uv;
 
+varying float vMultiplier;
+varying vec2 vTextureOffset;
 varying vec2 vUv;
 
 void main() {
@@ -25,6 +29,8 @@ void main() {
 
     vUv = uv;
     vUv.y = -vUv.y;
+    vMultiplier = textureMultiplier;
+    vTextureOffset = textureOffset;
 
     gl_Position = projectionMatrix * modelViewMatrix * vec4(offset + vPosition, 1.0);
 }

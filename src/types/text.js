@@ -118,7 +118,6 @@ class Text extends Rectangle {
         });
 
         if (maxX === -Infinity) {
-            debugger
             throw new Error(`Error finding size for string '${ this.string }'`);
         }
 

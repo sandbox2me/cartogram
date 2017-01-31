@@ -2,7 +2,8 @@ import _ from 'lodash';
 import {
     InstancedBufferAttribute,
     RawShaderMaterial,
-    Mesh
+    Mesh,
+    RepeatWrapping
 } from 'three';
 import Rectangle from './rectangle';
 import vertexShader from 'shaders/instanced_texture_rectangle_vertex.glsl';
@@ -21,9 +22,10 @@ class TextureRectangle extends Rectangle {
 
     _attributes() {
         this.offsets = new InstancedBufferAttribute(new Float32Array(this.shapes.length * 3), 3).setDynamic(true);
-        this.textureOffsets = new InstancedBufferAttribute(new Float32Array(this.shapes.length * 2), 2).setDynamic(true);
+        this.textureOffset = new InstancedBufferAttribute(new Float32Array(this.shapes.length * 2), 2).setDynamic(true);
         this.scales = new InstancedBufferAttribute(new Float32Array(this.shapes.length * 2), 2).setDynamic(true);
         this.angles = new InstancedBufferAttribute(new Float32Array(this.shapes.length), 1).setDynamic(true);
+        this.textureMultiplier = new InstancedBufferAttribute(new Float32Array(this.shapes.length), 1).setDynamic(true);
 
         this.shapes.forEach((shapeTypeInstance, i) => {
             let position = shapeTypeInstance.position;
@@ -33,7 +35,9 @@ class TextureRectangle extends Rectangle {
             this.scales.setXY(i, size.width, size.height);
 
             let textureOffset = shapeTypeInstance.textureOffset;
-            this.textureOffsets.setXY(i, textureOffset.x, textureOffset.y)
+            this.textureOffset.setXY(i, textureOffset.x, textureOffset.y);
+
+            this.textureMultiplier.setX(i, shapeTypeInstance.textureMultiplier);
 
             let angle = shapeTypeInstance.angle;
             this.angles.setX(i, angle);
@@ -43,8 +47,9 @@ class TextureRectangle extends Rectangle {
 
         this.geometry.addAttribute('offset', this.offsets);
         this.geometry.addAttribute('scale', this.scales);
-        this.geometry.addAttribute('textureOffset', this.textureOffsets);
         this.geometry.addAttribute('angle', this.angles);
+        this.geometry.addAttribute('textureMultiplier', this.textureMultiplier);
+        this.geometry.addAttribute('textureOffset', this.textureOffset);
     }
 
     updateAttributesAtIndex(index) {
@@ -55,23 +60,25 @@ class TextureRectangle extends Rectangle {
             return;
         }
 
-        let { position, textureOffset, angle, size, fill } = shapeTypeInstance;
+        let { position, textureOffset, textureMultiplier, angle, size, fill } = shapeTypeInstance;
 
         this.scales.setXY(index, size.width, size.height);
         this.offsets.setXYZ(index, position.x, position.y, position.z);
-        this.textureOffsets.setXY(index, textureOffset.x, textureOffset.y);
         this.angles.setX(index, angle);
+        this.textureOffset.setXY(index, textureOffset.x, textureOffset.y);
+        this.textureMultiplier = textureMultiplier;
 
         this.geometry.attributes.scale.needsUpdate = true;
         this.geometry.attributes.offset.needsUpdate = true;
-        this.geometry.attributes.textureOffset.needsUpdate = true;
         this.geometry.attributes.angle.needsUpdate = true;
+        this.geometry.attributes.textureOffset.needsUpdate = true;
+        this.geometry.attributes.textureMultiplier.needsUpdate = true;
 
-        debugger;
+
         if (this.material.uniforms.uSampler.value.uuid !== this.texture.texture.uuid) {
             // Font texture updated, refresh uniform
-            this.texture.texture.wrapS = THREE.RepeatWrapping;
-            this.texture.texture.wrapT = THREE.RepeatWrapping;
+            this.texture.texture.wrapS = RepeatWrapping;
+            this.texture.texture.wrapT = RepeatWrapping;
             this.texture.texture.repeat.set(100, 100);
             this.material.uniforms.uSampler.value = this.texture.texture;
 
@@ -81,9 +88,6 @@ class TextureRectangle extends Rectangle {
 
     get material() {
         if (!this._material) {
-            this.texture.texture.wrapS = THREE.RepeatWrapping;
-            this.texture.texture.wrapT = THREE.RepeatWrapping;
-            this.texture.texture.repeat.set(100, 100);
             this._material = new RawShaderMaterial({
                 uniforms: {
                     uLoaded: {
@@ -92,7 +96,7 @@ class TextureRectangle extends Rectangle {
                     },
                     uSampler: {
                         type: 't',
-                        value: this.texture.texture,
+                        value: this.texture.texture
                     }
                 },
                 vertexShader: this.vertexShader,

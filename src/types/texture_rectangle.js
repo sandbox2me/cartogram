@@ -9,7 +9,11 @@ class TextureRectangle extends Rectangle {
     }
 
     get textureOffset() {
-        return {x: 0, y: 0}
+        return this.get('textureOffset');
+    }
+
+    get textureMultiplier() {
+        return this.get('multiplier');
     }
 };
 
