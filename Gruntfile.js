@@ -34,7 +34,7 @@ module.exports = function(grunt) {
                 output: {
                     path: 'dist/',
                     filename: 'cartogram-dev.js',
-                    library: 'cartogram2',
+                    library: 'Cartogram',
                     libraryTarget: 'umd',
                     umdNamedDefine: true
                 },
@@ -54,7 +54,7 @@ module.exports = function(grunt) {
         'http-server': {
             dev: {
                 root: __dirname,
-                port: 8080,
+                port: 8081,
                 host: '0.0.0.0',
                 showDir: true
             }

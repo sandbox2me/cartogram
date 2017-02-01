@@ -127,6 +127,12 @@ class Cartogram {
         }));
     }
 
+    registerImage(name, url) {
+        this.dispatch(
+            actions.images.registerImage(name, url)
+        );
+    }
+
     getDefaultScene() {
         return this._defaultScene;
     }

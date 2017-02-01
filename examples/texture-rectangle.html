@@ -20,28 +20,32 @@
         <script type="text/javascript" src="../dist/cartogram-dev.js"></script>
         <script type="text/javascript">
             var cartogram = new Cartogram(document.getElementById('container'), {
-                backgroundColor: '#000000'
+                backgroundColor: '#f8f8f8'
             });
-            var scene = cartogram.getDefaultScene();
-            var shapes = [];
-            var range = 10000;
-            var origin = -400;
 
-            for (var i = 0; i < range; i++) {
-                shapes.push({
-                    type: 'Rectangle',
-                    id: i,
-                    size: {
-                        width: 2 + (Math.random() * 8),
-                        height: 2 + (Math.random() * 8)
-                    },
-                    position: {
-                        x: origin + ((i % 100) * 30),
-                        y: i * 0.35,
-                    },
-                    fill: { r: Math.random(), g: Math.random(), b: Math.random() }
-                });
-            }
+            // System configuration
+            cartogram.registerImage('cat', './happycat.jpg');
+
+            var scene = cartogram.getDefaultScene();
+            var shapes = [{
+                type: 'TextureRectangle',
+                texture: 'cat',
+                id: 1,
+                size: {
+                    width: 1000,
+                    height: 1000
+                },
+                position: {
+                    x: 0,
+                    y: 0
+                },
+                fill: { r: Math.random(), g: Math.random(), b: Math.random() },
+                multiplier: 10,
+                textureOffset: {
+                    x: 0.5,
+                    y: 0
+                }
+            }];
 
             console.time('add actor')
             var actor = {
@@ -52,7 +56,7 @@
 
             var group = scene.addGroup({
                 name: 'group',
-                position: { x: -1000, y: -1000, z: 0 },
+                position: { x: 0, y: 0, z: 0 },
                 actors: [actor]
             })
 

@@ -37,7 +37,10 @@ class Scene {
 
     // XXX Consider extracting this into a helper...
     _select(state) {
-        return state.scene.set('fonts', state.fonts).set('core', state.core);
+        return state.scene
+                    .set('fonts', state.fonts)
+                    .set('images', state.images)
+                    .set('core', state.core);
     }
 
     _initializeStoreObserver() {
