@@ -213,7 +213,7 @@ class Rectangle {
     }
 
     get renderOrder() {
-        return 0;
+        return 0.5;
     }
 
     get mesh() {

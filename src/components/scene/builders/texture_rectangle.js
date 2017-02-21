@@ -119,6 +119,10 @@ class TextureRectangle extends Rectangle {
     get builderType() {
         return 'TextureRectangle';
     }
+
+    get renderOrder() {
+        return 0;
+    }
 }
 
 export default TextureRectangle;
