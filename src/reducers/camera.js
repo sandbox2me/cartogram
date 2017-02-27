@@ -23,7 +23,9 @@ const handlers = {
     },
 
     'UPDATE_POSITION': (state, action) => {
-        return state.set('position', action.position);
+        return state
+            .set('position', {...action.position, z: 0})
+            .set('currentZoom', action.position.z);
     }
 };
 

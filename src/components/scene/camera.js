@@ -117,6 +117,10 @@ class Camera {
         return (this.camera.position.z - maxZoom) / minZoom;
     }
 
+    getZoomLevel() {
+        return this.camera.position.z;
+    }
+
     updatePosition(triggerChange=true) {
         let maxZoom = this.state.get('maxZoom');
         let minZoom = this.state.get('minZoom');
@@ -134,7 +138,7 @@ class Camera {
                 z: this.camera.position.z,
             }));
 
-            _.defer(() => { this._scene.trigger('camera:motion'); })
+            // _.defer(() => { this._scene.trigger('camera:motion'); })
         }
     }
 

@@ -40,6 +40,7 @@ class Scene {
         return state.scene
                     .set('fonts', state.fonts)
                     .set('images', state.images)
+                    .set('camera', state.camera)
                     .set('core', state.core);
     }
 
@@ -60,9 +61,26 @@ class Scene {
     }
 
     stateDidChange(oldState) {
-        // Iterate pending changes
-        if (oldState && oldState.get('core').get('size') !== this.state.get('core').get('size')) {
-            this.trigger('screen:resized');
+        // Iterate pending
+        if (oldState) {
+            if (oldState.get('core').get('size') !== this.state.get('core').get('size')) {
+                this.trigger('screen:resized');
+            }
+
+            let cameraZoomed = oldState.get('camera').get('currentZoom') !== this.state.get('camera').get('currentZoom');
+            let cameraMoved = oldState.get('camera').get('position') !== this.state.get('camera').get('position');
+
+            if (cameraMoved || cameraZoomed) {
+                this.trigger('camera:motion');
+            }
+
+            if (cameraZoomed) {
+                this.trigger('camera:zoomed');
+            }
+
+            if (cameraMoved) {
+                this.trigger('camera:moved');
+            }
         }
 
         if (!oldState || this.state.get('pendingUpdates') !== oldState.get('pendingUpdates')) {
