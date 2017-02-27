@@ -457,7 +457,9 @@ class Scene {
 
             this.rtree.insertActors(this.state.get('actorObjects').toArray());
             this.state.get('groupObjects').forEach((group) => {
-                this.rtree.insertActors(group.actorList);
+                if (group.interactive) {
+                    this.rtree.insertActors(group.actorList);
+                }
             });
         }
     }
