@@ -31,13 +31,6 @@ module.exports = function(grunt) {
 				)
             },
             dev: {
-                output: {
-                    path: 'dist/',
-                    filename: 'cartogram-dev.js',
-                    library: 'Cartogram',
-                    libraryTarget: 'umd',
-                    umdNamedDefine: true
-                },
                 devtool: 'inline-source-map',
                 debug: true
             }
@@ -46,6 +39,13 @@ module.exports = function(grunt) {
             lib: {
                 files: ['src/**/*'],
                 tasks: ['webpack:dev'],
+                options: {
+                    spawn: false
+                }
+            },
+            prod: {
+                files: ['src/**/*'],
+                tasks: ['webpack:production'],
                 options: {
                     spawn: false
                 }
@@ -94,6 +94,10 @@ module.exports = function(grunt) {
     grunt.registerTask('dev-watch', [
         'webpack:dev',
         'watch:lib'
+    ]);
+    grunt.registerTask('prod-watch', [
+        'webpack:production',
+        'watch:prod'
     ]);
 
     grunt.registerTask('dev', [
