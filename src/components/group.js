@@ -102,6 +102,10 @@ class Group {
         return this.definition.layer || 'default';
     }
 
+    get interactive() {
+        return this.definition.interactive == undefined ? true : this.definition.interactive;
+    }
+
     addActor(actor) {
         actor = _.cloneDeep(actor);
 
