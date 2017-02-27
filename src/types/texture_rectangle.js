@@ -8,6 +8,10 @@ class TextureRectangle extends Rectangle {
         }
     }
 
+    get textureName() {
+        return this.get('texture');
+    }
+
     get textureOffset() {
         return this.get('textureOffset');
     }

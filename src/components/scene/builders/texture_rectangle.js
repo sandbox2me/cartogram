@@ -60,13 +60,14 @@ class TextureRectangle extends Rectangle {
             return;
         }
 
-        let { position, textureOffset, textureMultiplier, angle, size, fill } = shapeTypeInstance;
+        let { position, textureName, textureOffset, textureMultiplier, angle, size, fill } = shapeTypeInstance;
+        let texture = this.sceneState.getIn(['images', 'images', textureName]);
 
         this.scales.setXY(index, size.width, size.height);
         this.offsets.setXYZ(index, position.x, position.y, position.z);
         this.angles.setX(index, angle);
         this.textureOffset.setXY(index, textureOffset.x, textureOffset.y);
-        this.textureMultiplier = textureMultiplier;
+        this.textureMultiplier.setX(index, textureMultiplier);
 
         this.geometry.attributes.scale.needsUpdate = true;
         this.geometry.attributes.offset.needsUpdate = true;
@@ -74,9 +75,12 @@ class TextureRectangle extends Rectangle {
         this.geometry.attributes.textureOffset.needsUpdate = true;
         this.geometry.attributes.textureMultiplier.needsUpdate = true;
 
+        if (texture.texture.uuid !== this.texture.texture.uuid) {
+            this.texture = texture;
+        }
 
         if (this.material.uniforms.uSampler.value.uuid !== this.texture.texture.uuid) {
-            // Font texture updated, refresh uniform
+            // Texture updated, refresh uniform
             this.texture.texture.wrapS = RepeatWrapping;
             this.texture.texture.wrapT = RepeatWrapping;
             this.texture.texture.repeat.set(100, 100);
