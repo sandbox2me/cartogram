@@ -286,6 +286,7 @@ class Scene {
                         // Text objects need to recalulate chunks and sizing when the string changes
                         hasActorChanges = true;
                         hasDestructiveAction = true;
+                        shapeTypeInstance._bbox = undefined;
                     }
 
                     let builder = this.buildersForLayer(layer)[shapeTypeInstance.shape.type];
