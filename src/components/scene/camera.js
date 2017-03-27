@@ -200,8 +200,7 @@ class Camera {
             axis = width;
         }
 
-        // XXX The 3 factor is an unknown, need to figure out why it's necessary...
-        this.camera.position.z = -((axis / 2) / Math.tan(fov / 2)) / 3;
+        this.camera.position.z = -((axis / 4) / Math.tan(fov));
 
         this.updatePosition();
         this._scene._needsRepaint = true;
