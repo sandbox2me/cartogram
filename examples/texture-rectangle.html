@@ -17,33 +17,38 @@
         <script type="text/javascript" src="http://raw.githack.com/mrdoob/stats.js/master/build/stats.min.js"></script>
         <script type="text/javascript" src="../node_modules/three/three.js"></script>
         <script type="text/javascript" src="../node_modules/lodash/index.js"></script>
-        <script type="text/javascript" src="../dist/cartogram-dev.js"></script>
+        <script type="text/javascript" src="../dist/cartogram.js"></script>
         <script type="text/javascript">
-            var cartogram = new Cartogram(document.getElementById('container'), {
+            var cartogram = new cartogram2(document.getElementById('container'), {
                 backgroundColor: '#f8f8f8'
             });
 
             // System configuration
             cartogram.registerImage('cat', './happycat.jpg');
+            cartogram.registerImage('atlas', './resized.png');
+
 
             var scene = cartogram.getDefaultScene();
             var shapes = [{
-                type: 'TextureRectangle',
-                texture: 'cat',
+                type: 'AtlasImage',
+                texture: 'atlas',
                 id: 1,
                 size: {
-                    width: 1000,
-                    height: 1000
+                    width: 40000,
+                    height: 40000
                 },
                 position: {
                     x: 0,
                     y: 0
                 },
-                fill: { r: Math.random(), g: Math.random(), b: Math.random() },
-                multiplier: 10,
+                multiplier: 703,
                 textureOffset: {
-                    x: 0.5,
-                    y: 0
+                    x: .883,
+                    y: .6285
+                },
+                textureLocation: {
+                    x: -.02,
+                    y: -.02
                 }
             }];
 
@@ -62,7 +67,7 @@
 
             console.timeEnd('add actor')
 
-            var cameraController = new Cartogram.PanAndZoomCameraController({
+            var cameraController = new cartogram2.PanAndZoomCameraController({
                 buttons: {
                     0: 'pan',
                     3: 'zoom'

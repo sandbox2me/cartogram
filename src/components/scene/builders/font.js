@@ -211,7 +211,7 @@ class Font extends Rectangle {
     }
 
     get renderOrder() {
-        return 2;
+        return 4;
     }
 
     get mesh() {
