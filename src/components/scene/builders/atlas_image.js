@@ -5,11 +5,11 @@ import {
     Mesh,
     RepeatWrapping
 } from 'three';
-import Rectangle from './rectangle';
-import vertexShader from 'shaders/instanced_texture_rectangle_vertex.glsl';
-import fragmentShader from 'shaders/instanced_texture_rectangle_fragment.glsl';
+import TextureRectangle from './texture_rectangle';
+import vertexShader from 'shaders/instanced_atlas_image_vertex.glsl';
+import fragmentShader from 'shaders/instanced_atlas_image_fragment.glsl';
 
-class TextureRectangle extends Rectangle {
+class AtlasImage extends TextureRectangle {
     initializeGeometry() {
         if (!this.shapes.length) {
             return;
@@ -23,6 +23,7 @@ class TextureRectangle extends Rectangle {
     _attributes() {
         this.offsets = new InstancedBufferAttribute(new Float32Array(this.shapes.length * 3), 3).setDynamic(true);
         this.textureOffset = new InstancedBufferAttribute(new Float32Array(this.shapes.length * 2), 2).setDynamic(true);
+        this.textureLocation = new InstancedBufferAttribute(new Float32Array(this.shapes.length * 2), 2).setDynamic(true);
         this.scales = new InstancedBufferAttribute(new Float32Array(this.shapes.length * 2), 2).setDynamic(true);
         this.angles = new InstancedBufferAttribute(new Float32Array(this.shapes.length), 1).setDynamic(true);
         this.textureMultiplier = new InstancedBufferAttribute(new Float32Array(this.shapes.length), 1).setDynamic(true);
@@ -37,6 +38,9 @@ class TextureRectangle extends Rectangle {
             let textureOffset = shapeTypeInstance.textureOffset;
             this.textureOffset.setXY(i, textureOffset.x, textureOffset.y);
 
+            let textureLocation = shapeTypeInstance.textureLocation;
+            this.textureLocation.setXY(i, textureLocation.x, textureLocation.y);
+
             this.textureMultiplier.setX(i, shapeTypeInstance.textureMultiplier);
 
             let angle = shapeTypeInstance.angle;
@@ -50,6 +54,7 @@ class TextureRectangle extends Rectangle {
         this.geometry.addAttribute('angle', this.angles);
         this.geometry.addAttribute('textureMultiplier', this.textureMultiplier);
         this.geometry.addAttribute('textureOffset', this.textureOffset);
+        this.geometry.addAttribute('textureLocation', this.textureLocation);
     }
 
     updateAttributesAtIndex(index) {
@@ -60,19 +65,29 @@ class TextureRectangle extends Rectangle {
             return;
         }
 
-        let { position, textureName, textureOffset, textureMultiplier, angle, size } = shapeTypeInstance;
+        let {
+            position,
+            textureName,
+            textureLocation,
+            textureOffset,
+            textureMultiplier,
+            angle,
+            size
+        } = shapeTypeInstance;
         let texture = this.sceneState.getIn(['images', 'images', textureName]);
 
         this.scales.setXY(index, size.width, size.height);
         this.offsets.setXYZ(index, position.x, position.y, position.z);
         this.angles.setX(index, angle);
         this.textureOffset.setXY(index, textureOffset.x, textureOffset.y);
+        this.textureLocation.setXY(index, textureLocation.x, textureLocation.y);
         this.textureMultiplier.setX(index, textureMultiplier);
 
         this.geometry.attributes.scale.needsUpdate = true;
         this.geometry.attributes.offset.needsUpdate = true;
         this.geometry.attributes.angle.needsUpdate = true;
         this.geometry.attributes.textureOffset.needsUpdate = true;
+        this.geometry.attributes.textureLocation.needsUpdate = true;
         this.geometry.attributes.textureMultiplier.needsUpdate = true;
 
         if (texture.texture.uuid !== this.texture.texture.uuid) {
@@ -121,12 +136,12 @@ class TextureRectangle extends Rectangle {
     }
 
     get builderType() {
-        return 'TextureRectangle';
+        return 'AtlasImage';
     }
 
     get renderOrder() {
-        return 0;
+        return 1;
     }
 }
 
-export default TextureRectangle;
+export default AtlasImage;

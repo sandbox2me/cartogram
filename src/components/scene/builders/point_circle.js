@@ -78,7 +78,7 @@ class PointCircle extends Rectangle {
     }
 
     get renderOrder() {
-        return 1;
+        return 3;
     }
 }
 
