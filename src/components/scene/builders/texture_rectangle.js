@@ -60,7 +60,7 @@ class TextureRectangle extends Rectangle {
             return;
         }
 
-        let { position, textureName, textureOffset, textureMultiplier, angle, size, fill } = shapeTypeInstance;
+        let { position, textureName, textureOffset, textureMultiplier, angle, size } = shapeTypeInstance;
         let texture = this.sceneState.getIn(['images', 'images', textureName]);
 
         this.scales.setXY(index, size.width, size.height);
