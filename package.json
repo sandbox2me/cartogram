@@ -1,6 +1,6 @@
 {
   "name": "cartogram",
-  "version": "2.4.0",
+  "version": "2.4.1",
   "description": "WebGL graphics engine",
   "main": "dist/cartogram.js",
   "scripts": {
