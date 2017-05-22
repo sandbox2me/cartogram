@@ -2,7 +2,7 @@ import _ from 'lodash';
 import {
     InstancedBufferAttribute,
     RawShaderMaterial,
-    Mesh,
+    NearestFilter,
     RepeatWrapping
 } from 'three';
 import TextureRectangle from './texture_rectangle';
@@ -99,6 +99,9 @@ class AtlasImage extends TextureRectangle {
             this.texture.texture.wrapS = RepeatWrapping;
             this.texture.texture.wrapT = RepeatWrapping;
             this.texture.texture.repeat.set(100, 100);
+            this.texture.texture.anisotropy = 0;
+            this.texture.texture.magFilter = NearestFilter;
+            this.texture.texture.minFilter = NearestFilter;
             this.material.uniforms.uSampler.value = this.texture.texture;
 
             this.material.needsUpdate = true;
