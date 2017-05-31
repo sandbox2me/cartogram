@@ -40,7 +40,7 @@ class Cartogram {
     }
 
     _initializeRenderer() {
-        this.renderer = new three.WebGLRenderer();
+        this.renderer = new three.WebGLRenderer({antialias: false});
         this.renderer.setSize(this.width, this.height);
         this.renderer.setClearColor((new three.Color(this.options.backgroundColor)).getHex());
         this.renderer.setPixelRatio(window.devicePixelRatio);
